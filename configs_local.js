@@ -9,11 +9,11 @@ var LOCAL_IP = 'localhost';
 
 exports.mysql = function(){
 	return {
-		HOST:'127.0.0.1',
-		USER:'user1',
-		PSWD:'123456',
-		DB:'ddmj',
-		PORT:3366,
+		HOST:'118.24.146.117',
+		USER:'nodejs_test',
+		PSWD:'rpMph5R7YWFD4ZCc',
+		DB:'nodejs_test',
+		PORT:3306,
 	}
 }
 
