@@ -9,11 +9,11 @@ var LOCAL_IP = 'localhost';
 
 exports.mysql = function(){
 	return {
-		HOST:'118.24.146.117',
-		USER:'nodejs_test',
-		PSWD:'rpMph5R7YWFD4ZCc',
-		DB:'nodejs_test',
-		PORT:3306,
+		HOST:'127.0.0.1',
+		USER:'user1',
+		PSWD:'123456',
+		DB:'ddmj',
+		PORT:3366,
 	}
 }
 
@@ -37,7 +37,7 @@ exports.account_server = function(){
 exports.hall_server = function(){
 	return {
 		HALL_IP:HALL_IP,
-		CLEINT_PORT:HALL_CLIENT_PORT,
+		CLIENT_PORT:HALL_CLIENT_PORT,
 		FOR_ROOM_IP:LOCAL_IP,
 		ROOM_PORT:HALL_ROOM_PORT,
 		ACCOUNT_PRI_KEY:ACCOUNT_PRI_KEY,
