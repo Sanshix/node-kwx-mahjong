@@ -89,7 +89,7 @@ app.get('/create_user', function (req, res) {
 
     var account = req.query.account;
     var name = req.query.name;
-    var coins = 1000; // TODO
+    var coins = 0; // 默认为0
     var gems = 21;
 
     console.log(name);
@@ -312,6 +312,86 @@ app.get('/is_server_online', function (req, res) {
         http.send(res, 0, "ok", ret);
     });
 });
+
+
+app.get('/update_coin', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let coin = req.query.coin;
+    db.update_coin(uuid, coin, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {});
+        } else {
+            http.send(res, 1, '操作失败', {})
+        }
+    })
+});
+
+app.get('/update_user_rank', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let level = req.query.level;
+    db.update_rank(uuid, level, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {});
+        } else {
+            http.send(res, 1, '操作失败', {})
+        }
+    })
+});
+
+app.get('/join_org', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let parent_id = req.query.parent_id || 0;
+    let org_id = req.query.org_id;
+
+    db.join_org(uuid, org_id, parent_id, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {});
+        } else {
+            http.send(res, 1, '操作失败', {})
+        }
+    })
+});
+
+app.get('/join_org_list', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    db.join_org_list(org_id, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {data: data});
+        } else {
+            http.send(res, 1, '操作失败', {})
+        }
+    })
+});
+
+
+app.get('/join_org_approval', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let uuid = req.query.uuid;
+    let state = req.query.state;
+    db.join_org_approval(org_id, uuid, state, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {data: data});
+        } else {
+            http.send(res, 1, '操作失败', {})
+        }
+    })
+});
+
 
 exports.start = function ($config) {
     config = $config;

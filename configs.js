@@ -29,8 +29,8 @@ exports.account_server = function(){
 		VERSION: '20161227',
 		APP_WEB: 'http://fir.im/rf5m',
 
-		DEFAULT_USER_COINS: 1000,
-		DEFAULT_USER_GEMS: 100,
+		DEFAULT_USER_COINS: 0,
+		DEFAULT_USER_GEMS: 10,
 	};
 };
 
