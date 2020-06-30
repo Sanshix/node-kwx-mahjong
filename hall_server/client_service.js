@@ -219,7 +219,7 @@ app.get('/get_history_list', function (req, res) {
 
         var userId = data.userid;
         db.get_user_history(userId, function (history) {
-            http.send(res, 0, "ok", {history: history});
+            http.send(res, 0, "ok", { history: history });
         });
     });
 });
@@ -238,7 +238,7 @@ app.get('/get_games_of_room', function (req, res) {
 
     db.get_games_of_room(uuid, function (data) {
         console.log(data);
-        http.send(res, 0, "ok", {data: data});
+        http.send(res, 0, "ok", { data: data });
     });
 });
 
@@ -256,7 +256,7 @@ app.get('/get_detail_of_game', function (req, res) {
     }
 
     db.get_detail_of_game(uuid, index, function (data) {
-        http.send(res, 0, "ok", {data: data});
+        http.send(res, 0, "ok", { data: data });
     });
 });
 
@@ -268,7 +268,7 @@ app.get('/get_user_status', function (req, res) {
     var account = req.query.account;
     db.get_gems(account, function (data) {
         if (data != null) {
-            http.send(res, 0, "ok", {gems: data.gems});
+            http.send(res, 0, "ok", { gems: data.gems });
         } else {
             http.send(res, 1, "get gems failed.");
         }
@@ -290,7 +290,7 @@ app.get('/get_message', function (req, res) {
     var version = req.query.version;
     db.get_message(type, version, function (data) {
         if (data != null) {
-            http.send(res, 0, "ok", {msg: data.msg, version: data.version});
+            http.send(res, 0, "ok", { msg: data.msg, version: data.version });
         } else {
             http.send(res, 1, "get message failed.");
         }
@@ -370,7 +370,7 @@ app.get('/join_org_list', function (req, res) {
     let org_id = req.query.org_id;
     db.join_org_list(org_id, (data) => {
         if (data) {
-            http.send(res, 0, 'ok', {data: data});
+            http.send(res, 0, 'ok', { data: data });
         } else {
             http.send(res, 1, 'handle error', {})
         }
@@ -387,7 +387,7 @@ app.get('/join_org_approval', function (req, res) {
     let state = req.query.state; //用户状态：1正常，2待审核, 3拒绝
     db.join_org_approval(org_id, uuid, state, (data) => {
         if (data) {
-            http.send(res, 0, 'ok', {data: data});
+            http.send(res, 0, 'ok', { data: data });
         } else {
             http.send(res, 1, 'handle error', {})
         }
@@ -402,7 +402,7 @@ app.get('/org_get_info', function (req, res) {
     let org_id = req.query.org_id;
     db.get_org_info(org_id, (data) => {
         if (data) {
-            http.send(res, 0, 'ok', {data: data});
+            http.send(res, 0, 'ok', { data: data });
         } else {
             http.send(res, 1, 'server error', {})
         }
@@ -416,7 +416,7 @@ app.get('/org_set_notice', function (req, res) {
     }
     let org_id = req.query.org_id;
     let notice = req.query.notice;
-    db.set_org_notice(org_id, notice,(data) => {
+    db.set_org_notice(org_id, notice, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
@@ -431,11 +431,48 @@ app.get('/org_set_config', function (req, res) {
     let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
-    db.set_org_info(org_id, func_type_1,func_type_2,show_type,pump,(data) => {
+    db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
 
+// 创建社团
+app.get('/org_create', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let name = req.query.name;
+    db.org_create(name, (data) => {
+        if (data == null) {
+            return http.send(res, 1, 'server error', {})
+        }
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
+
+// 查询我的社团
+app.get('/org_self', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    db.org_self(uuid, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
+
+// 查询社团成员
+app.get('/org_user_list', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let uuid = req.query.uuid;
+    let type = req.query.type || 1; // 1所有玩家，2未绑定玩家
+    db.org_user_list(org_id, uuid, type, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
 
 exports.start = function ($config) {
     config = $config;

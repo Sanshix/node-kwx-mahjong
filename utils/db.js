@@ -804,4 +804,42 @@ exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pu
     });
 }
 
+exports.org_create = (name, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `INSERT INTO organization (name) VALUES ('${name}')`;
+    query(sql, (err, rows) => {
+        if (err) {
+            callback(null);
+            throw err;
+        } else {
+            callback(rows.insertId);
+        }
+    })
+}
+
+exports.org_self = (uuid, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `select * from user_organization where uuid = ${uuid} `;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        callback(rows);
+    });
+}
+
+exports.org_user_list = (org_id, uuid, type, callback) => {
+    callback = callback == null ? nop : callback;
+    let where = `org_id=${org_id}`;
+    if (uuid) {
+        where += ` and uuid = ${uuid}`;
+    }
+    if (type == 2) {
+        where += ` and parent_uuid =0`
+    }
+    let sql = `select * from user_organization where ${where} `;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        callback(rows);
+    });
+}
+
 exports.query = query;
