@@ -324,7 +324,7 @@ app.get('/update_coin', function (req, res) {
         if (data) {
             http.send(res, 0, 'ok', {});
         } else {
-            http.send(res, 1, '操作失败', {})
+            http.send(res, 1, 'handle error', {})
         }
     })
 });
@@ -341,7 +341,7 @@ app.get('/update_user_rank', function (req, res) {
         if (data) {
             http.send(res, 0, 'ok', {});
         } else {
-            http.send(res, 1, '操作失败', {})
+            http.send(res, 1, 'handle error', {})
         }
     })
 });
@@ -358,7 +358,7 @@ app.get('/join_org', function (req, res) {
         if (data) {
             http.send(res, 0, 'ok', {});
         } else {
-            http.send(res, 1, '操作失败', {})
+            http.send(res, 1, 'handle error', {})
         }
     })
 });
@@ -372,7 +372,7 @@ app.get('/join_org_list', function (req, res) {
         if (data) {
             http.send(res, 0, 'ok', {data: data});
         } else {
-            http.send(res, 1, '操作失败', {})
+            http.send(res, 1, 'handle error', {})
         }
     })
 });
@@ -389,8 +389,50 @@ app.get('/join_org_approval', function (req, res) {
         if (data) {
             http.send(res, 0, 'ok', {data: data});
         } else {
-            http.send(res, 1, '操作失败', {})
+            http.send(res, 1, 'handle error', {})
         }
+    })
+});
+
+// 获取社团配置信息(社团配置信息，公告数据）
+app.get('/org_get_info', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    db.get_org_info(org_id, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {data: data});
+        } else {
+            http.send(res, 1, 'server error', {})
+        }
+    })
+});
+
+// 设置公告
+app.get('/org_set_notice', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let notice = req.query.notice;
+    db.set_org_notice(org_id, notice,(data) => {
+        http.send(res, 0, 'ok', {});
+    })
+});
+
+// 设置社团玩法
+app.get('/org_set_config', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let func_type_1 = req.query.func_type_1;//再来一局功能 0未启用 1启用
+    let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
+    let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
+    let pump = req.query.pump; //总抽水比例
+    db.set_org_info(org_id, func_type_1,func_type_2,show_type,pump,(data) => {
+        http.send(res, 0, 'ok', {});
     })
 });
 
