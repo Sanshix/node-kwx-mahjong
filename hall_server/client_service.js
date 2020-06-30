@@ -313,7 +313,7 @@ app.get('/is_server_online', function (req, res) {
     });
 });
 
-
+// 上下分
 app.get('/update_coin', function (req, res) {
     if (!check_account(req, res)) {
         return;
@@ -329,11 +329,13 @@ app.get('/update_coin', function (req, res) {
     })
 });
 
+// 设置社团管理员
 app.get('/update_user_rank', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
     let uuid = req.query.uuid;
+    //社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家'
     let level = req.query.level;
     db.update_rank(uuid, level, (data) => {
         if (data) {
@@ -343,14 +345,14 @@ app.get('/update_user_rank', function (req, res) {
         }
     })
 });
-
+// 加入社团
 app.get('/join_org', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
     let uuid = req.query.uuid;
-    let parent_id = req.query.parent_id || 0;
-    let org_id = req.query.org_id;
+    let parent_id = req.query.parent_id || 0; // 邀请人id
+    let org_id = req.query.org_id;  // 社团id
 
     db.join_org(uuid, org_id, parent_id, (data) => {
         if (data) {
@@ -360,7 +362,7 @@ app.get('/join_org', function (req, res) {
         }
     })
 });
-
+// 获取入团申请列表
 app.get('/join_org_list', function (req, res) {
     if (!check_account(req, res)) {
         return;
@@ -375,14 +377,14 @@ app.get('/join_org_list', function (req, res) {
     })
 });
 
-
+// 审批入团申请请求
 app.get('/join_org_approval', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;
-    let state = req.query.state;
+    let state = req.query.state; //用户状态：1正常，2待审核, 3拒绝
     db.join_org_approval(org_id, uuid, state, (data) => {
         if (data) {
             http.send(res, 0, 'ok', {data: data});
