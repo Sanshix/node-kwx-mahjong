@@ -474,6 +474,21 @@ app.get('/org_user_list', function (req, res) {
     })
 });
 
+// 解散社团 TODO 
+app.get('/org_delete', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    db.org_delete(org_id, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
+
+
+// 解散社团功能
+// 可设定分团长积分抽成比例（百分比）
+// 可设定进入社团无绑定玩家为直系上下分会员（便于玩家游戏房费抽成积分归属）   
 exports.start = function ($config) {
     config = $config;
     app.listen(config.CLIENT_PORT);
