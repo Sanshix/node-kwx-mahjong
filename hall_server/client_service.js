@@ -442,7 +442,8 @@ app.get('/org_create', function (req, res) {
         return;
     }
     let name = req.query.name;
-    db.org_create(name, (data) => {
+    let uuid = req.query.uuid;
+    db.org_create(name,uuid, (data) => {
         if (data == null) {
             return http.send(res, 1, 'server error', {})
         }

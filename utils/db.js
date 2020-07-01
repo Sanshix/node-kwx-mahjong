@@ -804,22 +804,25 @@ exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pu
     });
 }
 
-exports.org_create = (name, callback) => {
+exports.org_create = (name,uuid, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `INSERT INTO organization (name) VALUES ('${name}')`;
     query(sql, (err, rows) => {
         if (err) {
             callback(null);
             throw err;
-        } else {
-            callback(rows.insertId);
         }
+        let sql = `INSERT INTO user_organization(uuid, org_id) VALUES (${uuid},${rows.insertId})`
+        console.log(sql);
+        query(sql, function (err, rows) { 
+            callback(rows.insertId);
+        });
     })
 }
 
 exports.org_self = (uuid, callback) => {
     callback = callback == null ? nop : callback;
-    let sql = `select * from user_organization where uuid = ${uuid} `;
+    let sql = `select b.*,a.level from user_organization a left join organization b on a.org_id=b.id where uuid = ${uuid} `;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
@@ -854,7 +857,7 @@ exports.org_delete = (org_id, callback) => {
     });
 }
 
-exports.org_pump_config = (org_id,uuid,water, callback) => {
+exports.org_pump_config = (org_id, uuid, water, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set water_ratio =${water} where org_id=${org_id} and uuid=${uuid}`;
     console.log(sql);
@@ -863,7 +866,7 @@ exports.org_pump_config = (org_id,uuid,water, callback) => {
     });
 }
 
-exports.org_parent_config = (org_id,uuid,parent_id, callback) => {
+exports.org_parent_config = (org_id, uuid, parent_id, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set parent_uuid =${parent_id} where org_id=${org_id} and uuid=${uuid}`;
     console.log(sql);
