@@ -118,6 +118,12 @@ app.get('/auth', function(req, res) {
 	});
 });
 
+app.get('/get_captcha', function(req, res) {
+	var account = req.query.account;
+
+	send(res, ret);
+});
+
 var appInfo = {
 	Android: {
 		appid: "wxe39f08522d35c80c",
