@@ -842,4 +842,34 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
     });
 }
 
+exports.org_delete = (org_id, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `delete from user_organization where org_id = ${org_id} `;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        let sqls = `delete from organization where id = ${org_id}`;
+        query(sqls, function (err, rows) {
+            callback(true);
+        });
+    });
+}
+
+exports.org_pump_config = (org_id,uuid,water, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `update user_organization set water_ratio =${water} where org_id=${org_id} and uuid=${uuid}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        callback(true);
+    });
+}
+
+exports.org_parent_config = (org_id,uuid,parent_id, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `update user_organization set parent_uuid =${parent_id} where org_id=${org_id} and uuid=${uuid}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        callback(true);
+    });
+}
+
 exports.query = query;

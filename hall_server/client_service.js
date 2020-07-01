@@ -474,7 +474,7 @@ app.get('/org_user_list', function (req, res) {
     })
 });
 
-// 解散社团 TODO 
+// 解散社团
 app.get('/org_delete', function (req, res) {
     if (!check_account(req, res)) {
         return;
@@ -485,10 +485,34 @@ app.get('/org_delete', function (req, res) {
     })
 });
 
+// 可设定分团长积分抽成比例（百分比）(只能给自己的下线设置，总团长只能设置分团长）
+app.get('/org_pump_config', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let uuid = req.query.uuid;
+    let water = req.query.water; //比例
+    db.org_pump_config(org_id,uuid,water, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
 
-// 解散社团功能
-// 可设定分团长积分抽成比例（百分比）
-// 可设定进入社团无绑定玩家为直系上下分会员（便于玩家游戏房费抽成积分归属）   
+// 可设定进入社团无绑定玩家为直系上下分会员（便于玩家游戏房费抽成积分归属）总团长可以设置指定的上下关系其他的只能设置为自己的
+app.get('/org_parent_config', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let uuid = req.query.uuid;  //下级uuid
+    let parent_id = req.query.parent_id; // 上级uuid
+    db.org_parent_config(org_id,uuid,water,parent_id, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
+
+// 解散房间
+
 exports.start = function ($config) {
     config = $config;
     app.listen(config.CLIENT_PORT);
