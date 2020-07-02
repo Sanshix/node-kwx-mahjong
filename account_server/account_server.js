@@ -3,7 +3,7 @@ var crypto = require('../utils/crypto');
 var express = require('express');
 var db = require('../utils/db');
 var http = require('../utils/http');
-
+var captcha = require('../utils/captcha')
 var app = express();
 var hallAddr = '';
 
@@ -39,7 +39,7 @@ app.get('/register',function(req, res) {
 	};
 
 	var fnSucceed = function() {
-		send(res, { errcode: 0, errmsg: "ok" });	
+		send(res, { errcode: 0, errmsg: "ok" });
 	};
 
 	if (null == account || null == password)
@@ -58,7 +58,7 @@ app.get('/register',function(req, res) {
 			});
 		} else {
 			fnFailed('account has been used.');
-			console.log("account has been used.");			
+			console.log("account has been used.");
 		}
 	});
 });
@@ -98,13 +98,21 @@ app.get('/guest', function(req, res) {
 app.get('/auth', function(req, res) {
 	var account = req.query.account;
 	var password = req.query.password;
-
+	var code = req.query.code;
+    var type = req.query.type || 1; // 1账号，2手机验证，
 	db.get_account_info(account, password, function(info) {
 		if (info == null) {
 			send(res, { errcode: 1, errmsg: "invalid account" });
 			return;
 		}
-
+        if (type == 2){
+            db.get_captcha(account,(data)=>{
+                if (data == null || code != data.code){
+                    send(res, { errcode: 1, errmsg: "invalid code" });
+                    return;
+                }
+            })
+        }
 		var account = "vivi_" + req.query.account;
 		var sign = crypto.md5(account + req.ip + config.ACCOUNT_PRI_KEY);
 		var ret = {
@@ -118,10 +126,16 @@ app.get('/auth', function(req, res) {
 	});
 });
 
-app.get('/get_captcha', function(req, res) {
-	var account = req.query.account;
-
-	send(res, ret);
+// 获取验证码
+app.get('/get_captcha', function (req, res) {
+    var mobile = req.query.mobile; //手机号
+    let code = captcha.send_sms(mobile);
+    db.add_captcha(mobile, code, (data) => {
+        send(res, {
+            errcode: 0,
+            errmsg: "ok",
+        })
+    })
 });
 
 var appInfo = {
@@ -131,7 +145,7 @@ var appInfo = {
 	},
 	iOS: {
 		appid: "wxcb508816c5c4e2a4",
-		secret: "7de38489ede63089269e3410d5905038",		
+		secret: "7de38489ede63089269e3410d5905038",
 	}
 };
 

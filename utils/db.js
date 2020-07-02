@@ -804,7 +804,7 @@ exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pu
     });
 }
 
-exports.org_create = (name,uuid, callback) => {
+exports.org_create = (name, uuid, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `INSERT INTO organization (name) VALUES ('${name}')`;
     query(sql, (err, rows) => {
@@ -814,7 +814,7 @@ exports.org_create = (name,uuid, callback) => {
         }
         let sql = `INSERT INTO user_organization(uuid, org_id) VALUES (${uuid},${rows.insertId})`
         console.log(sql);
-        query(sql, function (err, rows) { 
+        query(sql, function (err, rows) {
             callback(rows.insertId);
         });
     })
@@ -875,4 +875,25 @@ exports.org_parent_config = (org_id, uuid, parent_id, callback) => {
     });
 }
 
+exports.add_captcha = (mobile, code, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `INSERT INTO captcha(mobile, code) VALUES (${mobile},${code})`
+    console.log(sql);
+    query(sql, function (err, rows) {
+        callback(true);
+    });
+}
+
+exports.get_captcha = (mobile, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `select * from captcha where mobile=${mobile}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (rows.length > 0) {
+            callback(rows[0]);
+        } else {
+            callback(null);
+        }
+    });
+}
 exports.query = query;
