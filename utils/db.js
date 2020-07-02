@@ -77,7 +77,7 @@ exports.create_account = function (account, password, callback) {
     });
 };
 
-exports.get_account_info = function (account, password, callback) {
+exports.get_account_info = function (account, password,type, callback) {
     callback = callback == null ? nop : callback;
     if (account == null) {
         callback(null);
@@ -92,8 +92,12 @@ exports.get_account_info = function (account, password, callback) {
         }
 
         if (rows.length == 0) {
-            callback(null);
-            return;
+            if (type == 1){
+                callback(null);
+                return;
+            }
+            // insert
+            this.create_account(account, password)
         }
 
         if (password != null) {

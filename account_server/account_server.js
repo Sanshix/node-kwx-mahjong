@@ -100,7 +100,7 @@ app.get('/auth', function(req, res) {
 	var password = req.query.password;
 	var code = req.query.code;
     var type = req.query.type || 1; // 1账号，2手机验证，
-	db.get_account_info(account, password, function(info) {
+	db.get_account_info(account, password,type, function(info) {
 		if (info == null) {
 			send(res, { errcode: 1, errmsg: "invalid account" });
 			return;
