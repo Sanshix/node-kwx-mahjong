@@ -812,10 +812,11 @@ exports.org_create = (name,uuid, callback) => {
             callback(null);
             throw err;
         }
+        // TODO 添加状态
         let sql = `INSERT INTO user_organization(uuid, org_id) VALUES (${uuid},${rows.insertId})`
         console.log(sql);
         query(sql, function (err, rows) { 
-            callback(rows.insertId);
+            callback(true);
         });
     })
 }
