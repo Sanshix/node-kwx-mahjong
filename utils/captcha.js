@@ -4,19 +4,22 @@ var querystring = require('querystring')
 
 var md5 = crypto.createHash('md5')
 
-var smsapi = "api.smsbao.com"
+const smsapi = "api.smsbao.com";
 // 短信平台账号
-var user = "tianrong"
+const user = "tianrong";
 // 短信平台密码
-var password = "tianrong"
-// 要发送的短信内容
-var content = `【聚友联盟】您的登录验证码${random_code()}，验证码在60秒时间内有效`;
-// 要发送短信的手机号码
-var phone = "13398127330"
+const password = "tianrong";
 
-send_sms(smsapi, user, password, content, phone)
 
-function send_sms(smsapi, user, password, content, phone) {
+exports.send_sms = (phone) => {
+    let code = random_code();
+    // 要发送的短信内容
+    let content = `【聚友联盟】您的登录验证码${code}，验证码在60秒时间内有效`;
+    _send_sms(smsapi, user, password, content, phone);
+    return code;
+}
+
+function _send_sms(smsapi, user, password, content, phone) {
     var pass = md5.update(password).digest('hex')
     var data = {
         'u': user,
