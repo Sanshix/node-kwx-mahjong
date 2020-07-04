@@ -514,7 +514,16 @@ app.get('/org_parent_config', function (req, res) {
     })
 });
 
-// 解散房间
+// 解散房间 TODO: 房间中要定期检测房间状态
+app.get('/org_get_room_delet', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let room_id = req.query.room_id;
+    db.delete_room(room_id, (data) => {
+        http.send(res, 0, 'ok', {});
+    })
+});
 
 // 查询房间
 app.get('/org_get_room_list', function (req, res) {
