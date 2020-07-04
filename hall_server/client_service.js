@@ -531,7 +531,7 @@ app.get('/org_get_room_list', function (req, res) {
         return;
     }
     let org_id = req.query.org_id;
-    db.get_room_list(org_id,uuid,water,parent_id, (data) => {
+    db.get_room_list(org_id, (data) => {
         http.send(res, 0, 'ok', { data: data });
     })
 });
