@@ -810,13 +810,12 @@ exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pu
 
 exports.org_create = (name, uuid, callback) => {
     callback = callback == null ? nop : callback;
-    let sql = `INSERT INTO organization (name) VALUES ('${name}')`;
+    let sql = `INSERT INTO organization (name,boss_uuid) VALUES ('${name}',${uuid})`;
     query(sql, (err, rows) => {
         if (err) {
             callback(null);
             throw err;
         }
-        // TODO 添加状态
         let sql = `INSERT INTO user_organization(uuid, org_id) VALUES (${uuid},${rows.insertId})`
         console.log(sql);
         query(sql, function (err, rows) { 
@@ -827,7 +826,7 @@ exports.org_create = (name, uuid, callback) => {
 
 exports.org_self = (uuid, callback) => {
     callback = callback == null ? nop : callback;
-    let sql = `select b.*,a.level from user_organization a left join organization b on a.org_id=b.id where uuid = ${uuid} `;
+    let sql = `select b.*,a.level from user_organization a left join organization b on a.org_id=b.id where b.status=1 and a.uuid = ${uuid} `;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
