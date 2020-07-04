@@ -128,15 +128,17 @@ app.get('/create_private_room', function (req, res) {
 
         var userId = data.userid;
         var name = data.name;
-
+        var org_id = data.org_id || 0;
         db.get_room_id_of_user(userId, function (roomId) {
             if (roomId != null) {
                 http.send(res, -1, "user is playing in room now.");
                 return;
             }
-
-            room_service.createRoom(account, userId, conf, function (err, roomId) {
+            room_service.createRoom(account, userId, conf,org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
+                    if (org_id != 0){
+                        return http.send(res, 0, "ok", ret);
+                    }
                     room_service.enterRoom(userId, name, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
@@ -513,6 +515,17 @@ app.get('/org_parent_config', function (req, res) {
 });
 
 // 解散房间
+
+// 查询房间
+app.get('/org_get_room_list', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    db.get_room_list(org_id,uuid,water,parent_id, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
 
 exports.start = function ($config) {
     config = $config;

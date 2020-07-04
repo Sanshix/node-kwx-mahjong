@@ -53,7 +53,8 @@ app.get('/create_room', function(req, res) {
 	var userId = parseInt(req.query.userid);
 	var sign = req.query.sign;
 	var gems = req.query.gems;
-	var conf = req.query.conf
+	var conf = req.query.conf;
+	var org_id = req.query.org_id;
 	if (userId == null || sign == null || conf == null) {
 		http.send(res, 1, "invalid parameters");
 		return;
@@ -67,7 +68,7 @@ app.get('/create_room', function(req, res) {
 	}
 
 	conf = JSON.parse(conf);
-	roomMgr.createRoom(userId, conf, gems, serverIp, config.CLIENT_PORT, function(errcode, roomId) {
+	roomMgr.createRoom(userId, conf, gems, org_id, serverIp, config.CLIENT_PORT, function(errcode, roomId) {
 		if (errcode != 0 || roomId == null) {
 			http.send(res, errcode, "create failed.");
 			return;

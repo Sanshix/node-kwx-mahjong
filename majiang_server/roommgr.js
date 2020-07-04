@@ -89,7 +89,7 @@ function constructRoomFromDb(dbdata) {
 	return roomInfo;
 }
 
-exports.createRoom = function(creator, roomConf, gems, ip, port, callback) {
+exports.createRoom = function(creator, roomConf, gems, org_id, ip,  port, callback) {
 	var gameMgr = getGameMgr('kwx');
 	if (null == gameMgr) {
 		callback(1, null);
@@ -187,7 +187,7 @@ exports.createRoom = function(creator, roomConf, gems, ip, port, callback) {
 					}
 
 					//写入数据库
-					db.create_room(roomId, conf, ip, port, createTime, function(uuid) {
+					db.create_room(roomId, conf, org_id, ip, port, createTime, function(uuid) {
 						delete creatingRooms[roomId];
 						if (uuid != null) {
 							roomInfo.uuid = uuid;

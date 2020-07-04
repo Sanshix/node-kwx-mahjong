@@ -454,13 +454,13 @@ exports.get_room_id_of_user = function (userId, callback) {
 };
 
 
-exports.create_room = function (roomId, conf, ip, port, create_time, callback) {
+exports.create_room = function (roomId, conf, org_id, ip, port, create_time, callback) {
     callback = callback == null ? nop : callback;
-    var sql = "INSERT INTO t_rooms(uuid,id,base_info,ip,port,create_time) \
-                VALUES('{0}','{1}','{2}','{3}',{4},{5})";
+    var sql = "INSERT INTO t_rooms(uuid,id,base_info,ip,port,create_time,org_id) \
+                VALUES('{0}','{1}','{2}','{3}',{4},{5},{6})";
     var uuid = Date.now() + roomId;
     var baseInfo = JSON.stringify(conf);
-    sql = sql.format(uuid, roomId, baseInfo, ip, port, create_time);
+    sql = sql.format(uuid, roomId, baseInfo, ip, port, create_time, org_id);
     console.log(sql);
     query(sql, function (err, row, fields) {
         if (err) {
@@ -595,6 +595,35 @@ exports.delete_room = function (roomId, callback) {
         }
     });
 }
+
+exports.get_room_list = function (org_id, callback) {
+    callback = callback == null ? nop : callback;
+    if (roomId == null) {
+        callback(null);
+        return;
+    }
+
+    var sql = 'SELECT * FROM t_rooms WHERE org_id = "' + org_id + '"';
+    query(sql, function (err, rows, fields) {
+        if (err) {
+            callback(null);
+            throw err;
+        }
+        if (rows.length > 0) {
+            for (const key in rows) {
+                if (object.hasOwnProperty(key)) {
+                    rows[key].user_name0 = crypto.fromBase64(rows[0].user_name0);
+                    rows[key].user_name1 = crypto.fromBase64(rows[0].user_name1);
+                    rows[key].user_name2 = crypto.fromBase64(rows[0].user_name2);
+                    rows[key].user_name3 = crypto.fromBase64(rows[0].user_name3);
+                }
+            }
+            callback(rows);
+        } else {
+            callback(null);
+        }
+    });
+};
 
 exports.create_game = function (room_uuid, index, base_info, callback) {
     callback = callback == null ? nop : callback;
@@ -826,7 +855,7 @@ exports.org_create = (name, uuid, callback) => {
 
 exports.org_self = (uuid, callback) => {
     callback = callback == null ? nop : callback;
-    let sql = `select b.*,a.level from user_organization a left join organization b on a.org_id=b.id where b.status=1 and a.uuid = ${uuid} `;
+    let sql = `select b.*,a.level from user_organization a left join organization b on a.org_id=b.id where b.status=1 and a.type=1 and a.uuid = ${uuid} `;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);

@@ -89,7 +89,7 @@ function chooseServer() {
     return serverinfo;
 }
 
-exports.createRoom = function (account, userId, roomConf, fnCallback) {
+exports.createRoom = function (account, userId, roomConf,org_id, fnCallback) {
     var serverinfo = chooseServer();
     if (serverinfo == null) {
         fnCallback(101, null);
@@ -102,7 +102,8 @@ exports.createRoom = function (account, userId, roomConf, fnCallback) {
             var reqdata = {
                 userid: userId,
                 gems: data.gems,
-                conf: roomConf
+                conf: roomConf,
+                org_id :org_id
             };
 
             reqdata.sign = crypto.md5(userId + roomConf + data.gems + config.ROOM_PRI_KEY);
