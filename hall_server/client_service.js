@@ -549,7 +549,7 @@ app.get('/org_get_room_list', function (req, res) {
 });
 
 // 查询指定房间
-app.get('/org_get_room_list', function (req, res) {
+app.get('/org_get_room_id', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
