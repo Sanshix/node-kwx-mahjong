@@ -605,7 +605,7 @@ exports.get_room_list = function (org_id, callback) {
     var sql = 'SELECT * FROM t_rooms WHERE org_id = "' + org_id + '"';
     query(sql, function (err, rows, fields) {
         if (err) {
-            callback(null);
+            callback({});
             throw err;
         }
         if (rows.length > 0) {
@@ -619,7 +619,7 @@ exports.get_room_list = function (org_id, callback) {
             }
             callback(rows);
         } else {
-            callback(null);
+            callback({});
         }
     });
 };
