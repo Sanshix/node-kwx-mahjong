@@ -35,6 +35,15 @@ app.all('*', function (req, res, next) {
     next();
 });
 
+function errorHandler(err, req, res, next) {
+    console.error(err.stack);
+    console.log('errorzxcxzasdsad')
+    http.send(res, 2, "system error.");
+}
+app.use(errorHandler);
+process.on('uncaughtException', function(err) {
+    console.log('Caught exception: ' + err);
+});
 app.get('/login', function (req, res) {
     if (!check_account(req, res)) {
         return;
@@ -114,31 +123,31 @@ app.get('/create_private_room', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
-
     var account = data.account;
 
     data.account = null;
     data.sign = null;
     var conf = data.conf;
+    var org_id = data.org_id || 0;
     db.get_user_data(account, function (data) {
         if (null == data) {
             http.send(res, 1, "system error");
             return;
         }
-
         var userId = data.userid;
         var name = data.name;
-        var org_id = data.org_id || 0;
         db.get_room_id_of_user(userId, function (roomId) {
-            if (roomId != null) {
+            if (roomId != null && org_id == 0) {
                 http.send(res, -1, "user is playing in room now.");
                 return;
             }
             room_service.createRoom(account, userId, conf,org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
                     if (org_id != 0){
-                        return http.send(res, 0, "ok", ret);
+                        console.log(1)
+                        return http.send(res, 0, "ok", {roomid: roomId});
                     }
+                    console.error(2);
                     room_service.enterRoom(userId, name, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {

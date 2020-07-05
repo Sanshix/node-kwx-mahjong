@@ -929,4 +929,17 @@ exports.get_captcha = (mobile, callback) => {
         }
     });
 }
+
+exports.org_find_boss = (uuid, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `select id from t_users where mobile=${uuid}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (rows.length > 0) {
+            callback(rows[0]);
+        } else {
+            callback(null);
+        }
+    });
+}
 exports.query = query;

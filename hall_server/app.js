@@ -14,4 +14,3 @@ db.init(configs.mysql());
 
 client_service.start(config);
 room_service.start(config);
-
