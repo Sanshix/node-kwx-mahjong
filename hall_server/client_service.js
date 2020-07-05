@@ -128,7 +128,8 @@ app.get('/create_private_room', function (req, res) {
     data.account = null;
     data.sign = null;
     var conf = data.conf;
-    var org_id = data.org_id || 0;
+    let json_conf = JSON.parse(conf);
+    var org_id = json_conf.org_id || 0;
     db.get_user_data(account, function (data) {
         if (null == data) {
             http.send(res, 1, "system error");
@@ -141,6 +142,7 @@ app.get('/create_private_room', function (req, res) {
                 http.send(res, -1, "user is playing in room now.");
                 return;
             }
+            console.log(account,userId,conf,org_id);
             room_service.createRoom(account, userId, conf,org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
                     if (org_id != 0){
@@ -165,6 +167,7 @@ app.get('/create_private_room', function (req, res) {
                         }
                     });
                 } else {
+                    console.log(err,roomId)
                     http.send(res, err, "create failed.");
                 }
             });

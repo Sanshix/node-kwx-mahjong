@@ -929,4 +929,30 @@ exports.get_captcha = (mobile, callback) => {
     });
 }
 
+exports.get_water = (org_id, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `select pump from organization where id=${org_id}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (rows.length > 0) {
+            callback(rows[0].pump);
+        } else {
+            callback(0);
+        }
+    });
+}
+
+exports.get_parent = (org_id, uuid,callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `select parent_uuid from user_organization where uuid=${uuid} and org_id = ${org_id}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (rows.length > 0) {
+            callback(rows[0].parent_uuid);
+        } else {
+            callback(0);
+        }
+    });
+}
+
 exports.query = query;

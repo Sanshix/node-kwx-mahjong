@@ -1525,7 +1525,9 @@ function doGameOver(game, userId, forceEnd) {
 			}
 
 			results.push(userRT);
-
+			if (roomInfo.org_id != 0){
+			 	update_coin(sd.userId,sd.score,roomInfo.org_id);
+			}
 			dbresult[i] = sd.detail.score;
 			delete gameSeatsOfUsers[sd.userId];
 		}
@@ -1564,20 +1566,45 @@ function doGameOver(game, userId, forceEnd) {
 			//保存游戏局数
 			db.update_num_of_turns(roomId, roomInfo.numOfGames);
 
-			//如果是第一次，则扣除房卡  TODO: 测试阶段不扣房卡
-			if (false && roomInfo.numOfGames == 1) {
+			//如果是第一次，则扣除房卡
+			if ( roomInfo.numOfGames == 1) {
 				var cost = 1;
 				if (roomInfo.conf.maxGames == 16) {
 					cost = 2;
 				}
-
-				db.cost_gems(game.gameSeats[0].userId, cost);
+				// 如果是社团房，扣团长的
+				if (roomInfo.org_id == 0){
+					db.cost_gems(game.gameSeats[0].userId, cost);
+				}else{
+					db.cost_gems(roomInfo.org_id, cost);
+				}
+				
 			}
-
 			var isEnd = (roomInfo.numOfGames >= roomInfo.conf.maxGames);
 			fnNoticeResult(isEnd);
 		});
 	}
+}
+
+
+function update_coin(userid,coins,org_id){
+	
+	 db.get_water(org_id,(data) => {
+		let res_coins = coins;
+		let water = 0;
+		if (coins > 0) {
+			res_coins = coins - parseInt(coins * (data/100));
+			water = coins - res_coins;
+		}
+		db.update_coin(userid,res_coins,null);
+		if (water == 0){return true;}
+		// TODO 抽水
+		let parant_arr = [];
+		// for (let index = 0; index < 3; index++) {
+		// 	db.get_parent()
+			
+		// }
+	 })
 }
 
 function recordUserAction(game, seatData, type, target) {
