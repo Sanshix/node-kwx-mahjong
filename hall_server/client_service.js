@@ -42,7 +42,7 @@ function errorHandler(err, req, res, next) {
 }
 app.use(errorHandler);
 process.on('uncaughtException', function(err) {
-    console.log('Caught exception: ' + err);
+    console.log('Caught exception: ' + err.stack);
 });
 app.get('/login', function (req, res) {
     if (!check_account(req, res)) {

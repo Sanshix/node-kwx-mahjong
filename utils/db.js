@@ -610,7 +610,7 @@ exports.get_room_list = function (org_id, callback) {
         }
         if (rows.length > 0) {
             for (const key in rows) {
-                if (object.hasOwnProperty(key)) {
+                if (rows.hasOwnProperty(key)) {
                     rows[key].user_name0 = crypto.fromBase64(rows[0].user_name0);
                     rows[key].user_name1 = crypto.fromBase64(rows[0].user_name1);
                     rows[key].user_name2 = crypto.fromBase64(rows[0].user_name2);
