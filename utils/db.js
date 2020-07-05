@@ -480,7 +480,11 @@ exports.get_room_uuid = function (roomId, callback) {
             callback(null);
             throw err;
         } else {
-            callback(rows[0].uuid);
+            if (rows.length > 0){
+                callback(rows[0].uuid);
+            }else{
+                callback(null);
+            }
         }
     });
 };
@@ -598,11 +602,6 @@ exports.delete_room = function (roomId, callback) {
 
 exports.get_room_list = function (org_id, callback) {
     callback = callback == null ? nop : callback;
-    if (roomId == null) {
-        callback(null);
-        return;
-    }
-
     var sql = 'SELECT * FROM t_rooms WHERE org_id = "' + org_id + '"';
     query(sql, function (err, rows, fields) {
         if (err) {
@@ -930,16 +929,4 @@ exports.get_captcha = (mobile, callback) => {
     });
 }
 
-exports.org_find_boss = (uuid, callback) => {
-    callback = callback == null ? nop : callback;
-    let sql = `select id from t_users where mobile=${uuid}`;
-    console.log(sql);
-    query(sql, function (err, rows) {
-        if (rows.length > 0) {
-            callback(rows[0]);
-        } else {
-            callback(null);
-        }
-    });
-}
 exports.query = query;

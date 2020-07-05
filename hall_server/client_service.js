@@ -545,6 +545,18 @@ app.get('/org_get_room_list', function (req, res) {
     })
 });
 
+// 查询指定房间
+app.get('/org_get_room_list', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let roomid = req.query.roomid;
+
+    db.get_room_uuid(roomid, (data) => {
+        http.send(res, 0, 'ok', { data: data });
+    })
+});
+
 exports.start = function ($config) {
     config = $config;
     app.listen(config.CLIENT_PORT);
