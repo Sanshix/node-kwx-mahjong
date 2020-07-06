@@ -807,7 +807,7 @@ exports.join_org_approval = function (org_id, uuid, state, callback) {
 
 exports.set_org_notice = function (org_id, notice, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `update organization set notice =${notice} where id=${org_id}`;
+    let sql = `update organization set notice ='${notice}' where id=${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
