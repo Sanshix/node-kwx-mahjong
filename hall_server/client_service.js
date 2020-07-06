@@ -373,7 +373,7 @@ app.get('/join_org', function (req, res) {
     let parent_id = req.query.parent_id || 0; // 邀请人id
     let org_id = req.query.org_id;  // 社团id
     db.join_org_find(uuid, org_id, parent_id, (elem) => {
-        if (!elem){
+        if (elem){
             return http.send(res, 1, '请勿重复申请', {});
         }
         db.join_org(uuid, org_id, parent_id, (data) => {
