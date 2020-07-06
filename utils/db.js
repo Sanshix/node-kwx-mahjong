@@ -807,7 +807,7 @@ exports.join_org_approval = function (org_id, uuid, state, callback) {
 
 exports.set_org_notice = function (org_id, notice, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `update organization set notice =${notice} where org_id=${org_id}`;
+    let sql = `update organization set notice =${notice} where id=${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
@@ -816,7 +816,7 @@ exports.set_org_notice = function (org_id, notice, callback) {
 
 exports.get_org_info = function (org_id, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `select * from organization where org_id = ${org_id} `;
+    let sql = `select * from organization where id = ${org_id} `;
     console.log(sql);
     query(sql, function (err, rows) {
         if (err) {
@@ -829,7 +829,7 @@ exports.get_org_info = function (org_id, callback) {
 
 exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pump, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `update organization set func_type_1 =${func_type_1},func_type_2=${func_type_2},show_type=${show_type},pump=${pump} where org_id=${org_id}`;
+    let sql = `update organization set func_type_1 =${func_type_1},func_type_2=${func_type_2},show_type=${show_type},pump=${pump} where id=${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
@@ -948,9 +948,9 @@ exports.get_parent = async (org_id, uuid) => {
     console.log(sql);
     query(sql, function (err, rows) {
         if (rows.length > 0) {
-            return rows[0].parent_uuid;
+            return rows[0];
         } else {
-            return 0;
+            return null;
         }
     });
 }

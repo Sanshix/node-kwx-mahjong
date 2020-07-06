@@ -1600,8 +1600,12 @@ function update_coin(userid,coins,org_id){
 		// TODO 抽水
 		let parant_arr = [];
 		for (let index = 0; index < 3; index++) {
-			let parant_id = await db.get_parent(org_id,userid);
-
+			let parent = await db.get_parent(org_id,userid);
+			if (parent == null || parent.parent_uuid == 0){
+				// 分给团长
+				
+				break;
+			}
 			
 		}
 	 })

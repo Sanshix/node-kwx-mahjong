@@ -135,6 +135,11 @@ app.get('/create_private_room', function (req, res) {
             http.send(res, 1, "system error");
             return;
         }
+        if (org_id !=0 && data.gems < 30){
+            //http.send(res, 1, "房卡不足30张");
+            console.log(data.gems,'房卡不足30张')
+            //return;
+        }
         var userId = data.userid;
         var name = data.name;
         db.get_room_id_of_user(userId, function (roomId) {
