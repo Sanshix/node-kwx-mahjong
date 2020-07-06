@@ -778,6 +778,25 @@ exports.join_org = function (uuid, org_id, parent_id, callback) {
     });
 }
 
+
+exports.join_org_find = function (uuid, org_id, parent_id, callback) {
+    callback = callback == null ? nop : callback;
+    let sql = `select * from user_organization where uuid=${uuid} and org_id = ${org_id}`
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (err) {
+            callback(false)
+        } else {
+            if (rows.length > 0) {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        }
+
+    });
+}
+
 exports.join_org_list = function (org_id, callback) {
     callback = callback == null ? nop : callback;
     let sql = `select a.*,b.name from user_organization a left join t_users b on b.userid = a.uuid where a.org_id = ${org_id} and a.type=2`;
@@ -844,7 +863,7 @@ exports.org_create = (name, uuid, callback) => {
             callback(null);
             throw err;
         }
-        let sql = `INSERT INTO user_organization(uuid, org_id) VALUES (${uuid},${rows.insertId})`
+        let sql = `INSERT INTO user_organization(uuid, org_id, type) VALUES (${uuid},${rows.insertId},1)`
         console.log(sql);
         query(sql, function (err, rows) { 
             callback(true);
