@@ -498,6 +498,9 @@ app.get('/org_user_list', function (req, res) {
     let uuid = req.query.uuid;
     let type = req.query.type || 1; // 1所有玩家，2未绑定玩家
     db.org_user_list(org_id, uuid, type, (data) => {
+        for (const key in data) {
+            data[key].name = crypto.fromBase64(data[key].name);
+      }
         http.send(res, 0, 'ok', { data: data });
     })
 });

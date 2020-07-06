@@ -882,14 +882,14 @@ exports.org_self = (uuid, callback) => {
 
 exports.org_user_list = (org_id, uuid, type, callback) => {
     callback = callback == null ? nop : callback;
-    let where = `org_id=${org_id}`;
+    let where = `a.org_id=${org_id}`;
     if (uuid) {
-        where += ` and uuid = ${uuid}`;
+        where += ` and a.uuid = ${uuid}`;
     }
     if (type == 2) {
-        where += ` and parent_uuid =0`
+        where += ` and a.parent_uuid =0`
     }
-    let sql = `select * from user_organization where ${where} `;
+    let sql = `select a.*,b.name from user_organization a left join t_users b on b.userid = a.uuid where  ${where} `;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
