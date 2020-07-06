@@ -1598,8 +1598,9 @@ function update_coin(userid,coins,org_id){
 		db.update_coin(userid,res_coins,null);
 		if (water == 0){return true;}
 		// 抽水
+		let parent_id = userid;
 		for (let index = 0; index < 3; index++) {
-			let parent = await db.get_parent(org_id,userid);
+			let parent = await db.get_parent(org_id,parent_id);
 			if (parent == null){
 				break;
 			}
@@ -1611,6 +1612,7 @@ function update_coin(userid,coins,org_id){
 			// 按份额分
 			let coin = parseInt(parent.water_ratio * (water/100));
 			db.update_coin(parent.uuid,coin,null);
+			parent_id = parent.uuid;
 		}
 	 })
 }
