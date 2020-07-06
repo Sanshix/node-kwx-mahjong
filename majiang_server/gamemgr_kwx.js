@@ -1588,8 +1588,7 @@ function doGameOver(game, userId, forceEnd) {
 
 
 function update_coin(userid,coins,org_id){
-	
-	 db.get_water(org_id,(data) => {
+	 db.get_water(org_id,async (data) => {
 		let res_coins = coins;
 		let water = 0;
 		if (coins > 0) {
@@ -1600,10 +1599,11 @@ function update_coin(userid,coins,org_id){
 		if (water == 0){return true;}
 		// TODO 抽水
 		let parant_arr = [];
-		// for (let index = 0; index < 3; index++) {
-		// 	db.get_parent()
+		for (let index = 0; index < 3; index++) {
+			let parant_id = await db.get_parent(org_id,userid);
+
 			
-		// }
+		}
 	 })
 }
 

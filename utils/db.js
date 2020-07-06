@@ -942,15 +942,15 @@ exports.get_water = (org_id, callback) => {
     });
 }
 
-exports.get_parent = (org_id, uuid,callback) => {
-    callback = callback == null ? nop : callback;
-    let sql = `select parent_uuid from user_organization where uuid=${uuid} and org_id = ${org_id}`;
+exports.get_parent = async (org_id, uuid) => {
+    let sql = `select b.* from user_organization a left join user_organization b on a.parent_uuid=b.uuid
+               where a.uuid=${uuid} and org_id=${org_id} `;
     console.log(sql);
     query(sql, function (err, rows) {
         if (rows.length > 0) {
-            callback(rows[0].parent_uuid);
+            return rows[0].parent_uuid;
         } else {
-            callback(0);
+            return 0;
         }
     });
 }
