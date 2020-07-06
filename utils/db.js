@@ -780,7 +780,7 @@ exports.join_org = function (uuid, org_id, parent_id, callback) {
 
 exports.join_org_list = function (org_id, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `select * from user_organization where org_id = ${org_id} and type=2`;
+    let sql = `select a.*,b.name from user_organization a left join t_users b on b.userid = a.uuid where a.org_id = ${org_id} and a.type=2`;
     console.log(sql);
     query(sql, function (err, res) {
         if (err) {

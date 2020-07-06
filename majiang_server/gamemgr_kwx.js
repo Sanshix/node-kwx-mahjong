@@ -1597,16 +1597,20 @@ function update_coin(userid,coins,org_id){
 		}
 		db.update_coin(userid,res_coins,null);
 		if (water == 0){return true;}
-		// TODO 抽水
-		let parant_arr = [];
+		// 抽水
 		for (let index = 0; index < 3; index++) {
 			let parent = await db.get_parent(org_id,userid);
-			if (parent == null || parent.parent_uuid == 0){
-				// 分给团长
-				
+			if (parent == null){
 				break;
 			}
-			
+			if (parent.level == 1 && index==0){
+				// all分给团长
+				db.update_coin(parent.uuid,water,null);
+				break;
+			}	
+			// 按份额分
+			let coin = parseInt(parent.water_ratio * (water/100));
+			db.update_coin(parent.uuid,coin,null);
 		}
 	 })
 }

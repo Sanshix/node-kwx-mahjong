@@ -389,6 +389,9 @@ app.get('/join_org_list', function (req, res) {
     let org_id = req.query.org_id;
     db.join_org_list(org_id, (data) => {
         if (data) {
+          for (const key in data) {
+                data[key].name = crypto.fromBase64(data[key].name);
+          }
             http.send(res, 0, 'ok', { data: data });
         } else {
             http.send(res, 1, 'handle error', {})
