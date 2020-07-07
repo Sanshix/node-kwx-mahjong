@@ -908,6 +908,19 @@ exports.org_delete = (org_id, callback) => {
     });
 }
 
+exports.org_quit = (org_id,uuid, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `delete from user_organization where org_id = ${org_id} and uuid = ${uuid}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (err){
+            callback(false);
+        }else{
+            callback(true);
+        }
+    });
+}
+
 exports.org_pump_config = (org_id, uuid, water, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set water_ratio =${water} where org_id=${org_id} and uuid=${uuid}`;

@@ -516,6 +516,19 @@ app.get('/org_delete', function (req, res) {
     })
 });
 
+// 退出社团
+app.get('/org_quit', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let uuid = req.query.uuid;
+    db.org_quit(org_id,uuid, (data) => {
+        http.send(res, 0, 'ok', {});
+    })
+});
+
+
 // 可设定分团长积分抽成比例（百分比）(只能给自己的下线设置，总团长只能设置分团长）
 app.get('/org_pump_config', function (req, res) {
     if (!check_account(req, res)) {
