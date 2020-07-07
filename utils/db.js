@@ -863,7 +863,7 @@ exports.org_create = (name, uuid, callback) => {
             callback(null);
             throw err;
         }
-        let sql = `INSERT INTO user_organization(uuid, org_id, type) VALUES (${uuid},${rows.insertId},1)`
+        let sql = `INSERT INTO user_organization(uuid, org_id, type, level) VALUES (${uuid},${rows.insertId},1,1)`
         console.log(sql);
         query(sql, function (err, rows) { 
             callback(true);
