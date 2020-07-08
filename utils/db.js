@@ -987,4 +987,16 @@ exports.get_parent = async (org_id, uuid) => {
     });
 }
 
+exports.org_duibi_dengji = async (org_id, uuid, be_uuid) => {
+    let sql = `select * from user_organization where a.uuid=${uuid} and org_id=${org_id} `;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        if (rows.length > 0) {
+            return rows[0];
+        } else {
+            return null;
+        }
+    });
+}
+
 exports.query = query;
