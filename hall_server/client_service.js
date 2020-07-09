@@ -547,7 +547,7 @@ app.get('/org_pump_config', function (req, res) {
 });
 
 // 可设定进入社团无绑定玩家为直系上下分会员（便于玩家游戏房费抽成积分归属）总团长可以设置指定的上下关系其他的只能设置为自己的
-app.get('/org_parent_config', function (req, res) {
+app.get('/org_parent_config', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
