@@ -554,7 +554,7 @@ app.get('/org_parent_config', function (req, res) {
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;  //下级uuid
     let parent_id = req.query.parent_id; // 上级uuid
-    db.org_parent_config(org_id,uuid,water,parent_id, (data) => {
+    db.org_parent_config(org_id,uuid,parent_id, (data) => {
         http.send(res, 0, 'ok', { data: data });
     })
 });
