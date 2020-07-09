@@ -506,9 +506,13 @@ app.get('/org_user_list', function (req, res) {
 });
 
 // 解散社团
-app.get('/org_delete', function (req, res) {
+app.get('/org_delete', async function (req, res) {
     if (!check_account(req, res)) {
         return;
+    }
+    let validator = await async_get_user(req.query.account)
+    if (!validator || validator.level != 1){
+        http.send(res, 1, 'handle error', {});
     }
     let org_id = req.query.org_id;
     db.org_delete(org_id, (data) => {
@@ -517,7 +521,7 @@ app.get('/org_delete', function (req, res) {
 });
 
 // 退出社团
-app.get('/org_quit', function (req, res) {
+app.get('/org_quit', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
