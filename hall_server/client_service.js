@@ -510,9 +510,9 @@ app.get('/org_delete', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
-    let validator = await async_get_user(req.query.account)
+    let validator = await db.async_get_user(req.query.account)
     if (!validator || validator.level != 1){
-        http.send(res, 1, 'handle error', {});
+        http.send(res, 1, '操作失败', {});
     }
     let org_id = req.query.org_id;
     db.org_delete(org_id, (data) => {
@@ -554,6 +554,12 @@ app.get('/org_parent_config', function (req, res) {
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;  //下级uuid
     let parent_id = req.query.parent_id; // 上级uuid
+
+    let validator = await db.org_duibi_dengji(org_id, parent_id, uuid);
+    if (!validator){
+        http.send(res, 1, '权限不足', {});
+    }
+
     db.org_parent_config(org_id,uuid,parent_id, (data) => {
         http.send(res, 0, 'ok', { data: data });
     })
