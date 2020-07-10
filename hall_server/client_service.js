@@ -356,6 +356,12 @@ app.get('/update_user_rank', function (req, res) {
     let uuid = req.query.uuid;
     //社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家'
     let level = req.query.level;
+    let to_uuid = req.query.to_uuid;
+    let org_id = req.query.org_id;
+    let validator = await db.org_duibi_dengji(org_id, parent_id, uuid);
+    if (!validator){
+        return http.send(res, 1, '权限不足', {});
+    }
     db.update_rank(uuid, level, (data) => {
         if (data) {
             http.send(res, 0, 'ok', {});
@@ -557,7 +563,7 @@ app.get('/org_parent_config', async function (req, res) {
 
     let validator = await db.org_duibi_dengji(org_id, parent_id, uuid);
     if (!validator){
-        http.send(res, 1, '权限不足', {});
+        return http.send(res, 1, '权限不足', {});
     }
 
     db.org_parent_config(org_id,uuid,parent_id, (data) => {

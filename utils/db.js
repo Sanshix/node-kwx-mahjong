@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var crypto = require('./crypto');
+const { resolve } = require("path");
 
 var pool = null;
 
@@ -889,7 +890,7 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
     if (type == 2) {
         where += ` and a.parent_uuid =0`
     }
-    let sql = `select a.*,b.name from user_organization a left join t_users b on b.userid = a.uuid where  ${where} `;
+    let sql = `select a.*,b.name,b.coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} `;
     console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
@@ -979,10 +980,10 @@ exports.get_parent = async (org_id, uuid) => {
                where a.uuid=${uuid} and org_id=${org_id} `;
     console.log(sql);
     query(sql, function (err, rows) {
-        if (rows.length > 0) {
-            return rows[0];
+        if (rows) {
+            return resolve(rows[0]);
         } else {
-            return null;
+            return resolve(false);
         }
     });
 }
@@ -993,10 +994,11 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
             `from user_organization where uuid=${to_uuid} and org_id=${org_id})`;
         console.log(sql);
         query(sql, function (err, rows) {
-            if (rows.length > 0) {
-                return true;
+            console.log(rows)
+            if (rows) {
+                return resolve(true);
             } else {
-                return false;
+                return resolve(false);
             }
         });
     })
