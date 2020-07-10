@@ -1,5 +1,6 @@
 var crypto = require('../utils/crypto');
 var express = require('express');
+var domain = require('domain');
 var db = require('../utils/db');
 var http = require('../utils/http');
 var room_service = require("./room_service");
@@ -35,15 +36,20 @@ app.all('*', function (req, res, next) {
     next();
 });
 
-function errorHandler(err, req, res, next) {
-    console.error(err.stack);
-    console.log('errorzxcxzasdsad')
-    http.send(res, 2, "system error.");
-}
-app.use(errorHandler);
-process.on('uncaughtException', function(err) {
-    console.log('Caught exception: ' + err.stack);
+app.use(function (req, res, next) {
+    var reqDomain = domain.create();
+    reqDomain.on('error', function (err) { // 下面抛出的异常在这里被捕获
+        console.log(err.message);
+        err.message = '服务器异常';
+        next(err, req, res, next);
+    });
+    //console.log(req.url);
+    reqDomain.run(next);
 });
+process.on('uncaughtException', function(err) {
+    console.log('Error: ' + err.stack);
+});
+
 app.get('/login', function (req, res) {
     if (!check_account(req, res)) {
         return;
@@ -597,6 +603,12 @@ app.get('/org_get_room_id', function (req, res) {
     db.get_room_uuid(roomid, (data) => {
         http.send(res, 0, 'ok', { data: data });
     })
+});
+
+app.use(function (err, req, res, next) {
+    //res.status(err.status || 500);
+    console.error(err, err.message);
+    http.send(res, 1, 'server error', {})
 });
 
 exports.start = function ($config) {
