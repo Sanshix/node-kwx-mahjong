@@ -365,11 +365,11 @@ app.get('/update_user_rank', async function (req, res) {
     let level = req.query.level;
     let to_uuid = req.query.to_uuid;
     let org_id = req.query.org_id;
-    let validator = await db.org_duibi_dengji(org_id, to_uuid, uuid);
+    let validator = await db.org_duibi_dengji(org_id, uuid, to_uuid);
     if (!validator){
         return http.send(res, 1, '权限不足', {});
     }
-    db.update_rank(uuid, level, (data) => {
+    db.update_rank(to_uuid, level, (data) => {
         if (data) {
             http.send(res, 0, 'ok', {});
         } else {
