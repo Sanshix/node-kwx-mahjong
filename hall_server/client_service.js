@@ -369,7 +369,7 @@ app.get('/update_user_rank', async function (req, res) {
     if (!validator){
         return http.send(res, 1, '权限不足', {});
     }
-    db.update_rank(to_uuid, level, (data) => {
+    db.update_rank(to_uuid, level, org_id, (data) => {
         if (data) {
             http.send(res, 0, 'ok', {});
         } else {

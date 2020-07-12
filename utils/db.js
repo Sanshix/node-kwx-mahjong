@@ -752,9 +752,9 @@ exports.update_coin = function (uuid, coin, callback) {
     });
 }
 
-exports.update_rank = function (uuid, level, callback) {
+exports.update_rank = function (uuid, level, org_id, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `update user_organization set level =` + level + ` where uuid=` + uuid;
+    let sql = `update user_organization set level =` + level + ` where uuid=${uuid} and org_id=${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
