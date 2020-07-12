@@ -82,6 +82,7 @@ app.get('/enter_room', function(req, res) {
 	var userId = parseInt(req.query.userid);
 	var name = req.query.name;
 	var roomId = req.query.roomid;
+	var org_id = req.query.org_id;
 	var sign = req.query.sign;
 	if (userId == null || roomId == null || sign == null) {
 		http.send(res, 1, "invalid parameters");

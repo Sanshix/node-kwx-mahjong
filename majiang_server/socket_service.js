@@ -62,6 +62,7 @@ exports.start = function(config, mgr) {
 			var roomInfo = roomMgr.getRoom(roomId);
 
 			var seatIndex = roomMgr.getUserSeatId(userId);
+			// TODO 在这里限制ip
 			roomInfo.seats[seatIndex].ip = socket.handshake.address;
 
 			var userData = null;

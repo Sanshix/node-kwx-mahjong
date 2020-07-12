@@ -262,7 +262,7 @@ exports.enterRoom = function(roomId, userId, userName, callback) {
 					roomId: roomId,
 					seatIndex: i
 				};
-
+				// TODO 更新coin
 				db.update_seat_info(roomId, i, seat.userId, '', seat.name);
 				return 0;
 			}
