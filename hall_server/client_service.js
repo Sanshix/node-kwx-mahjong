@@ -345,9 +345,10 @@ app.get('/update_coin', function (req, res) {
     }
     let uuid = req.query.uuid;
     let coin = req.query.coin;
-    db.update_coin(uuid, coin, (data) => {
+    db.update_coin(uuid, coin, async (data) => {
         if (data) {
-            http.send(res, 0, 'ok', {});
+            let result = await db.async_get_user(req.query.account);
+            http.send(res, 0, 'ok', {result});
         } else {
             http.send(res, 1, 'handle error', {})
         }
@@ -355,7 +356,7 @@ app.get('/update_coin', function (req, res) {
 });
 
 // 设置社团管理员
-app.get('/update_user_rank', function (req, res) {
+app.get('/update_user_rank', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
@@ -364,7 +365,7 @@ app.get('/update_user_rank', function (req, res) {
     let level = req.query.level;
     let to_uuid = req.query.to_uuid;
     let org_id = req.query.org_id;
-    let validator = await db.org_duibi_dengji(org_id, parent_id, uuid);
+    let validator = await db.org_duibi_dengji(org_id, to_uuid, uuid);
     if (!validator){
         return http.send(res, 1, '权限不足', {});
     }
@@ -619,7 +620,7 @@ app.use(function (err, req, res, next) {
 
 exports.start = function ($config) {
     config = $config;
-    app.listen(config.CLIENT_PORT);
+    app.listen(9001);
     console.log("client service is listening on port " + config.CLIENT_PORT);
 };
 
