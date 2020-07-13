@@ -248,7 +248,7 @@ exports.isCreator = function(roomId, userId) {
 };
 
 exports.enterRoom = function(roomId, userId, userName, callback) {
-	var fnTakeSeat = function(room) {
+	var fnTakeSeat = async function(room) {
 		if (exports.getUserRoom(userId) == roomId) {
 			return 0;
 		}
@@ -262,8 +262,15 @@ exports.enterRoom = function(roomId, userId, userName, callback) {
 					roomId: roomId,
 					seatIndex: i
 				};
+				let coins = '';
+				if (room.org_id != 0){
+					let user = await db.async_uuid_getUser(userId);
+					seat.coins = user.coins;
+					coins = user.coins;
+					console.log('coins:',seat.coins);
+				}
 				// TODO 更新coin
-				db.update_seat_info(roomId, i, seat.userId, '', seat.name);
+				db.update_seat_info(roomId, i, seat.userId, coins, seat.name);
 				return 0;
 			}
 		}

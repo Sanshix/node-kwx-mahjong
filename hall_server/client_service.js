@@ -168,7 +168,6 @@ app.get('/create_private_room', function (req, res) {
                                 token: enterInfo.token,
                                 time: Date.now()
                             };
-
                             ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
                             http.send(res, 0, "ok", ret);
                         } else {

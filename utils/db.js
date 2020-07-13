@@ -1022,5 +1022,23 @@ exports.async_get_user = async (account)=> {
     })
 };
 
+exports.async_uuid_getUser = async (userid)=> {
+    return new Promise((resolve,reject)=>{
+        var sql = 'SELECT * FROM t_users WHERE userid = "' + userid + '"';
+        query(sql, function (err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                if (rows.length > 0) {
+                    resolve(rows[0]);
+                } else {
+                    resolve(null)
+                }
+            }
+        });
+    })
+};
+
+
 
 exports.query = query;
