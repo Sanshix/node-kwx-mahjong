@@ -55,6 +55,7 @@ app.get('/create_room', function(req, res) {
 	var gems = req.query.gems;
 	var conf = req.query.conf;
 	var org_id = req.query.org_id;
+
 	if (userId == null || sign == null || conf == null) {
 		http.send(res, 1, "invalid parameters");
 		return;

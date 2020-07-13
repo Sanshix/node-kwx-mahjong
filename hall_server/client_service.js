@@ -157,10 +157,8 @@ app.get('/create_private_room', function (req, res) {
             room_service.createRoom(account, userId, conf,org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
                     if (org_id != 0){
-                        console.log(1)
                         return http.send(res, 0, "ok", {roomid: roomId});
                     }
-                    console.error(2);
                     room_service.enterRoom(userId, name, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
