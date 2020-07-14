@@ -159,7 +159,7 @@ app.get('/create_private_room', function (req, res) {
                     if (org_id != 0){
                         return http.send(res, 0, "ok", {roomid: roomId});
                     }
-                    room_service.enterRoom(userId, name, roomId, function (errcode, enterInfo) {
+                    room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
                                 roomid: roomId,
@@ -206,8 +206,7 @@ app.get('/enter_private_room', function (req, res) {
         var userId = data.userid;
         var name = data.name;
 
-        // TODO: 验证玩家状态
-        room_service.enterRoom(userId, name, roomId, function (errcode, enterInfo) {
+        room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
             if (enterInfo) {
                 var ret = {
                     roomid: roomId,
@@ -550,7 +549,10 @@ app.get('/org_pump_config', function (req, res) {
     }
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;
-    let water = req.query.water; //比例
+    let water = parseInt(req.query.water); //比例
+    if (water <= 0 || water >= 100){
+        http.send(res, 1, '操作失败', {});
+    }
     db.org_pump_config(org_id,uuid,water, (data) => {
         http.send(res, 0, 'ok', { data: data });
     })

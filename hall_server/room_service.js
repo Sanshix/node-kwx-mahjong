@@ -127,11 +127,12 @@ exports.createRoom = function (account, userId, roomConf,org_id, fnCallback) {
     });
 };
 
-exports.enterRoom = function (userId, name, roomId, fnCallback) {
+exports.enterRoom = function (userId, name, coins, roomId, fnCallback) {
     var reqdata = {
         userid: userId,
         name: name,
-        roomid: roomId
+        roomid: roomId,
+        coins : coins
     };
 
     reqdata.sign = crypto.md5(userId + name + roomId + config.ROOM_PRI_KEY);

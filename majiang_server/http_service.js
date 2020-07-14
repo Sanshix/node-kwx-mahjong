@@ -83,7 +83,7 @@ app.get('/enter_room', function(req, res) {
 	var userId = parseInt(req.query.userid);
 	var name = req.query.name;
 	var roomId = req.query.roomid;
-	var org_id = req.query.org_id;
+	var coins = req.query.coins;
 	var sign = req.query.sign;
 	if (userId == null || roomId == null || sign == null) {
 		http.send(res, 1, "invalid parameters");
@@ -98,7 +98,7 @@ app.get('/enter_room', function(req, res) {
 		return;
 	}
 
-	roomMgr.enterRoom(roomId, userId, name, function(ret) {
+	roomMgr.enterRoom(roomId, userId, name,coins, function(ret) {
 		if (ret != 0) {
 			if (ret == 1) {
 				http.send(res, 4, "room is full.");

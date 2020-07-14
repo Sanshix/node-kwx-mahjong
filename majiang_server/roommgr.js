@@ -247,7 +247,7 @@ exports.isCreator = function(roomId, userId) {
 	return roomInfo.conf.creator == userId;
 };
 
-exports.enterRoom = function(roomId, userId, userName, callback) {
+exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 	var fnTakeSeat = async function(room) {
 		if (exports.getUserRoom(userId) == roomId) {
 			return 0;
@@ -264,12 +264,10 @@ exports.enterRoom = function(roomId, userId, userName, callback) {
 				};
 				let coins = '';
 				if (room.org_id != 0){
-					let user = await db.async_uuid_getUser(userId);
-					seat.coins = user.coins;
-					coins = user.coins;
-					console.log('coins:',seat.coins);
+					seat.coins = coins;
+					console.log('coins:',coins);
 				}
-				// TODO 更新coin
+				// 更新coin
 				db.update_seat_info(roomId, i, seat.userId, coins, seat.name);
 				return 0;
 			}
