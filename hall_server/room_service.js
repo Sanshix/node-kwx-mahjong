@@ -89,7 +89,7 @@ function chooseServer() {
     return serverinfo;
 }
 
-exports.createRoom = function (account, userId, roomConf,org_id, fnCallback) {
+exports.createRoom = function (account, userId, roomConf, org_id, fnCallback) {
     var serverinfo = chooseServer();
     if (serverinfo == null) {
         fnCallback(101, null);

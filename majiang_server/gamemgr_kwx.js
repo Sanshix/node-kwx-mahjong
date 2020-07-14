@@ -2886,6 +2886,8 @@ exports.parseConf = function (roomConf, conf) {
 	} else if (type == 'yckwx') {
 		conf.pqmb = roomConf.pqmb;
 	}
+	conf.ipForbid = roomConf.ipForbid;
+	conf.second9 = roomConf.second9;
 }
 
 exports.checkConf = function() {

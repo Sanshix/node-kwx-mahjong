@@ -154,7 +154,7 @@ app.get('/create_private_room', function (req, res) {
                 return;
             }
             console.log(account,userId,conf,org_id);
-            room_service.createRoom(account, userId, conf,org_id, function (err, roomId) {
+            room_service.createRoom(account, userId, conf, org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
                     if (org_id != 0){
                         return http.send(res, 0, "ok", {roomid: roomId});
@@ -595,6 +595,9 @@ app.get('/org_get_room_list', function (req, res) {
     }
     let org_id = req.query.org_id;
     db.get_room_list(org_id, (data) => {
+        for (const key in data) {
+                data[key]['base_info'] = JSON.parse(data[key]['base_info']);
+        }
         http.send(res, 0, 'ok', { data: data });
     })
 });
