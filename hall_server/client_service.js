@@ -205,7 +205,6 @@ app.get('/enter_private_room', function (req, res) {
 
         var userId = data.userid;
         var name = data.name;
-
         room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
             if (enterInfo) {
                 var ret = {
@@ -215,11 +214,10 @@ app.get('/enter_private_room', function (req, res) {
                     token: enterInfo.token,
                     time: Date.now()
                 };
-
-                ret.sign = crypto.md5(roomId + ret.token + ret.time + config.ROOM_PRI_KEY);
+                ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
                 http.send(res, 0, "ok", ret);
             } else {
-                http.send(res, errcode, "enter room failed.");
+                http.send(res, errcode, "room doesn't exist.");
             }
         });
     });
@@ -622,7 +620,8 @@ app.use(function (err, req, res, next) {
 
 exports.start = function ($config) {
     config = $config;
-    app.listen(9001);
+    let server = app.listen(9001);
+    server.setTimeout(0)
     console.log("client service is listening on port " + config.CLIENT_PORT);
 };
 

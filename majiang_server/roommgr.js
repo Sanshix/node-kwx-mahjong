@@ -248,11 +248,11 @@ exports.isCreator = function(roomId, userId) {
 };
 
 exports.enterRoom = function(roomId, userId, userName,coins, callback) {
-	var fnTakeSeat = async function(room) {
+	var fnTakeSeat = function(room) {
 		if (exports.getUserRoom(userId) == roomId) {
 			return 0;
 		}
-
+		//console.log(room);
 		for (var i = 0; i < room.numOfSeats; ++i) {
 			var seat = room.seats[i];
 			if (seat.userId <= 0) {
@@ -262,11 +262,6 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 					roomId: roomId,
 					seatIndex: i
 				};
-				let coins = '';
-				if (room.org_id != 0){
-					seat.coins = coins;
-					console.log('coins:',coins);
-				}
 				// 更新coin
 				db.update_seat_info(roomId, i, seat.userId, coins, seat.name);
 				return 0;

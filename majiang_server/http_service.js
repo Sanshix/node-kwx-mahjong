@@ -106,7 +106,7 @@ app.get('/enter_room', function(req, res) {
 				http.send(res, 3, "can't find room.");
 			}
 
-			return;		
+			http.send(res, 5, "handle error");
 		}
 
 		var token = tokenMgr.createToken(userId, 5000);
@@ -186,7 +186,8 @@ exports.start = function($config) {
 	};
 
 	setInterval(update, 1000);
-	app.listen(config.HTTP_PORT, config.FOR_HALL_IP);
+	let server  = app.listen(config.HTTP_PORT, config.FOR_HALL_IP);
+	server.setTimeout(0)
 	console.log("game server is listening on " + config.FOR_HALL_IP + ":" + config.HTTP_PORT);
 };
 

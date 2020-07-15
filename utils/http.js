@@ -119,5 +119,9 @@ exports.send = function(res,errcode,errmsg,data){
 	data.errcode = errcode;
 	data.errmsg = errmsg;
 	var jsonstr = JSON.stringify(data);
+	if (res.req.path != '/register_gs'){
+		console.error(res.req.path);
+		console.log(data);
+	}
 	res.send(jsonstr);
 };
