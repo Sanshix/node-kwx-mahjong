@@ -2,7 +2,6 @@ var crypto = require('crypto')
 var http = require('http')
 var querystring = require('querystring')
 
-var md5 = crypto.createHash('md5')
 
 const smsapi = "api.smsbao.com";
 // 短信平台账号
@@ -20,7 +19,7 @@ exports.send_sms = (phone) => {
 }
 
 function _send_sms(smsapi, user, password, content, phone) {
-    var pass = md5.update(password).digest('hex')
+    var pass = crypto.createHash('md5').update(password).digest('hex')
     var data = {
         'u': user,
         'p': pass,

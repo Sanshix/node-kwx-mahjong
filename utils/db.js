@@ -98,7 +98,7 @@ exports.get_account_info = function (account, password,type, callback) {
                 return;
             }
             // insert
-            this.create_account(account, password)
+            create_account(account, password)
         }
 
         if (password != null) {
