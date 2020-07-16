@@ -106,7 +106,8 @@ app.get('/auth', function(req, res) {
                 if (data == null || code != data.code){
                     send(res, { errcode: 1, errmsg: "invalid code" });
                     return;
-                }
+				}
+				db.delete_captcha(account);
             })
         }
 		var account = "vivi_" + req.query.account;
@@ -124,7 +125,10 @@ app.get('/auth', function(req, res) {
 
 // 获取验证码
 app.get('/get_captcha', function (req, res) {
-    var mobile = req.query.mobile; //手机号
+	var mobile = req.query.mobile; //手机号
+	if (!mobile || mobile == ''){
+		send(res, { errcode: 1, errmsg: '手机号格式异常' });
+	}
     let code = captcha.send_sms(mobile);
     db.add_captcha(mobile, code, (data) => {
         send(res, {

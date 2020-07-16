@@ -76,7 +76,7 @@ exports.start = function(config, mgr) {
 					online = userMgr.isOnline(uid);
 				}
 				//限制ip
-				if (roominfo.conf.ipForbid == true && i != seatIndex){
+				if (roomInfo.conf.ipForbid == true && i != seatIndex){
 					if (roomInfo.seats[seatIndex].ip == rs.ip){
 						console.log('ip重复');
 						socket.emit('login_result',{ errcode: 4, errmsg: "该房间禁止同IP用户游玩"});
@@ -517,7 +517,9 @@ exports.start = function(config, mgr) {
 			if (roomId == null) {
 				return;
 			}
-
+			if (!socket.gameMgr){
+				return;
+			}
 			if (!socket.gameMgr.hasBegan(roomId)) {
 				return;
 			}

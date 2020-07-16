@@ -962,6 +962,12 @@ exports.get_captcha = (mobile, callback) => {
     });
 }
 
+exports.delete_captcha = (mobile) => {
+    let sql = `DELETE FROM captcha WHERE mobile=${mobile}`;
+    query(sql, function (err, rows) {
+    });
+}
+
 exports.get_water = (org_id, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `select pump from organization where id=${org_id}`;
