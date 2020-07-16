@@ -262,6 +262,10 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 					roomId: roomId,
 					seatIndex: i
 				};
+				if (room.org_id != 0){
+					seat.coins = coins;
+					console.log('coins:',coins);
+				}
 				// 更新coin
 				db.update_seat_info(roomId, i, seat.userId, coins, seat.name);
 				return 0;
