@@ -159,7 +159,7 @@ exports.createRoom = function(creator, roomConf, gems, org_id, ip,  port, callba
 						conf: {
 							type: roomConf.type,
 							creator: creator,
-							baseScore: DI_FEN[roomConf.difen],
+							baseScore: roomConf.baseScore,
 							maxFan: MAX_FAN[roomConf.maxfan],
 							maxGames: JU_SHU[roomConf.gamenum],
 						},

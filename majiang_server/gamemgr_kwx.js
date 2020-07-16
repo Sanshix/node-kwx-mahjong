@@ -2888,7 +2888,7 @@ exports.parseConf = function (roomConf, conf) {
 	}
 	conf.ipForbid = roomConf.ipForbid;
 	conf.second9 = roomConf.second9;
-	conf.people  = roomConf.people;
+	conf.people  = roomConf.people || 3;
 }
 
 exports.checkConf = function() {
