@@ -62,11 +62,12 @@ exports.start = function(config, mgr) {
 			var roomInfo = roomMgr.getRoom(roomId);
 
 			var seatIndex = roomMgr.getUserSeatId(userId);
-			// TODO 在这里限制ip
+
 			roomInfo.seats[seatIndex].ip = socket.handshake.address;
 
 			var userData = null;
 			var seats = [];
+			console.log('ROOM CONF：',roomInfo.conf);
 			for (var i = 0; i < roomInfo.seats.length; ++i) {
 				var rs = roomInfo.seats[i];
 				var uid = rs.userId;
@@ -74,7 +75,14 @@ exports.start = function(config, mgr) {
 				if (uid > 0) {
 					online = userMgr.isOnline(uid);
 				}
-
+				//限制ip
+				if (roominfo.conf.ipForbid == true && i != seatIndex){
+					if (roomInfo.seats[seatIndex].ip == rs.ip){
+						console.log('ip重复');
+						socket.emit('login_result',{ errcode: 4, errmsg: "该房间禁止同IP用户游玩"});
+						return;
+					}
+				}
 				var seat = {
 					userid: uid,
 					ip: rs.ip,
@@ -107,7 +115,6 @@ exports.start = function(config, mgr) {
 			};
 
 			socket.emit('login_result', ret);
-
 			//通知其它客户端
 			userMgr.broacastInRoom('new_user_comes_push', userData, userId, false);
 
