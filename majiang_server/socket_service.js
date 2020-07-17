@@ -67,7 +67,7 @@ exports.start = function(config, mgr) {
 
 			var userData = null;
 			var seats = [];
-			console.log('ROOM CONF：',roomInfo.conf);
+			console.log('ROOM',roomInfo);
 			for (var i = 0; i < roomInfo.seats.length; ++i) {
 				var rs = roomInfo.seats[i];
 				var uid = rs.userId;
@@ -369,14 +369,15 @@ exports.start = function(config, mgr) {
 			if (roomId == null) {
 				return;
 			}
+			// 强制解散房间
+			let roomInfo = roomMgr.getRoom(roomId);
 
 			//如果游戏已经开始，则不可以
-			if (socket.gameMgr.hasBegan(roomId)) {
+			if (socket.gameMgr.hasBegan(roomId) && roomInfo.org_id == 0) {
 				return;
 			}
-			// TODO 强制解散
 			//如果不是房主，则不能解散房间
-			if (!roomMgr.isCreator(roomId, uid)) {
+			if (!roomMgr.isCreator(roomId, uid) && roomInfo.org_id == 0) {
 				return;
 			}
 

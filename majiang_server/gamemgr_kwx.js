@@ -1588,6 +1588,7 @@ function doGameOver(game, userId, forceEnd) {
 
 
 function update_coin(userid,coins,org_id){
+	console.log('更新金币',userid,coins,org_id);
 	 db.get_water(org_id,async (data) => {
 		let res_coins = coins;
 		let water = 0;
@@ -1664,7 +1665,7 @@ exports.setReady = function(userId, callback) {
 
 	var game = games[roomId];
 	if (game == null) {
-		if (roomInfo.seats.length == exports.numOfSeats) {
+		if (roomInfo.seats.length == game.conf.people) {
 			for(var i = 0; i < roomInfo.seats.length; ++i){
 				var s = roomInfo.seats[i];
 				if (!s.ready || !userMgr.isOnline(s.userId)) {
@@ -1747,7 +1748,7 @@ function store_history(roomInfo) {
         uuid:roomInfo.uuid,
         id:roomInfo.id,
         time:roomInfo.createTime,
-        seats:new Array(exports.numOfSeats)
+        seats:new Array(roomInfo.numOfSeats)
     };
 
     for(var i = 0; i < seats.length; ++i){
@@ -1795,7 +1796,7 @@ exports.begin = function(roomId) {
 	}
 
 	var seats = roomInfo.seats;
-	var numOfSeats = exports.numOfSeats;
+	var numOfSeats = roomInfo.numOfSeats;
 
 	var game = {
 		conf: roomInfo.conf,
@@ -1831,7 +1832,7 @@ exports.begin = function(roomId) {
 
 	roomInfo.numOfGames++;
 	
-	for (var i = 0; i < exports.numOfSeats; ++i) {
+	for (var i = 0; i < roomInfo.numOfSeats; ++i) {
 		var data = game.gameSeats[i] = {};
 
 		data.game = game;

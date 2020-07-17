@@ -51,8 +51,8 @@ function constructRoomFromDb(dbdata) {
 		return null;
 	}
 
-	var nSeats = gameMgr.numOfSeats;
-
+	//var nSeats = gameMgr.numOfSeats;
+	var nSeats = dbdata.num_seats;
 	roomInfo.gameMgr = gameMgr;
 	roomInfo.seats = new Array(nSeats);
 	roomInfo.numOfSeats = nSeats;
@@ -103,7 +103,7 @@ exports.createRoom = function(creator, roomConf, gems, org_id, ip,  port, callba
 		return;
 	}
 
-	var nSeats = gameMgr.numOfSeats;
+	var nSeats = roomConf.people || 3;
 
 	if (roomConf.type == null ||
 		roomConf.difen == null ||
@@ -252,7 +252,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 		if (exports.getUserRoom(userId) == roomId) {
 			return 0;
 		}
-		//console.log(room);
+		console.log('enterRoom',room);
 		for (var i = 0; i < room.numOfSeats; ++i) {
 			var seat = room.seats[i];
 			if (seat.userId <= 0) {
