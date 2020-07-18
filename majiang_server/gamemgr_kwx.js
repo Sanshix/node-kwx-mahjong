@@ -1665,7 +1665,7 @@ exports.setReady = function(userId, callback) {
 
 	var game = games[roomId];
 	if (game == null) {
-		if (roomInfo.seats.length == game.conf.people) {
+		if (roomInfo.seats.length == roomInfo.numOfSeats) {
 			for(var i = 0; i < roomInfo.seats.length; ++i){
 				var s = roomInfo.seats[i];
 				if (!s.ready || !userMgr.isOnline(s.userId)) {

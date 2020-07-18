@@ -360,7 +360,7 @@ app.get('/update_user_rank', async function (req, res) {
     let to_uuid = req.query.to_uuid;
     let org_id = req.query.org_id;
     let validator = await db.org_duibi_dengji(org_id, uuid, to_uuid);
-    if (!validator){
+    if (!validator || level == 1){
         return http.send(res, 1, '权限不足', {});
     }
     db.update_rank(to_uuid, level, org_id, (data) => {

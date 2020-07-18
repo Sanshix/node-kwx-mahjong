@@ -96,11 +96,11 @@ app.get('/guest', function(req, res) {
 });
 
 app.get('/auth', function(req, res) {
-	var account = req.query.account;
-	var password = req.query.password || '';
+	var account  = req.query.account;
+	let passwords = req.query.password;
 	var code = req.query.code;
     var type = req.query.type || 1; // 1账号，2手机验证，
-	db.get_account_info(account, password,type, function(info) {
+	db.get_account_info(account, passwords,type, function(info) {
         if (type == 2){
             db.get_captcha(account,(data)=>{
                 if (data == null || code != data.code){
@@ -127,7 +127,8 @@ app.get('/auth', function(req, res) {
 app.get('/get_captcha', function (req, res) {
 	var mobile = req.query.mobile; //手机号
 	if (!mobile || mobile == ''){
-		send(res, { errcode: 1, errmsg: '手机号格式异常' });
+		return send(res, { errcode: 1, errmsg: '手机号格式异常' });
+	
 	}
     let code = captcha.send_sms(mobile);
     db.add_captcha(mobile, code, (data) => {
