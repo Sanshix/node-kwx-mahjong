@@ -1045,6 +1045,14 @@ exports.async_uuid_getUser = async (userid)=> {
     })
 };
 
+exports.authentication = ( uuid, name, id_card, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `update t_users set real_name =${name},id_card=${id_card} where userid=${uuid}`;
+    console.log(sql);
+    query(sql, function (err, rows) {
+        callback(true);
+    });
+}
 
 
 exports.query = query;

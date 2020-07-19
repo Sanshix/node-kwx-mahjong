@@ -359,6 +359,8 @@ exports.start = function(config, mgr) {
 			socket.disconnect();
 		});
 
+		
+		//强制解散
 		socket.on('dispress', function(data) {
 			var uid = socket.userId;
 			if (uid == null) {
@@ -369,7 +371,7 @@ exports.start = function(config, mgr) {
 			if (roomId == null) {
 				return;
 			}
-			// 强制解散房间
+
 			let roomInfo = roomMgr.getRoom(roomId);
 
 			//如果游戏已经开始，则不可以

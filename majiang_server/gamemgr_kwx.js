@@ -2779,9 +2779,12 @@ exports.dissolveRequest = function(roomId, userId, offline) {
 	} else {
 		dr = {
 			endTime: Date.now() + 600000,
-			states: [ 0, 0, 0 ],
+			states: new Array(roomInfo.numOfSeats),
 			online: [ true, true, true ],
 		};
+		for (let index = 0; index < dr.states.length; index++) {
+			dr.states[index] = 0;
+		}
 
 		if (offline) {
 			dr.reason = 'offline';

@@ -278,6 +278,8 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 	var room = rooms[roomId];
 	if (room) {
 		var ret = fnTakeSeat(room);
+		console.log('enterRoom_over',room);
+		rooms[roomId] = room;
 		callback(ret);
 	} else {
 		db.get_room_data(roomId, function(dbdata) {

@@ -77,6 +77,8 @@ app.get('/login', function (req, res) {
             gems: data.gems,
             ip: ip,
             sex: data.sex,
+            real_name : data.real_name,
+            id_card : data.id_card
         };
 
         db.get_room_id_of_user(data.userid, function (roomId) {
@@ -575,7 +577,7 @@ app.get('/org_parent_config', async function (req, res) {
     })
 });
 
-// 解散房间 TODO: 房间中要定期检测房间状态
+// 解散房间
 app.get('/org_get_room_delet', function (req, res) {
     if (!check_account(req, res)) {
         return;
@@ -609,6 +611,19 @@ app.get('/org_get_room_id', function (req, res) {
 
     db.get_room_uuid(roomid, (data) => {
         http.send(res, 0, 'ok', { data: data });
+    })
+});
+
+// 实名认证
+app.get('/authentication', function (req, res){
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let name = req.query.name;
+    let id_card = req.query.id_card;
+    db.authentication(uuid, name, id_card, (data) => {
+        http.send(res, 0, 'ok', {});
     })
 });
 
