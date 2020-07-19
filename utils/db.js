@@ -143,7 +143,7 @@ exports.get_user_data = function (account, callback) {
         return;
     }
 
-    var sql = 'SELECT userid,account,name,lv,exp,coins,gems,roomid FROM t_users WHERE account = "' + account + '"';
+    var sql = 'SELECT userid,account,name,lv,exp,coins,gems,roomid,real_name,id_card FROM t_users WHERE account = "' + account + '"';
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(null);
