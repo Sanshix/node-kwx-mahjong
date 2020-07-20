@@ -101,6 +101,9 @@ app.get('/auth', function(req, res) {
 	var code = req.query.code;
     var type = req.query.type || 1; // 1账号，2手机验证，
 	db.get_account_info(account, passwords,type, function(info) {
+		if (!info){
+			return send(res, { errcode: 2, errmsg: "未检测到账号，请先微信登录并绑定手机号" });
+		}
         if (type == 2){
             db.get_captcha(account,(data)=>{
                 if (data == null || code != data.code){
