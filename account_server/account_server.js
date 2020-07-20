@@ -141,8 +141,8 @@ app.get('/get_captcha', function (req, res) {
 
 var appInfo = {
 	Android: {
-		appid: "wxe39f08522d35c80c",
-		secret: "fa88e3a3ca5a11b06499902cea4b9c01",
+		appid: "wx9e441ca3da64f3e7",
+		secret: "2bc59f74dca944715cd502bd5d0e06ca",
 	},
 	iOS: {
 		appid: "wxcb508816c5c4e2a4",

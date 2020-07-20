@@ -93,12 +93,10 @@ exports.get_account_info = function (account, password,type, callback) {
         }
 
         if (rows.length == 0) {
-            if (type == 1){
-                callback(null);
-                return;
-            }
+            callback(null);
+            return;
             // insert
-            exports.create_account(account, password)
+        //  exports.create_account(account, password)
         }
 
         if (password != null) {
