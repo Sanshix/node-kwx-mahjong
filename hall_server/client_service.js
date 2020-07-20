@@ -225,6 +225,54 @@ app.get('/enter_private_room', function (req, res) {
     });
 });
 
+// 强制解散房间
+app.get('/org_get_room_delet', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let room_id = req.query.room_id;
+    var account = data.account;
+    db.get_user_data(account, function (data) {
+        if (null == data) {
+            http.send(res, -1, "system error");
+            return;
+        }
+
+        var userId = data.userid;
+        var name = data.name;
+        room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
+            if (enterInfo) {
+                var ret = {
+                    roomid: roomId,
+                    ip: enterInfo.ip,
+                    port: enterInfo.port,
+                    token: enterInfo.token,
+                    time: Date.now()
+                };
+                ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
+                http.send(res, 0, "ok", ret);
+            } else {
+                http.send(res, errcode, "room doesn't exist.");
+            }
+        });
+    });
+
+    let uuid = req.query.uuid;
+    var roomInfo = roomMgr.getRoom(roomId);
+    userMgr.broacastInRoom('dissolve_done_push', {}, uid, true);
+    roomInfo.dissolveDone = true;
+    socket.gameMgr.doDissolve(roomId);
+
+    userMgr.broacastInRoom('dispress_push', {}, uid, true);
+    userMgr.kickAllInRoom(roomId);
+    roomMgr.destroy(roomId);
+    socket.disconnect();
+
+    db.delete_room(room_id, (data) => {
+        http.send(res, 0, 'ok', {});
+    })
+});
+
 app.get('/get_history_list', function (req, res) {
     var data = req.query;
     if (!check_account(req, res)) {
@@ -341,6 +389,7 @@ app.get('/update_coin', function (req, res) {
     }
     let uuid = req.query.uuid;
     let coin = req.query.coin;
+    // 权限验证
     db.update_coin(uuid, coin, async (data) => {
         if (data) {
             let result = await db.async_get_user(req.query.account);
@@ -577,17 +626,6 @@ app.get('/org_parent_config', async function (req, res) {
     })
 });
 
-// 解散房间
-app.get('/org_get_room_delet', function (req, res) {
-    if (!check_account(req, res)) {
-        return;
-    }
-    let room_id = req.query.room_id;
-    db.delete_room(room_id, (data) => {
-        http.send(res, 0, 'ok', {});
-    })
-});
-
 // 查询房间
 app.get('/org_get_room_list', function (req, res) {
     if (!check_account(req, res)) {
@@ -622,6 +660,9 @@ app.get('/authentication', function (req, res){
     let uuid = req.query.uuid;
     let name = req.query.name;
     let id_card = req.query.id_card;
+    if (name == '' || id_card == ''){
+        return http.send(res, 1, "参数异常");
+    }
     db.authentication(uuid, name, id_card, (data) => {
         http.send(res, 0, 'ok', {});
     })

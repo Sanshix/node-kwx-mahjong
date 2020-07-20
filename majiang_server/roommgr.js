@@ -252,7 +252,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 		if (exports.getUserRoom(userId) == roomId) {
 			return 0;
 		}
-		console.log('enterRoom',room);
+		console.log('enterRoom_start',room);
 		for (var i = 0; i < room.numOfSeats; ++i) {
 			var seat = room.seats[i];
 			if (seat.userId <= 0) {
@@ -266,6 +266,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 					seat.coins = coins;
 					console.log('coins:',coins);
 				}
+				console.log('enterRoom_end',room);
 				// 更新coin
 				db.update_seat_info(roomId, i, seat.userId, coins, seat.name);
 				return 0;

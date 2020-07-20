@@ -360,7 +360,7 @@ exports.start = function(config, mgr) {
 		});
 
 		
-		//强制解散
+		//解散房间
 		socket.on('dispress', function(data) {
 			var uid = socket.userId;
 			if (uid == null) {

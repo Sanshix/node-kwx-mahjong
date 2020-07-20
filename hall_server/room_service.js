@@ -210,6 +210,88 @@ exports.enterRoom = function (userId, name, coins, roomId, fnCallback) {
     });
 };
 
+exports.dissolveRoom = function (userId, name, coins, roomId, fnCallback) {
+    var reqdata = {
+        userid: userId,
+        name: name,
+        roomid: roomId,
+        coins : coins
+    };
+
+    reqdata.sign = crypto.md5(userId + name + roomId + config.ROOM_PRI_KEY);
+    var checkRoomIsRuning = function (serverinfo, roomId, callback) {
+        var sign = crypto.md5(roomId + config.ROOM_PRI_KEY);
+        var roominfo = {
+            roomid: roomId,
+            sign: sign
+        };
+
+        http.get(serverinfo.ip, serverinfo.httpPort, "/is_room_runing", roominfo, function (ret, data) {
+            if (ret) {
+                if (data.errcode == 0 && data.runing == true) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            } else {
+                callback(false);
+            }
+        });
+    }
+
+    var enterRoomReq = function (serverinfo) {
+        http.get(serverinfo.ip, serverinfo.httpPort, "/enter_room", reqdata, function (ret, data) {
+            console.log(data);
+            if (ret) {
+                if (data.errcode == 0) {
+                    db.set_room_id_of_user(userId, roomId, function (ret) {
+                        fnCallback(0, {
+                            ip: serverinfo.clientip,
+                            port: serverinfo.clientport,
+                            token: data.token
+                        });
+                    });
+                } else {
+                    console.log(data.errmsg);
+                    fnCallback(data.errcode, null);
+                }
+            } else {
+                fnCallback(-1, null);
+            }
+        });
+    };
+
+    var chooseServerAndEnter = function (serverinfo) {
+        serverinfo = chooseServer();
+        if (serverinfo != null) {
+            enterRoomReq(serverinfo);
+        } else {
+            fnCallback(-1, null);
+        }
+    }
+
+    db.get_room_addr(roomId, function (ret, ip, port) {
+        if (ret) {
+            var id = ip + ":" + port;
+            var serverinfo = serverMap[id];
+            if (serverinfo != null) {
+                checkRoomIsRuning(serverinfo, roomId, function (isRuning) {
+                    if (isRuning) {
+                        enterRoomReq(serverinfo);
+                    } else {
+                        // TODO
+                        chooseServerAndEnter(serverinfo);
+                    }
+                });
+            } else {
+                chooseServerAndEnter(serverinfo);
+            }
+        } else {
+            fnCallback(-2, null);
+        }
+    });
+};
+
 exports.isServerOnline = function (ip, port, callback) {
     var id = ip + ":" + port;
     var serverInfo = serverMap[id];
