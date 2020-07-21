@@ -78,7 +78,8 @@ app.get('/login', function (req, res) {
             ip: ip,
             sex: data.sex,
             real_name : data.real_name,
-            id_card : data.id_card
+            id_card : data.id_card,
+            headimg : data.headimg
         };
 
         db.get_room_id_of_user(data.userid, function (roomId) {
@@ -231,42 +232,42 @@ app.get('/org_get_room_delet', function (req, res) {
         return;
     }
     let room_id = req.query.room_id;
-    var account = data.account;
-    db.get_user_data(account, function (data) {
-        if (null == data) {
-            http.send(res, -1, "system error");
-            return;
-        }
+    //var account = data.account;
+    // db.get_user_data(account, function (data) {
+    //     if (null == data) {
+    //         http.send(res, -1, "system error");
+    //         return;
+    //     }
 
-        var userId = data.userid;
-        var name = data.name;
-        room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
-            if (enterInfo) {
-                var ret = {
-                    roomid: roomId,
-                    ip: enterInfo.ip,
-                    port: enterInfo.port,
-                    token: enterInfo.token,
-                    time: Date.now()
-                };
-                ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
-                http.send(res, 0, "ok", ret);
-            } else {
-                http.send(res, errcode, "room doesn't exist.");
-            }
-        });
-    });
+    //     var userId = data.userid;
+    //     var name = data.name;
+    //     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
+    //         if (enterInfo) {
+    //             var ret = {
+    //                 roomid: roomId,
+    //                 ip: enterInfo.ip,
+    //                 port: enterInfo.port,
+    //                 token: enterInfo.token,
+    //                 time: Date.now()
+    //             };
+    //             ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
+    //             http.send(res, 0, "ok", ret);
+    //         } else {
+    //             http.send(res, errcode, "room doesn't exist.");
+    //         }
+    //     });
+    // });
 
-    let uuid = req.query.uuid;
-    var roomInfo = roomMgr.getRoom(roomId);
-    userMgr.broacastInRoom('dissolve_done_push', {}, uid, true);
-    roomInfo.dissolveDone = true;
-    socket.gameMgr.doDissolve(roomId);
+    // let uuid = req.query.uuid;
+    // var roomInfo = roomMgr.getRoom(roomId);
+    // userMgr.broacastInRoom('dissolve_done_push', {}, uid, true);
+    // roomInfo.dissolveDone = true;
+    // socket.gameMgr.doDissolve(roomId);
 
-    userMgr.broacastInRoom('dispress_push', {}, uid, true);
-    userMgr.kickAllInRoom(roomId);
-    roomMgr.destroy(roomId);
-    socket.disconnect();
+    // userMgr.broacastInRoom('dispress_push', {}, uid, true);
+    // userMgr.kickAllInRoom(roomId);
+    // roomMgr.destroy(roomId);
+    // socket.disconnect();
 
     db.delete_room(room_id, (data) => {
         http.send(res, 0, 'ok', {});
@@ -516,7 +517,8 @@ app.get('/org_set_config', function (req, res) {
     let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
-    db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, (data) => {
+    let room_conf = req.query.room_conf;
+    db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump,room_conf, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
@@ -592,20 +594,21 @@ app.get('/org_quit', async function (req, res) {
 
 
 // 可设定分团长积分抽成比例（百分比）(只能给自己的下线设置，总团长只能设置分团长）
-app.get('/org_pump_config', function (req, res) {
-    if (!check_account(req, res)) {
-        return;
-    }
-    let org_id = req.query.org_id;
-    let uuid = req.query.uuid;
-    let water = parseInt(req.query.water); //比例
-    if (water <= 0 || water >= 100){
-        http.send(res, 1, '操作失败', {});
-    }
-    db.org_pump_config(org_id,uuid,water, (data) => {
-        http.send(res, 0, 'ok', { data: data });
-    })
-});
+// app.get('/org_pump_config', function (req, res) {
+//     if (!check_account(req, res)) {
+//         return;
+//     }
+//     let org_id = req.query.org_id;
+//     let uuid = req.query.uuid;
+//     let water = parseInt(req.query.water); //比例
+//     if (water <= 0 || water >= 100){
+//         http.send(res, 1, '操作失败', {});
+//     }
+//     db.org_pump_config(org_id,uuid,water, (data) => {
+//         http.send(res, 0, 'ok', { data: data });
+//     })
+// });
+
 
 // 可设定进入社团无绑定玩家为直系上下分会员（便于玩家游戏房费抽成积分归属）总团长可以设置指定的上下关系其他的只能设置为自己的
 app.get('/org_parent_config', async function (req, res) {
@@ -674,15 +677,15 @@ app.get('/bind_mobile', function (req, res){
         return;
     }
     let uuid = req.query.uuid;
-    let name = req.query.name;
-    let id_card = req.query.id_card;
-    if (name == '' || id_card == ''){
+    let mobile = req.query.mobile;
+    if (!mobile){
         return http.send(res, 1, "参数异常");
     }
-    db.authentication(uuid, name, id_card, (data) => {
+    db.bind_mobile(uuid, mobile, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
+
 
 app.use(function (err, req, res, next) {
     //res.status(err.status || 500);

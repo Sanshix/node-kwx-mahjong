@@ -263,7 +263,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 					seatIndex: i
 				};
 				if (room.org_id != 0){
-					seat.coins = coins;
+					seat.score = coins;
 					console.log('coins:',coins);
 				}
 				console.log('enterRoom_end',room);

@@ -202,18 +202,24 @@ app.get('/wechat_auth', function(req, res) {
 		return;
 	}
 
-	console.log(os);
-
 	get_access_token(code, os, function(suc, data) {
 		if (suc) {
 			var access_token = data.access_token;
 			var openid = data.openid;
+			if (!access_token || !openid){
+				console.log(access_token, openid)
+				return send(res, { errcode: -1, errmsg: "param err." });
+			}
 			get_state_info(access_token, openid, function(suc2, data2) {
 				if (suc2) {
+					console.log(data2);
 					var openid = data2.openid;
 					var nickname = data2.nickname;
 					var sex = data2.sex;
 					var headimgurl = data2.headimgurl;
+					if (!openid){
+						return send(res, { errcode: -1, errmsg: "param err." });
+					}
 					var account = "wx_" + openid;
 					create_user(account, nickname, sex, headimgurl, function() {
 						var sign = crypto.md5(account + req.ip + config.ACCOUNT_PRI_KEY);
