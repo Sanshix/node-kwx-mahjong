@@ -84,8 +84,11 @@ exports.get_account_info = function (account, password,type, callback) {
         callback(null);
         return;
     }
-
-    var sql = 'SELECT * FROM t_accounts WHERE account = "' + account + '"';
+    if (type == 2){
+        var sql = 'SELECT * FROM t_accounts WHERE mobile = "' + account + '"';
+    }else{
+        var sql = 'SELECT * FROM t_accounts WHERE account = "' + account + '"';
+    }
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(null);
@@ -95,17 +98,15 @@ exports.get_account_info = function (account, password,type, callback) {
         if (rows.length == 0) {
             callback(null);
             return;
-            // insert
-        //  exports.create_account(account, password)
         }
 
-        if (password != null) {
-            var psw = crypto.md5(password);
-            if (rows[0].password == psw) {
-                callback(null);
-                return;
-            }
-        }
+        // if (password != null) {
+        //     var psw = crypto.md5(password);
+        //     if (rows[0].password == psw) {
+        //         callback(null);
+        //         return;
+        //     }
+        // }
 
         callback(rows[0]);
     });
@@ -950,7 +951,7 @@ exports.add_captcha = (mobile, code, callback) => {
 exports.get_captcha = (mobile, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `select * from captcha where mobile=${mobile}`;
-    console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (rows.length > 0) {
             callback(rows[0]);

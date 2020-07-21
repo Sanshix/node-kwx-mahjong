@@ -668,6 +668,22 @@ app.get('/authentication', function (req, res){
     })
 });
 
+// 绑定手机号
+app.get('/bind_mobile', function (req, res){
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let name = req.query.name;
+    let id_card = req.query.id_card;
+    if (name == '' || id_card == ''){
+        return http.send(res, 1, "参数异常");
+    }
+    db.authentication(uuid, name, id_card, (data) => {
+        http.send(res, 0, 'ok', {});
+    })
+});
+
 app.use(function (err, req, res, next) {
     //res.status(err.status || 500);
     console.error(err, err.message);

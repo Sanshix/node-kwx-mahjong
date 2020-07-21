@@ -30,7 +30,7 @@ exports.account_server = function(){
 		APP_WEB: 'http://fir.im/rf5m',
 
 		DEFAULT_USER_COINS: 0,
-		DEFAULT_USER_GEMS: 10,
+		DEFAULT_USER_GEMS: 0,
 	};
 };
 
