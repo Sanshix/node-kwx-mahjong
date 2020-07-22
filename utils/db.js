@@ -854,7 +854,7 @@ exports.get_org_info = function (org_id, callback) {
     });
 }
 
-exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pump, room_conf,callback) {
+exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pump, room_config, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update organization set func_type_1 =${func_type_1},func_type_2=${func_type_2},show_type=${show_type},pump=${pump},room_config=${room_config} where id=${org_id}`;
    //console.log(sql);
@@ -863,14 +863,6 @@ exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pu
     });
 }
 
-exports.set_org_room_config = function (org_id, config, callback) {
-    callback = callback == null ? nop : callback;
-    let sql = `update organization set room_config =${config} where id=${org_id}`;
-    //console.log(sql);
-    query(sql, function (err, rows) {
-        callback(true);
-    });
-}
 
 exports.org_create = (name, uuid, callback) => {
     callback = callback == null ? nop : callback;

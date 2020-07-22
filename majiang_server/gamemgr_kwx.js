@@ -1521,7 +1521,7 @@ function doGameOver(game, userId, forceEnd) {
 
                 results.push(userRT);
                 if (roomInfo.org_id != 0) {
-                    update_coin(sd.userId, sd.score, water_average);
+                    update_coin(sd.userId, sd.score, water_average,roomInfo.org_id);
                 }
                 dbresult[i] = sd.detail.score;
                 delete gameSeatsOfUsers[sd.userId];
@@ -1581,7 +1581,7 @@ function doGameOver(game, userId, forceEnd) {
 }
 
 
-async function update_coin(userid, coins, water) {
+async function update_coin(userid, coins, water,org_id) {
     console.log('更新金币', userid, coins, water, org_id);
     db.update_coin(userid, coins, null);
     if (water == 0) {

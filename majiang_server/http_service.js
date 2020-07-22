@@ -101,12 +101,12 @@ app.get('/enter_room', function(req, res) {
 	roomMgr.enterRoom(roomId, userId, name,coins, function(ret) {
 		if (ret != 0) {
 			if (ret == 1) {
-				http.send(res, 4, "room is full.");
+				return http.send(res, 4, "room is full.");
 			} else if (ret == 2) {
-				http.send(res, 3, "can't find room.");
+				return http.send(res, 3, "can't find room.");
 			}
 
-			http.send(res, 5, "handle error");
+			return http.send(res, 5, "handle error");
 		}
 
 		var token = tokenMgr.createToken(userId, 5000);
