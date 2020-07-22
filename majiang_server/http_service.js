@@ -114,6 +114,19 @@ app.get('/enter_room', function(req, res) {
 	});
 });
 
+app.get('/dissolve_room', function(req, res) {
+	var roomId = req.query.roomid;
+	var md5 = crypto.md5(roomId + config.ROOM_PRI_KEY);
+	if (md5 != sign) {
+		http.send(res, 2, "sign check failed.");
+		return;
+	}
+	userMgr.broacastAllInRoom('dissolve_done_push', {}, roomId);
+	userMgr.kickAllInRoom(roomId);
+	roomMgr.destroy(roomId);
+	http.send(res, 0, "ok");
+});
+
 app.get('/ping', function(req, res) {
 	var sign = req.query.sign;
 	var md5 = crypto.md5(config.ROOM_PRI_KEY);

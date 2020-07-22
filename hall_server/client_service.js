@@ -46,7 +46,7 @@ app.use(function (req, res, next) {
     //console.log(req.url);
     reqDomain.run(next);
 });
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', function (err) {
     console.log('Error: ' + err.stack);
 });
 
@@ -77,9 +77,9 @@ app.get('/login', function (req, res) {
             gems: data.gems,
             ip: ip,
             sex: data.sex,
-            real_name : data.real_name,
-            id_card : data.id_card,
-            headimg : data.headimg
+            real_name: data.real_name,
+            id_card: data.id_card,
+            headimg: data.headimg
         };
 
         db.get_room_id_of_user(data.userid, function (roomId) {
@@ -144,9 +144,9 @@ app.get('/create_private_room', function (req, res) {
             http.send(res, 1, "system error");
             return;
         }
-        if (org_id !=0 && data.gems < 30){
+        if (org_id != 0 && data.gems < 30) {
             //http.send(res, 1, "房卡不足30张");
-            console.log(data.gems,'房卡不足30张')
+            console.log(data.gems, '房卡不足30张')
             //return;
         }
         var userId = data.userid;
@@ -156,10 +156,10 @@ app.get('/create_private_room', function (req, res) {
                 http.send(res, -1, "user is playing in room now.");
                 return;
             }
-            console.log(account,userId,conf,org_id);
+            console.log(account, userId, conf, org_id);
             room_service.createRoom(account, userId, conf, org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
-                    if (org_id != 0){
+                    if (org_id != 0) {
                         return http.send(res, 0, "ok", {roomid: roomId});
                     }
                     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
@@ -178,7 +178,7 @@ app.get('/create_private_room', function (req, res) {
                         }
                     });
                 } else {
-                    console.log(err,roomId)
+                    console.log(err, roomId)
                     http.send(res, err, "create failed.");
                 }
             });
@@ -199,7 +199,18 @@ app.get('/enter_private_room', function (req, res) {
     }
 
     var account = data.account;
-
+    // 1底分不买马50
+    // 1底分买马：80
+    // 2底分不买马：100
+    // 2底分买马：140
+    // 3底分不买马：120
+    // 3底分买马：180
+    // 4底分不买马：160
+    // 4底分买马：220
+    // 5底分不买马：200
+    // 5底分买马：280
+    // 6底分不买马：260
+    // 6底分买马：320
     db.get_user_data(account, function (data) {
         if (null == data) {
             http.send(res, -1, "system error");
@@ -220,7 +231,7 @@ app.get('/enter_private_room', function (req, res) {
                 ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
                 http.send(res, 0, "ok", ret);
             } else {
-                http.send(res, errcode, "room doesn't exist.");
+                http.send(res, errcode, "room can't enter.");
             }
         });
     });
@@ -232,44 +243,8 @@ app.get('/org_get_room_delet', function (req, res) {
         return;
     }
     let room_id = req.query.room_id;
-    //var account = data.account;
-    // db.get_user_data(account, function (data) {
-    //     if (null == data) {
-    //         http.send(res, -1, "system error");
-    //         return;
-    //     }
-
-    //     var userId = data.userid;
-    //     var name = data.name;
-    //     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
-    //         if (enterInfo) {
-    //             var ret = {
-    //                 roomid: roomId,
-    //                 ip: enterInfo.ip,
-    //                 port: enterInfo.port,
-    //                 token: enterInfo.token,
-    //                 time: Date.now()
-    //             };
-    //             ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
-    //             http.send(res, 0, "ok", ret);
-    //         } else {
-    //             http.send(res, errcode, "room doesn't exist.");
-    //         }
-    //     });
-    // });
-
-    // let uuid = req.query.uuid;
-    // var roomInfo = roomMgr.getRoom(roomId);
-    // userMgr.broacastInRoom('dissolve_done_push', {}, uid, true);
-    // roomInfo.dissolveDone = true;
-    // socket.gameMgr.doDissolve(roomId);
-
-    // userMgr.broacastInRoom('dispress_push', {}, uid, true);
-    // userMgr.kickAllInRoom(roomId);
-    // roomMgr.destroy(roomId);
-    // socket.disconnect();
-
-    db.delete_room(room_id, (data) => {
+    room_service.dissolveRoom(room_id,(cal_rs)=>{
+        console.log('强制解散房间',cal_rs);
         http.send(res, 0, 'ok', {});
     })
 });
@@ -289,7 +264,7 @@ app.get('/get_history_list', function (req, res) {
 
         var userId = data.userid;
         db.get_user_history(userId, function (history) {
-            http.send(res, 0, "ok", { history: history });
+            http.send(res, 0, "ok", {history: history});
         });
     });
 });
@@ -308,7 +283,7 @@ app.get('/get_games_of_room', function (req, res) {
 
     db.get_games_of_room(uuid, function (data) {
         console.log(data);
-        http.send(res, 0, "ok", { data: data });
+        http.send(res, 0, "ok", {data: data});
     });
 });
 
@@ -326,7 +301,7 @@ app.get('/get_detail_of_game', function (req, res) {
     }
 
     db.get_detail_of_game(uuid, index, function (data) {
-        http.send(res, 0, "ok", { data: data });
+        http.send(res, 0, "ok", {data: data});
     });
 });
 
@@ -338,7 +313,7 @@ app.get('/get_user_status', function (req, res) {
     var account = req.query.account;
     db.get_gems(account, function (data) {
         if (data != null) {
-            http.send(res, 0, "ok", { gems: data.gems });
+            http.send(res, 0, "ok", {gems: data.gems});
         } else {
             http.send(res, 1, "get gems failed.");
         }
@@ -360,7 +335,7 @@ app.get('/get_message', function (req, res) {
     var version = req.query.version;
     db.get_message(type, version, function (data) {
         if (data != null) {
-            http.send(res, 0, "ok", { msg: data.msg, version: data.version });
+            http.send(res, 0, "ok", {msg: data.msg, version: data.version});
         } else {
             http.send(res, 1, "get message failed.");
         }
@@ -389,16 +364,21 @@ app.get('/update_coin', function (req, res) {
         return;
     }
     let uuid = req.query.uuid;
-    let coin = req.query.coin;
-    // 权限验证
-    db.update_coin(uuid, coin, async (data) => {
-        if (data) {
-            let result = await db.async_get_user(req.query.account);
-            http.send(res, 0, 'ok', {result});
-        } else {
-            http.send(res, 1, 'handle error', {})
+    let coin = parseInt(req.query.coin);
+    // 验证
+    db.get_user_data(account, function (data) {
+        if ((data.coins + coin) < 0) {
+            return http.send(res, 1, '积分更新后不能小于0', {})
         }
-    })
+        db.update_coin(uuid, coin, async (data) => {
+            if (data) {
+                let result = await db.async_get_user(req.query.account);
+                http.send(res, 0, 'ok', {result});
+            } else {
+                http.send(res, 1, 'handle error', {})
+            }
+        })
+    });
 });
 
 // 设置社团管理员
@@ -412,7 +392,7 @@ app.get('/update_user_rank', async function (req, res) {
     let to_uuid = req.query.to_uuid;
     let org_id = req.query.org_id;
     let validator = await db.org_duibi_dengji(org_id, uuid, to_uuid);
-    if (!validator || level == 1){
+    if (!validator || level == 1) {
         return http.send(res, 1, '权限不足', {});
     }
     db.update_rank(to_uuid, level, org_id, (data) => {
@@ -432,7 +412,7 @@ app.get('/join_org', function (req, res) {
     let parent_id = req.query.parent_id || 0; // 邀请人id
     let org_id = req.query.org_id;  // 社团id
     db.join_org_find(uuid, org_id, parent_id, (elem) => {
-        if (elem){
+        if (elem) {
             return http.send(res, 1, '请勿重复申请', {});
         }
         db.join_org(uuid, org_id, parent_id, (data) => {
@@ -453,10 +433,10 @@ app.get('/join_org_list', function (req, res) {
     let org_id = req.query.org_id;
     db.join_org_list(org_id, (data) => {
         if (data) {
-          for (const key in data) {
+            for (const key in data) {
                 data[key].name = crypto.fromBase64(data[key].name);
-          }
-            http.send(res, 0, 'ok', { data: data });
+            }
+            http.send(res, 0, 'ok', {data: data});
         } else {
             http.send(res, 1, 'handle error', {})
         }
@@ -473,7 +453,7 @@ app.get('/join_org_approval', function (req, res) {
     let state = req.query.state; //用户状态：1正常，2待审核, 3拒绝
     db.join_org_approval(org_id, uuid, state, (data) => {
         if (data) {
-            http.send(res, 0, 'ok', { data: data });
+            http.send(res, 0, 'ok', {data: data});
         } else {
             http.send(res, 1, 'handle error', {})
         }
@@ -488,7 +468,7 @@ app.get('/org_get_info', function (req, res) {
     let org_id = req.query.org_id;
     db.get_org_info(org_id, (data) => {
         if (data) {
-            http.send(res, 0, 'ok', { data: data });
+            http.send(res, 0, 'ok', {data: data});
         } else {
             http.send(res, 1, 'server error', {})
         }
@@ -518,7 +498,7 @@ app.get('/org_set_config', function (req, res) {
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
     let room_conf = req.query.room_conf;
-    db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump,room_conf, (data) => {
+    db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, room_conf, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
@@ -530,11 +510,11 @@ app.get('/org_create', function (req, res) {
     }
     let name = req.query.name;
     let uuid = req.query.uuid;
-    db.org_create(name,uuid, (data) => {
+    db.org_create(name, uuid, (data) => {
         if (data == null) {
             return http.send(res, 1, 'server error', {})
         }
-        http.send(res, 0, 'ok', { data: data });
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
@@ -545,7 +525,7 @@ app.get('/org_self', function (req, res) {
     }
     let uuid = req.query.uuid;
     db.org_self(uuid, (data) => {
-        http.send(res, 0, 'ok', { data: data });
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
@@ -560,8 +540,8 @@ app.get('/org_user_list', function (req, res) {
     db.org_user_list(org_id, uuid, type, (data) => {
         for (const key in data) {
             data[key].name = crypto.fromBase64(data[key].name);
-      }
-        http.send(res, 0, 'ok', { data: data });
+        }
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
@@ -571,12 +551,12 @@ app.get('/org_delete', async function (req, res) {
         return;
     }
     let validator = await db.async_get_user(req.query.account)
-    if (!validator || validator.level != 1){
+    if (!validator || validator.level != 1) {
         http.send(res, 1, '操作失败', {});
     }
     let org_id = req.query.org_id;
     db.org_delete(org_id, (data) => {
-        http.send(res, 0, 'ok', { data: data });
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
@@ -587,7 +567,7 @@ app.get('/org_quit', async function (req, res) {
     }
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;
-    db.org_quit(org_id,uuid, (data) => {
+    db.org_quit(org_id, uuid, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
@@ -620,12 +600,12 @@ app.get('/org_parent_config', async function (req, res) {
     let parent_id = req.query.parent_id; // 上级uuid
 
     let validator = await db.org_duibi_dengji(org_id, parent_id, uuid);
-    if (!validator){
+    if (!validator) {
         return http.send(res, 1, '权限不足', {});
     }
 
-    db.org_parent_config(org_id,uuid,parent_id, (data) => {
-        http.send(res, 0, 'ok', { data: data });
+    db.org_parent_config(org_id, uuid, parent_id, (data) => {
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
@@ -637,9 +617,9 @@ app.get('/org_get_room_list', function (req, res) {
     let org_id = req.query.org_id;
     db.get_room_list(org_id, (data) => {
         for (const key in data) {
-                data[key]['base_info'] = JSON.parse(data[key]['base_info']);
+            data[key]['base_info'] = JSON.parse(data[key]['base_info']);
         }
-        http.send(res, 0, 'ok', { data: data });
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
@@ -651,19 +631,19 @@ app.get('/org_get_room_id', function (req, res) {
     let roomid = req.query.roomid;
 
     db.get_room_uuid(roomid, (data) => {
-        http.send(res, 0, 'ok', { data: data });
+        http.send(res, 0, 'ok', {data: data});
     })
 });
 
 // 实名认证
-app.get('/authentication', function (req, res){
+app.get('/authentication', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
     let uuid = req.query.uuid;
     let name = req.query.name;
     let id_card = req.query.id_card;
-    if (name == '' || id_card == ''){
+    if (name == '' || id_card == '') {
         return http.send(res, 1, "参数异常");
     }
     db.authentication(uuid, name, id_card, (data) => {
@@ -672,13 +652,13 @@ app.get('/authentication', function (req, res){
 });
 
 // 绑定手机号
-app.get('/bind_mobile', function (req, res){
+app.get('/bind_mobile', function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
     let uuid = req.query.uuid;
     let mobile = req.query.mobile;
-    if (!mobile){
+    if (!mobile) {
         return http.send(res, 1, "参数异常");
     }
     db.bind_mobile(uuid, mobile, (data) => {

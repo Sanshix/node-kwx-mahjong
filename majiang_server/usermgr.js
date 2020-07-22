@@ -91,3 +91,19 @@ exports.broacastInRoom = function(event, data, sender, includingSender) {
 	}
 };
 
+exports.broacastAllInRoom = function(event, data, roomId) {
+	var roomInfo = roomMgr.getRoom(roomId);
+	if (roomInfo == null) {
+		return;
+	}
+	for (var i = 0; i < roomInfo.seats.length; ++i) {
+		var rs = roomInfo.seats[i];
+		var uid = rs.userId;
+		var socket = userList[uid];
+		if (socket != null) {
+			socket.emit(event, data);
+			//console.log('send to ' + uid + ': ' + event);
+		}
+	}
+};
+
