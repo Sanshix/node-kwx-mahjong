@@ -269,25 +269,25 @@ exports.switchPump = (maima, baseScore) => {
     // 6底分买马：320
     switch (baseScore) {
         case 1:
-            if (maima) {return 50} else {return 80}
+            if (!maima) {return 50} else {return 80}
             break;
         case 2:
-            if (maima) {return 100} else {return 140}
+            if (!maima) {return 100} else {return 140}
             break;
         case 3:
-            if (maima) {return 120} else {return 180}
+            if (!maima) {return 120} else {return 180}
             break;
         case 4:
-            if (maima) {return 160} else {return 220}
+            if (!maima) {return 160} else {return 220}
             break;
         case 5:
-            if (maima) {return 200} else {return 280}
+            if (!maima) {return 200} else {return 280}
             break;
         case 6:
-            if (maima) {return 260} else {return 320}
+            if (!maima) {return 260} else {return 320}
             break;
         default :
-            if (maima) {return 50} else {return 80}
+            if (!maima) {return 50} else {return 80}
             break;
     }
 }
