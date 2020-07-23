@@ -86,7 +86,7 @@ exports.start = function(config, mgr) {
 				var seat = {
 					userid: uid,
 					ip: rs.ip,
-					score: rs.score,
+					score: parseInt(rs.score),
 					name: rs.name,
 					online: online,
 					ready: rs.ready,

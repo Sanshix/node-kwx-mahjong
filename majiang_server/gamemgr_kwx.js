@@ -1583,6 +1583,7 @@ function doGameOver(game, userId, forceEnd) {
 
 async function update_coin(userid, coins, water,org_id) {
     console.log('更新金币', userid, coins, water, org_id);
+    coins = parseInt(coins);
     db.update_coin(userid, coins, null);
     if (water == 0) {
         return true;

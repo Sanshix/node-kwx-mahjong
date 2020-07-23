@@ -209,7 +209,9 @@ app.get('/enter_private_room', function (req, res) {
             if (!room){
                 return http.send(res,-1,"not find room");
             }
-            let conditionCoin =  room_service.switchPump(room.conf.maima, room.conf.baseScore);
+            let room_conf = JSON.parse(room.base_info);
+            let conditionCoin =  room_service.switchPump(room_conf.maima, room_conf.baseScore);
+            console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
             if (data.coins < conditionCoin){
                 if (!room){
                     return http.send(res,-1,"积分不足!");
@@ -496,10 +498,25 @@ app.get('/org_set_config', function (req, res) {
     let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
-    let room_conf = req.query.room_conf;
-    db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, room_conf, (data) => {
-        http.send(res, 0, 'ok', {});
+    let room_conf = req.query.conf;
+    let json_room_conf = JSON.parse(room_conf);
+    db.get_org_info(org_id, (data) => {
+        let data_conf = [];
+        if (data[0].room_config){
+            data_conf = JSON.parse(data[0].room_config);
+        }
+        for (const key in data_conf) {
+            if (data_conf[key].type == json_room_conf.type){
+                delete data_conf[key];
+            }
+        }
+        data_conf.push(json_room_conf)
+
+        db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
+            http.send(res, 0, 'ok', {});
+        })
     })
+   
 });
 
 // 创建社团
@@ -524,6 +541,13 @@ app.get('/org_self', function (req, res) {
     }
     let uuid = req.query.uuid;
     db.org_self(uuid, (data) => {
+        for (const key in data) {
+           if (data[key].room_config){
+                data[key].room_config = JSON.parse(data[key].room_config);
+           }else{
+                data[key].room_config  = [];
+           }
+        }
         http.send(res, 0, 'ok', {data: data});
     })
 });
