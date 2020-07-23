@@ -213,9 +213,7 @@ app.get('/enter_private_room', function (req, res) {
             let conditionCoin =  room_service.switchPump(room_conf.maima, room_conf.baseScore);
             console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
             if (data.coins < conditionCoin){
-                if (!room){
-                    return http.send(res,-1,"积分不足!");
-                }
+                return http.send(res,-1,`积分不足! 该房间限制积分大于等于${conditionCoin}`);
             }
             var userId = data.userid;
             var name = data.name;
