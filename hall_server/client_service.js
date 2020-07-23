@@ -199,41 +199,40 @@ app.get('/enter_private_room', function (req, res) {
     }
 
     var account = data.account;
-    // 1底分不买马50
-    // 1底分买马：80
-    // 2底分不买马：100
-    // 2底分买马：140
-    // 3底分不买马：120
-    // 3底分买马：180
-    // 4底分不买马：160
-    // 4底分买马：220
-    // 5底分不买马：200
-    // 5底分买马：280
-    // 6底分不买马：260
-    // 6底分买马：320
+
     db.get_user_data(account, function (data) {
         if (null == data) {
             http.send(res, -1, "system error");
             return;
         }
-
-        var userId = data.userid;
-        var name = data.name;
-        room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
-            if (enterInfo) {
-                var ret = {
-                    roomid: roomId,
-                    ip: enterInfo.ip,
-                    port: enterInfo.port,
-                    token: enterInfo.token,
-                    time: Date.now()
-                };
-                ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
-                http.send(res, 0, "ok", ret);
-            } else {
-                http.send(res, errcode, "room can't enter.");
+        db.get_room_data(roomId,function (room) {
+            if (!room){
+                return http.send(res,-1,"not find room");
             }
-        });
+            let conditionCoin =  room_service.switchPump(room.conf.maima, room.conf.baseScore);
+            if (data.coins < conditionCoin){
+                if (!room){
+                    return http.send(res,-1,"积分不足!");
+                }
+            }
+            var userId = data.userid;
+            var name = data.name;
+            room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
+                if (enterInfo) {
+                    var ret = {
+                        roomid: roomId,
+                        ip: enterInfo.ip,
+                        port: enterInfo.port,
+                        token: enterInfo.token,
+                        time: Date.now()
+                    };
+                    ret.sign = crypto.md5(ret.roomid + ret.token + ret.time + config.ROOM_PRI_KEY);
+                    http.send(res, 0, "ok", ret);
+                } else {
+                    http.send(res, errcode, "room can't enter.");
+                }
+            });
+        })
     });
 });
 

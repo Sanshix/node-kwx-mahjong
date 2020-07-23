@@ -453,15 +453,6 @@ exports.get_room_id_of_user = function (userId, callback) {
     });
 };
 
-exports.get_config = function(callback){
-    callback = callback == null ? nop : callback;
-    var sql = 'SELECT * FROM config ';
-    query(sql, function (err, rows, fields) {
-        callback(rows[0]);
-    });
-};
-
-
 exports.create_room = function (roomId, conf, org_id, ip, port, create_time, callback) {
     callback = callback == null ? nop : callback;
     var sql = "INSERT INTO t_rooms(uuid,id,base_info,ip,port,create_time,org_id) \
@@ -750,6 +741,19 @@ exports.update_coin = function (uuid, coin, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update t_users set coins = coins+ ` + coin + ` where userid=` + uuid;
    console.log(sql);
+    query(sql, function (err, rows) {
+        if (rows.affectedRows > 0) {
+            callback(true);
+        } else {
+            callback(null);
+        }
+    });
+}
+
+exports.update_exp = function (uuid, exp, callback) {
+    callback = callback == null ? nop : callback;
+    let sql = `update t_users set exp = exp+ ` + exp + ` where userid=` + uuid;
+    console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
             callback(true);

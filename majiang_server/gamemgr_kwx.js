@@ -1475,7 +1475,7 @@ function doGameOver(game, userId, forceEnd) {
             }
         }
         db.get_water(roomInfo.org_id, async (water) => {
-            let water_average = parseInt(water / roomInfo.seats.length);
+            let water_average = parseInt(water / roomInfo.numOfSeats);
             for (var i = 0; i < roomInfo.seats.length; ++i) {
                 var rs = roomInfo.seats[i];
                 var sd = game.gameSeats[i];
@@ -1600,7 +1600,7 @@ async function update_coin(userid, coins, water,org_id) {
         if (parent.level == 1) {
             // all分给团长
             if (index == 0){
-                db.update_coin(parent.uuid, water, null);
+                db.update_exp(parent.uuid, water, null);
                 break;
             }
             coin = water_spare;
@@ -1609,7 +1609,7 @@ async function update_coin(userid, coins, water,org_id) {
             break;
         }
         console.log(`分茶水钱: uuid: ${parent.uuid}, coin: ${coin}`)
-        db.update_coin(parent.uuid, coin, null);
+        db.update_exp(parent.uuid, coin, null);
         parent_id = parent.uuid;
         water_spare -= coin;
     }

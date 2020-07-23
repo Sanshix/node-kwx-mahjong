@@ -214,10 +214,10 @@ exports.dissolveRoom = function (roomId, fnCallback) {
     var reqdata = {
         roomid: roomId
     };
-    reqdata.sign = crypto.md5( roomId + config.ROOM_PRI_KEY);
+    reqdata.sign = crypto.md5(roomId + config.ROOM_PRI_KEY);
     var dissolveRoomReq = function (serverinfo) {
         http.get(serverinfo.ip, serverinfo.httpPort, "/dissolve_room", reqdata, function (ret, data) {
-                fnCallback('已解散');
+            fnCallback('已解散');
         });
     };
 
@@ -253,6 +253,44 @@ exports.isServerOnline = function (ip, port, callback) {
         }
     });
 };
+
+exports.switchPump = (maima, baseScore) => {
+    // 1底分不买马50
+    // 1底分买马：80
+    // 2底分不买马：100
+    // 2底分买马：140
+    // 3底分不买马：120
+    // 3底分买马：180
+    // 4底分不买马：160
+    // 4底分买马：220
+    // 5底分不买马：200
+    // 5底分买马：280
+    // 6底分不买马：260
+    // 6底分买马：320
+    switch (baseScore) {
+        case 1:
+            if (maima) {return 50} else {return 80}
+            break;
+        case 2:
+            if (maima) {return 100} else {return 140}
+            break;
+        case 3:
+            if (maima) {return 120} else {return 180}
+            break;
+        case 4:
+            if (maima) {return 160} else {return 220}
+            break;
+        case 5:
+            if (maima) {return 200} else {return 280}
+            break;
+        case 6:
+            if (maima) {return 260} else {return 320}
+            break;
+        default :
+            if (maima) {return 50} else {return 80}
+            break;
+    }
+}
 
 exports.start = function ($config) {
     config = $config;
