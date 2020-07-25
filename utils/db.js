@@ -85,7 +85,7 @@ exports.get_account_info = function (account, password,type, callback) {
         return;
     }
     if (type == 2){
-        var sql = 'SELECT * FROM t_accounts WHERE mobile = "' + account + '"';
+        var sql = 'SELECT * FROM t_users WHERE mobile = "' + account + '"';
     }else{
         var sql = 'SELECT * FROM t_accounts WHERE account = "' + account + '"';
     }
@@ -975,6 +975,9 @@ exports.get_captcha = (mobile, callback) => {
     let sql = `select * from captcha where mobile=${mobile}`;
     //console.log(sql);
     query(sql, function (err, rows) {
+        if (err){
+           return callback(false);
+        }
         if (rows.length > 0) {
             callback(rows[0]);
         } else {
@@ -994,6 +997,9 @@ exports.get_water = (org_id, callback) => {
     let sql = `select pump from organization where id=${org_id}`;
    //console.log(sql);
     query(sql, function (err, rows) {
+        if (err){
+            return callback(0);
+         }
         if (rows.length > 0) {
             callback(rows[0].pump);
         } else {

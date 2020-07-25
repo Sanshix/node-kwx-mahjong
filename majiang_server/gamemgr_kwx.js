@@ -1581,14 +1581,14 @@ function doGameOver(game, userId, forceEnd) {
 }
 
 
-async function update_coin(userid, coins, water,org_id) {
+async function update_coin(userid, coins, water, org_id) {
     console.log('更新金币', userid, coins, water, org_id);
-    coins = parseInt(coins);
+    coins = parseInt(coins - water);
     db.update_coin(userid, coins, null);
     if (water == 0) {
         return true;
     }
-    // 茶水钱
+    // 扣茶水钱
     let parent_id = userid;
     let water_spare = water;
     for (let index = 0; index < 3; index++) {

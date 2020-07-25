@@ -5,6 +5,7 @@ var db = require('../utils/db');
 var http = require('../utils/http');
 var captcha = require('../utils/captcha')
 var app = express();
+var domain = require('domain');
 var hallAddr = '';
 
 function send(res, ret) {
@@ -13,6 +14,7 @@ function send(res, ret) {
 }
 
 var config = null;
+
 
 exports.start = function(cfg) {
 	config = cfg;
@@ -30,6 +32,24 @@ app.all('*', function(req, res, next) {
     next();
 });
 
+app.use(function (err, req, res, next) {
+    //res.status(err.status || 500);
+    console.error(err, err.message);
+    http.send(res, 1, 'server error', {})
+});
+app.use(function (req, res, next) {
+    var reqDomain = domain.create();
+    reqDomain.on('error', function (err) { // 下面抛出的异常在这里被捕获
+        console.log(err.message);
+        err.message = '服务器异常';
+        next(err, req, res, next);
+    });
+    //console.log(req.url);
+    reqDomain.run(next);
+});
+process.on('uncaughtException', function (err) {
+    console.log('Error: ' + err.stack);
+});
 app.get('/register',function(req, res) {
 	var account = req.query.account;
 	var password = req.query.password;

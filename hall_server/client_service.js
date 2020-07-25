@@ -507,7 +507,7 @@ app.get('/org_set_config', function (req, res) {
             data_conf = JSON.parse(data[0].room_config);
         }
         for (const key in data_conf) {
-            if (data_conf[key].type == json_room_conf.type){
+            if (data_conf[key]  && data_conf[key].type == json_room_conf.type){
                 delete data_conf[key];
             }
         }
