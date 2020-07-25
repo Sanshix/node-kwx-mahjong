@@ -1016,7 +1016,7 @@ exports.get_parent = async (org_id, uuid) => {
         if (rows) {
             return resolve(rows[0]);
         } else {
-            return resolve(false);
+            return resolve(null);
         }
     });
 }
@@ -1029,9 +1029,9 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
         query(sql, function (err, rows) {
             console.log(rows)
             if (rows) {
-                return resolve(true);
+                return resolve(1);
             } else {
-                return resolve(false);
+                return resolve(0);
             }
         });
     })
