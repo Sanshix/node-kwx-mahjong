@@ -79,7 +79,8 @@ app.get('/login', function (req, res) {
             sex: data.sex,
             real_name: data.real_name,
             id_card: data.id_card,
-            headimg: data.headimg
+            headimg: data.headimg,
+            mobile: data.mobile,
         };
 
         db.get_room_id_of_user(data.userid, function (roomId) {
@@ -209,11 +210,13 @@ app.get('/enter_private_room', function (req, res) {
             if (!room){
                 return http.send(res,-1,"not find room");
             }
-            let room_conf = JSON.parse(room.base_info);
-            let conditionCoin =  room_service.switchPump(room_conf.maima, room_conf.baseScore);
-            console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
-            if (data.coins < conditionCoin){
-                return http.send(res,-1,`积分不足! 该房间限制积分大于等于${conditionCoin}`);
+            if (room.org_id !=0){
+                let room_conf = JSON.parse(room.base_info);
+                let conditionCoin =  room_service.switchPump(room_conf.maima, room_conf.baseScore);
+                console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
+                if (data.coins < conditionCoin){
+                    return http.send(res,-1,`积分不足! 该房间限制积分大于等于${conditionCoin}`);
+                }
             }
             var userId = data.userid;
             var name = data.name;
@@ -365,7 +368,7 @@ app.get('/update_coin', function (req, res) {
     let uuid = req.query.uuid;
     let coin = parseInt(req.query.coin);
     // 验证
-    db.get_user_data(account, function (data) {
+    db.get_user_data(req.query.account, function (data) {
         if ((data.coins + coin) < 0) {
             return http.send(res, 1, '积分更新后不能小于0', {})
         }

@@ -244,6 +244,9 @@ app.get('/wechat_auth', function(req, res) {
 app.get('/base_info', function(req, res) {
 	var userid = req.query.userid;
 	db.get_user_base_info(userid, function(data) {
+		if (!data) {
+			return send(res, { errcode: -1, errmsg: "unknown err." });
+		}
 		var ret = {
 			errcode: 0,
 			errmsg: "ok",

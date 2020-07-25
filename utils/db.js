@@ -142,7 +142,7 @@ exports.get_user_data = function (account, callback) {
         return;
     }
 
-    var sql = 'SELECT userid,account,name,lv,exp,coins,gems,roomid,headimg,real_name,id_card FROM t_users WHERE account = "' + account + '"';
+    var sql = 'SELECT * FROM t_users WHERE account = "' + account + '"';
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(null);
@@ -385,6 +385,10 @@ exports.get_user_base_info = function (userid, callback) {
     query(sql, function (err, rows, fields) {
         if (err) {
             throw err;
+        }
+        if (rows.length == 0) {
+            callback(null);
+            return;
         }
         rows[0].name = crypto.fromBase64(rows[0].name);
         callback(rows[0]);
