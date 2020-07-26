@@ -78,15 +78,15 @@ exports.create_account = function (account, password, callback) {
     });
 };
 
-exports.get_account_info = function (account, password,type, callback) {
+exports.get_account_info = function (account, password, type, callback) {
     callback = callback == null ? nop : callback;
     if (account == null) {
         callback(null);
         return;
     }
-    if (type == 2){
+    if (type == 2) {
         var sql = 'SELECT * FROM t_users WHERE mobile = "' + account + '"';
-    }else{
+    } else {
         var sql = 'SELECT * FROM t_accounts WHERE account = "' + account + '"';
     }
     query(sql, function (err, rows, fields) {
@@ -190,7 +190,7 @@ exports.add_user_gems = function (userid, gems, callback) {
     }
 
     var sql = 'UPDATE t_users SET gems = gems +' + gems + ' WHERE userid = ' + userid;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             console.log(err);
@@ -340,7 +340,7 @@ exports.create_user = function (account, name, coins, gems, sex, headimg, callba
     name = crypto.toBase64(name);
     var sql = 'INSERT INTO t_users(account,name,coins,gems,sex,headimg) VALUES("{0}","{1}",{2},{3},{4},{5})';
     sql = sql.format(account, name, coins, gems, sex, headimg);
-   console.log(sql);
+    console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             throw err;
@@ -364,7 +364,7 @@ exports.update_user_info = function (userid, name, headimg, sex, callback) {
     name = crypto.toBase64(name);
     var sql = 'UPDATE t_users SET name="{0}",headimg={1},sex={2} WHERE account="{3}"';
     sql = sql.format(name, headimg, sex, userid);
-   console.log(sql);
+    console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             throw err;
@@ -381,7 +381,7 @@ exports.get_user_base_info = function (userid, callback) {
     }
     var sql = 'SELECT name,sex,headimg FROM t_users WHERE userid={0}';
     sql = sql.format(userid);
-   ////console.log(sql);
+    ////console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             throw err;
@@ -411,7 +411,7 @@ exports.is_room_exist = function (roomId, callback) {
 exports.cost_gems = function (userid, cost, callback) {
     callback = callback == null ? nop : callback;
     var sql = 'UPDATE t_users SET gems = gems -' + cost + ' WHERE userid = ' + userid;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(false);
@@ -428,7 +428,7 @@ exports.set_room_id_of_user = function (userId, roomId, callback) {
         roomId = '"' + roomId + '"';
     }
     var sql = 'UPDATE t_users SET roomid = ' + roomId + ' WHERE userid = "' + userId + '"';
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             console.log(err);
@@ -464,7 +464,7 @@ exports.create_room = function (roomId, conf, org_id, ip, port, create_time, cal
     var uuid = Date.now() + roomId;
     var baseInfo = JSON.stringify(conf);
     sql = sql.format(uuid, roomId, baseInfo, ip, port, create_time, org_id);
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, row, fields) {
         if (err) {
             callback(null);
@@ -483,9 +483,9 @@ exports.get_room_uuid = function (roomId, callback) {
             callback(null);
             throw err;
         } else {
-            if (rows.length > 0){
+            if (rows.length > 0) {
                 callback(rows[0].uuid);
-            }else{
+            } else {
                 callback(null);
             }
         }
@@ -592,7 +592,7 @@ exports.delete_room = function (roomId, callback) {
     }
     var sql = "DELETE FROM t_rooms WHERE id = '{0}'";
     sql = sql.format(roomId);
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(false);
@@ -649,7 +649,7 @@ exports.delete_games = function (room_uuid, callback) {
     }
     var sql = "DELETE FROM t_games WHERE room_uuid = '{0}'";
     sql = sql.format(room_uuid);
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(false);
@@ -667,7 +667,7 @@ exports.archive_games = function (room_uuid, callback) {
     }
     var sql = "INSERT INTO t_games_archive(SELECT * FROM t_games WHERE room_uuid = '{0}')";
     sql = sql.format(room_uuid);
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(false);
@@ -744,7 +744,7 @@ exports.get_message = function (type, version, callback) {
 exports.update_coin = function (uuid, coin, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update t_users set coins = coins+ ` + coin + ` where userid=` + uuid;
-   console.log(sql);
+    console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
             callback(true);
@@ -770,7 +770,7 @@ exports.update_exp = function (uuid, exp, callback) {
 exports.update_rank = function (uuid, level, org_id, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set level =` + level + ` where uuid=${uuid} and org_id=${org_id}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
             callback(true);
@@ -783,7 +783,7 @@ exports.update_rank = function (uuid, level, org_id, callback) {
 exports.join_org = function (uuid, org_id, parent_id, callback) {
     callback = callback == null ? nop : callback;
     let sql = `INSERT INTO user_organization(uuid, org_id, parent_uuid) VALUES (${uuid},${org_id},${parent_id})`
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (err) {
             callback(false)
@@ -797,8 +797,8 @@ exports.join_org = function (uuid, org_id, parent_id, callback) {
 
 exports.join_org_find = function (uuid, org_id, parent_id, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `select * from user_organization where uuid=${uuid} and org_id = ${org_id}`
-   //console.log(sql);
+    let sql = `select * from user_organization where uuid=${uuid} and org_id = ${org_id} and type!=3`
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (err) {
             callback(false)
@@ -816,7 +816,7 @@ exports.join_org_find = function (uuid, org_id, parent_id, callback) {
 exports.join_org_list = function (org_id, callback) {
     callback = callback == null ? nop : callback;
     let sql = `select a.*,b.name from user_organization a left join t_users b on b.userid = a.uuid where a.org_id = ${org_id} and a.type=2`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, res) {
         if (err) {
             return callback(false)
@@ -830,7 +830,7 @@ exports.join_org_list = function (org_id, callback) {
 exports.join_org_approval = function (org_id, uuid, state, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set type =${state} where uuid=${uuid} and org_id=${org_id}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
             callback(true);
@@ -843,7 +843,7 @@ exports.join_org_approval = function (org_id, uuid, state, callback) {
 exports.set_org_notice = function (org_id, notice, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update organization set notice ='${notice}' where id=${org_id}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
     });
@@ -852,7 +852,7 @@ exports.set_org_notice = function (org_id, notice, callback) {
 exports.get_org_info = function (org_id, callback) {
     callback = callback == null ? nop : callback;
     let sql = `select * from organization where id = ${org_id} `;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (err) {
             callback(false)
@@ -865,7 +865,7 @@ exports.get_org_info = function (org_id, callback) {
 exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pump, room_config, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update organization set func_type_1 =${func_type_1},func_type_2=${func_type_2},show_type=${show_type},pump=${pump},room_config='${room_config}' where id=${org_id}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         if (err) {
             console.error(err);
@@ -886,8 +886,8 @@ exports.org_create = (name, uuid, callback) => {
             throw err;
         }
         let sql = `INSERT INTO user_organization(uuid, org_id, type, level) VALUES (${uuid},${rows.insertId},1,1)`
-       //console.log(sql);
-        query(sql, function (err, rows) { 
+        //console.log(sql);
+        query(sql, function (err, rows) {
             callback(true);
         });
     })
@@ -896,7 +896,7 @@ exports.org_create = (name, uuid, callback) => {
 exports.org_self = (uuid, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `select b.*,a.level from user_organization a left join organization b on a.org_id=b.id where b.status=1 and a.type=1 and a.uuid = ${uuid} `;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
     });
@@ -912,7 +912,7 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
         where += ` and a.parent_uuid =0`
     }
     let sql = `select a.*,b.name,b.coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} `;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
     });
@@ -921,7 +921,7 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
 exports.org_delete = (org_id, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `delete from user_organization where org_id = ${org_id} `;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         let sqls = `delete from organization where id = ${org_id}`;
         query(sqls, function (err, rows) {
@@ -930,14 +930,14 @@ exports.org_delete = (org_id, callback) => {
     });
 }
 
-exports.org_quit = (org_id,uuid, callback) => {
+exports.org_quit = (org_id, uuid, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `delete from user_organization where org_id = ${org_id} and uuid = ${uuid}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
-        if (err){
+        if (err) {
             callback(false);
-        }else{
+        } else {
             callback(true);
         }
     });
@@ -946,7 +946,7 @@ exports.org_quit = (org_id,uuid, callback) => {
 exports.org_pump_config = (org_id, uuid, water, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set water_ratio =${water} where org_id=${org_id} and uuid=${uuid}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
     });
@@ -955,7 +955,7 @@ exports.org_pump_config = (org_id, uuid, water, callback) => {
 exports.org_parent_config = (org_id, uuid, parent_id, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set parent_uuid =${parent_id} where org_id=${org_id} and uuid=${uuid}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
     });
@@ -964,27 +964,12 @@ exports.org_parent_config = (org_id, uuid, parent_id, callback) => {
 exports.add_captcha = (mobile, code, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `INSERT INTO captcha(mobile, code) VALUES (${mobile},${code})`
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
     });
 }
 
-exports.get_captcha = (mobile, callback) => {
-    callback = callback == null ? nop : callback;
-    let sql = `select * from captcha where mobile=${mobile}`;
-    //console.log(sql);
-    query(sql, function (err, rows) {
-        if (err){
-           return callback(false);
-        }
-        if (rows.length > 0) {
-            callback(rows[0]);
-        } else {
-            callback(null);
-        }
-    });
-}
 
 exports.delete_captcha = (mobile) => {
     let sql = `DELETE FROM captcha WHERE mobile=${mobile}`;
@@ -992,42 +977,48 @@ exports.delete_captcha = (mobile) => {
     });
 }
 
-exports.get_water = (org_id, callback) => {
-    callback = callback == null ? nop : callback;
-    let sql = `select pump from organization where id=${org_id}`;
-   //console.log(sql);
-    query(sql, function (err, rows) {
-        if (err){
-            return callback(0);
-         }
-        if (rows.length > 0) {
-            callback(rows[0].pump);
-        } else {
-            callback(0);
-        }
-    });
+exports.get_water = async (org_id) => {
+    return new Promise((resolve, reject) => {
+        let sql = `select pump from organization where id=${org_id}`;
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (err) {
+                return resolve(0);
+            }
+            if (rows.length > 0) {
+                resolve(rows[0].pump);
+            } else {
+                resolve(0);
+            }
+        });
+    })
 }
 
 exports.get_parent = async (org_id, uuid) => {
-    let sql = `select b.* from user_organization a left join user_organization b on a.parent_uuid=b.uuid
+    return new Promise((resolve, reject) => {
+        let sql = `select b.* from user_organization a left join user_organization b on a.parent_uuid=b.uuid
                where a.uuid=${uuid} and org_id=${org_id} `;
-   //console.log(sql);
-    query(sql, function (err, rows) {
-        if (rows) {
-            return resolve(rows[0]);
-        } else {
-            return resolve(null);
-        }
-    });
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (rows) {
+                return resolve(rows[0]);
+            } else {
+                return resolve(null);
+            }
+        });
+    })
 }
 
 exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
-    return new Promise((resolve, reject)=>{
-        let sql = `select level from user_organization where uuid=${uuid} and org_id=${org_id} and level < (select level `+
+    return new Promise((resolve, reject) => {
+        let sql = `select level from user_organization where uuid=${uuid} and org_id=${org_id} and level < (select level ` +
             `from user_organization where uuid=${to_uuid} and org_id=${org_id})`;
-       //console.log(sql);
+        //console.log(sql);
         query(sql, function (err, rows) {
             console.log(rows)
+            if (err) {
+                return reject(err);
+            }
             if (rows) {
                 return resolve(1);
             } else {
@@ -1038,9 +1029,9 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
 }
 
 
-exports.async_get_user = async (account)=> {
-    return new Promise((resolve,reject)=>{
-        var sql = 'SELECT * FROM t_users WHERE account = "' + account + '"';
+exports.async_get_user = async (uuid) => {
+    return new Promise((resolve, reject) => {
+        var sql = 'SELECT * FROM t_users WHERE userid = "' + uuid + '"';
         query(sql, function (err, rows, fields) {
             if (err) {
                 reject(err);
@@ -1055,8 +1046,8 @@ exports.async_get_user = async (account)=> {
     })
 };
 
-exports.async_uuid_getUser = async (userid)=> {
-    return new Promise((resolve,reject)=>{
+exports.async_uuid_getUser = async (userid) => {
+    return new Promise((resolve, reject) => {
         var sql = 'SELECT * FROM t_users WHERE userid = "' + userid + '"';
         query(sql, function (err, rows, fields) {
             if (err) {
@@ -1072,16 +1063,33 @@ exports.async_uuid_getUser = async (userid)=> {
     })
 };
 
-exports.authentication = ( uuid, name, id_card, callback) => {
+exports.get_captcha = async (mobile) => {
+    return new Promise((resolve, reject) => {
+        let sql = `select * from captcha where mobile=${mobile}`;
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (err) {
+                return resolve(null);
+            }
+            if (rows.length > 0) {
+                resolve(rows[0]);
+            } else {
+                resolve(null);
+            }
+        });
+    });
+}
+
+exports.authentication = (uuid, name, id_card, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update t_users set real_name =${name},id_card=${id_card} where userid=${uuid}`;
-   //console.log(sql);
+    //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
     });
 }
 
-exports.bind_mobile = ( uuid, mobile, callback) => {
+exports.bind_mobile = (uuid, mobile, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update t_users set mobile =${mobile} where userid=${uuid}`;
     //console.log(sql);

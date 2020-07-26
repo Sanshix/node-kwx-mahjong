@@ -147,7 +147,7 @@ app.get('/create_private_room', function (req, res) {
         }
         if (org_id != 0 && data.gems < 30) {
             //http.send(res, 1, "房卡不足30张");
-            console.log(data.gems, '房卡不足30张')
+            //console.log(data.gems, '房卡不足30张')
             //return;
         }
         var userId = data.userid;
@@ -377,7 +377,7 @@ app.get('/update_coin', async function (req, res) {
     }
     db.update_coin(uuid, coin, async (data) => {
         if (data) {
-            let result = await db.async_get_user(req.query.account);
+            let result = await db.async_get_user(uuid);
             http.send(res, 0, 'ok', { result });
         } else {
             http.send(res, 1, 'handle error', {})
@@ -582,7 +582,7 @@ app.get('/org_delete', async function (req, res) {
     }
     let validator = await db.async_get_user(req.query.account)
     if (!validator || validator.level != 1) {
-        http.send(res, 1, '操作失败', {});
+        return http.send(res, 1, '操作失败', {});
     }
     let org_id = req.query.org_id;
     db.org_delete(org_id, (data) => {
@@ -700,7 +700,7 @@ app.get('/bind_mobile', function (req, res) {
 app.use(function (err, req, res, next) {
     //res.status(err.status || 500);
     console.error(err, err.message);
-    http.send(res, 1, 'server error', {})
+    return http.send(res, 1, 'server error', {})
 });
 
 exports.start = function ($config) {

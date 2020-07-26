@@ -120,18 +120,17 @@ app.get('/auth', function(req, res) {
 	let passwords = req.query.password;
 	var code = req.query.code;
     var type = req.query.type || 1; // 1账号，2手机验证，
-	db.get_account_info(account, passwords,type, function(info) {
+	db.get_account_info(account, passwords,type, async function(info) {
 		if (!info){
 			return send(res, { errcode: 2, errmsg: "未检测到账号，请先微信登录并绑定手机号" });
 		}
         if (type == 2){
-            db.get_captcha(account,(data)=>{
-                if (data == null || code != data.code){
-                    send(res, { errcode: 1, errmsg: "invalid code" });
-                    return;
-				}
-				db.delete_captcha(account);
-            })
+			let capthca_data = await db.get_captcha(account);
+			if (capthca_data == null || code != capthca_data.code){
+				send(res, { errcode: 1, errmsg: "invalid code" });
+				return;
+			}
+			db.delete_captcha(account);
         }
 		var account = "vivi_" + req.query.account;
 		var sign = crypto.md5(account + req.ip + config.ACCOUNT_PRI_KEY);

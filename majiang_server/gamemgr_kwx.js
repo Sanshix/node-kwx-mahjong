@@ -149,7 +149,7 @@ function new_deal(game, cb) {
 
         userMgr.sendMsg(uid, 'game_holds_update_push', act.holds);
 
-        userMgr.broacastInRoom('game_holds_len_push', {seatIndex: si, len: act.holds.length}, uid, false);
+        userMgr.broacastInRoom('game_holds_len_push', { seatIndex: si, len: act.holds.length }, uid, false);
 
         var numOfMJ = game.mahjongs.length;
         for (var i = 0; i < nums.length; i++) {
@@ -1397,7 +1397,7 @@ function getRoomInfo(uid) {
     return roomMgr.getRoom(roomId);
 }
 
-function doGameOver(game, userId, forceEnd) {
+async function doGameOver(game, userId, forceEnd) {
     var roomId = roomMgr.getUserRoom(userId);
     if (roomId == null) {
         return;
@@ -1435,7 +1435,7 @@ function doGameOver(game, userId, forceEnd) {
         }
 
         var fnGameOver = function () {
-            userMgr.broacastInRoom('game_over_push', {results: results, endinfo: endinfo, info: info}, userId, true);
+            userMgr.broacastInRoom('game_over_push', { results: results, endinfo: endinfo, info: info }, userId, true);
 
             //如果局数已够，则进行整体结算，并关闭房间
             if (isEnd) {
@@ -1474,61 +1474,60 @@ function doGameOver(game, userId, forceEnd) {
                 detail.score = sd.score + detail.gang;
             }
         }
-        db.get_water(roomInfo.org_id, async (water) => {
-            let water_average = parseInt(water / roomInfo.numOfSeats);
-            for (var i = 0; i < roomInfo.seats.length; ++i) {
-                var rs = roomInfo.seats[i];
-                var sd = game.gameSeats[i];
+        let water = await db.get_water(roomInfo.org_id1);
+        let water_average = parseInt(water / roomInfo.numOfSeats);
+        for (var i = 0; i < roomInfo.seats.length; ++i) {
+            var rs = roomInfo.seats[i];
+            var sd = game.gameSeats[i];
 
-                rs.ready = false;
-                rs.score += sd.score
-                rs.numZiMo += sd.numZiMo;
-                rs.numJiePao += sd.numJiePao;
-                rs.numDianPao += sd.numDianPao;
-                rs.numAnGang += sd.numAnGang;
-                rs.numMingGang += sd.numMingGang;
+            rs.ready = false;
+            rs.score += sd.score
+            rs.numZiMo += sd.numZiMo;
+            rs.numJiePao += sd.numJiePao;
+            rs.numDianPao += sd.numDianPao;
+            rs.numAnGang += sd.numAnGang;
+            rs.numMingGang += sd.numMingGang;
 
-                var userRT = {
-                    userId: sd.userId,
-                    actions: [],
-                    pengs: sd.pengs,
-                    wangangs: sd.wangangs,
-                    diangangs: sd.diangangs,
-                    angangs: sd.angangs,
-                    holds: sd.holds,
-                    score: sd.score,
-                    totalscore: rs.score,
-                    mingpai: sd.hasMingPai,
-                    firstmingpai: sd.firstMingPai,
-                    chajiao: sd.chajiao,
-                    peifu: sd.peifu,
-                    huinfo: sd.huInfo,
-                    piao: rs.dingpiao,
-                    detail: sd.detail,
-                    maima: sd.maima,
-                    hu: sd.hu,
-                }
-
-                for (var k in sd.actions) {
-                    userRT.actions[k] = {
-                        type: sd.actions[k].type,
-                    };
-
-                    if (sd.actions[k].fan) {
-                        userRT.actions[k].fan = sd.actions[k].fan;
-                    }
-                }
-
-                results.push(userRT);
-                if (roomInfo.org_id != 0) {
-                    update_coin(sd.userId, sd.score, water_average,roomInfo.org_id);
-                }
-                dbresult[i] = sd.detail.score;
-                delete gameSeatsOfUsers[sd.userId];
+            var userRT = {
+                userId: sd.userId,
+                actions: [],
+                pengs: sd.pengs,
+                wangangs: sd.wangangs,
+                diangangs: sd.diangangs,
+                angangs: sd.angangs,
+                holds: sd.holds,
+                score: sd.score,
+                totalscore: rs.score,
+                mingpai: sd.hasMingPai,
+                firstmingpai: sd.firstMingPai,
+                chajiao: sd.chajiao,
+                peifu: sd.peifu,
+                huinfo: sd.huInfo,
+                piao: rs.dingpiao,
+                detail: sd.detail,
+                maima: sd.maima,
+                hu: sd.hu,
             }
-        });
-        delete games[roomId];
 
+            for (var k in sd.actions) {
+                userRT.actions[k] = {
+                    type: sd.actions[k].type,
+                };
+
+                if (sd.actions[k].fan) {
+                    userRT.actions[k].fan = sd.actions[k].fan;
+                }
+            }
+
+            results.push(userRT);
+            if (roomInfo.org_id != 0) {
+                update_coin(sd.userId, sd.score, water_average, roomInfo.org_id);
+            }
+            dbresult[i] = sd.detail.score;
+            delete gameSeatsOfUsers[sd.userId];
+        }
+        delete games[roomId];
+        //console.log('测试L:', results);
         var old = roomInfo.nextButton;
 
         // 下一个庄家
@@ -1600,13 +1599,13 @@ async function update_coin(userid, coins, water, org_id) {
         let coin = parseInt(parent.water_ratio * (water / 100));
         if (parent.level == 1) {
             // all分给团长
-            if (index == 0){
+            if (index == 0) {
                 db.update_exp(parent.uuid, water, null);
                 break;
             }
             coin = water_spare;
         }
-        if (coin <= 0){
+        if (coin <= 0) {
             break;
         }
         console.log(`分茶水钱: uuid: ${parent.uuid}, coin: ${coin}`)
@@ -1617,7 +1616,7 @@ async function update_coin(userid, coins, water, org_id) {
 }
 
 function recordUserAction(game, seatData, type, target) {
-    var d = {type: type, targets: []};
+    var d = { type: type, targets: [] };
     if (target != null) {
         if (typeof (target) == 'number') {
             d.targets.push(target);
@@ -1969,7 +1968,7 @@ exports.begin = function (roomId) {
 
     var turnSeat = game.gameSeats[game.turn];
     userMgr.broacastInRoom('game_dice_push', game.dices, turnSeat.userId, true);
-    console.log(game.dices);
+    //console.log(game.dices);
 
     setTimeout(function () {
         new_deal(game, notify);
@@ -2018,7 +2017,7 @@ exports.chuPai = function (userId, pai) {
     game.chuPai = pai;
     recordGameAction(game, seatData.seatIndex, ACTION_CHUPAI, pai);
     checkCanTingPai(game, seatData);
-    userMgr.broacastInRoom('game_chupai_notify_push', {userId: seatData.userId, pai: pai}, seatData.userId, true);
+    userMgr.broacastInRoom('game_chupai_notify_push', { userId: seatData.userId, pai: pai }, seatData.userId, true);
 
     //检查是否有人要胡，要碰 要杠
     var hasActions = false;
@@ -2138,7 +2137,7 @@ exports.peng = function (userId) {
     recordGameAction(game, seatData.seatIndex, ACTION_PENG, pai);
 
     //广播通知其它玩家
-    userMgr.broacastInRoom('peng_notify_push', {userid: seatData.userId, pai: pai}, seatData.userId, true);
+    userMgr.broacastInRoom('peng_notify_push', { userid: seatData.userId, pai: pai }, seatData.userId, true);
 
     //碰的玩家打牌
     moveToNextUser(game, seatData.seatIndex);
@@ -2663,7 +2662,7 @@ exports.guo = function (userId) {
     //如果是已打出的牌，则需要通知
     if (game.chuPai >= 0) {
         var uid = game.gameSeats[game.turn].userId;
-        userMgr.broacastInRoom('guo_notify_push', {userId: uid, pai: game.chuPai}, seatData.userId, true);
+        userMgr.broacastInRoom('guo_notify_push', { userId: uid, pai: game.chuPai }, seatData.userId, true);
 
         var gs = game.gameSeats[game.turn];
         gs.folds.push(game.chuPai);
