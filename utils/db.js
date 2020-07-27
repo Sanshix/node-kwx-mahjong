@@ -411,7 +411,7 @@ exports.is_room_exist = function (roomId, callback) {
 exports.cost_gems = function (userid, cost, callback) {
     callback = callback == null ? nop : callback;
     var sql = 'UPDATE t_users SET gems = gems -' + cost + ' WHERE userid = ' + userid;
-    //console.log(sql);
+    console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(false);
@@ -741,15 +741,15 @@ exports.get_message = function (type, version, callback) {
 };
 
 
-exports.update_coin = function (uuid, coin, callback) {
+exports.update_coin = function (uuid, coin, org_id, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `update t_users set coins = coins+ ` + coin + ` where userid=` + uuid;
+    let sql = `update user_organization set score = score+${coin} where uuid=${uuid} and org_id = ${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
             callback(true);
         } else {
-            callback(null);
+            callback(false);
         }
     });
 }
@@ -762,7 +762,7 @@ exports.update_exp = function (uuid, exp, callback) {
         if (rows.affectedRows > 0) {
             callback(true);
         } else {
-            callback(null);
+            callback(false);
         }
     });
 }
@@ -876,6 +876,20 @@ exports.set_org_info = function (org_id, func_type_1, func_type_2, show_type, pu
     });
 }
 
+exports.set_org_conf = function (org_id, room_config, callback) {
+    callback = callback == null ? nop : callback;
+    let sql = `update organization set room_config='${room_config}' where id=${org_id}`;
+    //console.log(sql);
+    query(sql, function (err, rows) {
+        if (err) {
+            console.error(err);
+            callback(false)
+        } else {
+            callback(true);
+        }
+    });
+}
+
 
 exports.org_create = (name, uuid, callback) => {
     callback = callback == null ? nop : callback;
@@ -911,7 +925,7 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
     if (type == 2) {
         where += ` and a.parent_uuid =0`
     }
-    let sql = `select a.*,b.name,b.coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} `;
+    let sql = `select a.*,b.name,a.score as coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
@@ -1029,9 +1043,13 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
 }
 
 
-exports.async_get_user = async (uuid) => {
+exports.async_get_user = async (uuid,org_id) => {
     return new Promise((resolve, reject) => {
-        var sql = 'SELECT * FROM t_users WHERE userid = "' + uuid + '"';
+        if (org_id != 0){
+            var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id}`;
+        }else{
+            var sql = 'SELECT * FROM t_users WHERE userid = "' + uuid + '"';
+        }
         query(sql, function (err, rows, fields) {
             if (err) {
                 reject(err);
@@ -1046,9 +1064,26 @@ exports.async_get_user = async (uuid) => {
     })
 };
 
-exports.async_uuid_getUser = async (userid) => {
+exports.async_uuid_getUser = async (userid, org_id) => {
     return new Promise((resolve, reject) => {
-        var sql = 'SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE userid = "' + userid + '"';
+        var sql = `SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid =${userid} and b.org_id = ${org_id}`;
+        query(sql, function (err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                if (rows.length > 0) {
+                    resolve(rows[0]);
+                } else {
+                    resolve(null)
+                }
+            }
+        });
+    })
+};
+
+exports.async_account_getUser = async (account, org_id) => {
+    return new Promise((resolve, reject) => {
+        var sql = `SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.account ="${account}" and b.org_id = ${org_id}`;
         query(sql, function (err, rows, fields) {
             if (err) {
                 reject(err);
@@ -1075,6 +1110,34 @@ exports.get_captcha = async (mobile) => {
                 resolve(rows[0]);
             } else {
                 resolve(null);
+            }
+        });
+    });
+}
+
+exports.get_boss_id = async (org_id) => {
+    return new Promise((resolve, reject) => {
+        let sql = `select boss_uuid from organization where id = ${org_id} `;
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (rows.length > 0) {
+                resolve(rows[0].boss_uuid);
+            } else {
+                resolve(0);
+            }
+        });
+    });
+}
+
+exports.get_org_score = async (org_id,uuid) => {
+    return new Promise((resolve, reject) => {
+        let sql = `select score from user_organization where uuid = ${uuid} and org_id = ${org_id}`;
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (rows.length > 0) {
+                resolve(rows[0].score);
+            } else {
+                resolve(0);
             }
         });
     });

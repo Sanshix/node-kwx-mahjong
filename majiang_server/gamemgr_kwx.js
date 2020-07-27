@@ -1474,7 +1474,7 @@ async function doGameOver(game, userId, forceEnd) {
                 detail.score = sd.score + detail.gang;
             }
         }
-        let water = await db.get_water(roomInfo.org_id1);
+        let water = await db.get_water(roomInfo.org_id);
         let water_average = parseInt(water / roomInfo.numOfSeats);
         for (var i = 0; i < roomInfo.seats.length; ++i) {
             var rs = roomInfo.seats[i];
@@ -1569,7 +1569,7 @@ async function doGameOver(game, userId, forceEnd) {
                 if (roomInfo.org_id == 0) {
                     db.cost_gems(game.gameSeats[0].userId, cost);
                 } else {
-                    db.cost_gems(roomInfo.org_id, cost);
+                    db.cost_gems(roomInfo.conf.creator, cost);
                 }
 
             }
@@ -1583,7 +1583,7 @@ async function doGameOver(game, userId, forceEnd) {
 async function update_coin(userid, coins, water, org_id) {
     console.log('更新金币', userid, coins, water, org_id);
     coins = parseInt(coins - water);
-    db.update_coin(userid, coins, null);
+    db.update_coin(userid, coins, org_id,null);
     if (water == 0) {
         return true;
     }
@@ -2112,7 +2112,7 @@ exports.peng = function (userId) {
     var c = seatData.countMap[pai];
     if (c == null || c < 2) {
         console.log("pai:" + pai + ",count:" + c);
-        console.log(seatData.holds);
+       // console.log(seatData.holds);
         console.log("lack of mj.");
         return;
     }
@@ -2217,7 +2217,7 @@ function doGang(game, turnSeat, seatData, gangtype, numOfCnt, pai) {
     for (var i = 0; i < numOfCnt; ++i) {
         var index = seatData.holds.indexOf(pai);
         if (index == -1) {
-            console.log(seatData.holds);
+            //console.log(seatData.holds);
             console.log("can't find mj.");
             return;
         }
@@ -2353,9 +2353,9 @@ exports.ming = function (uid, data) {
     userMgr.broacastInRoom('ming_notify_push', data, uid, true);
 
     console.log("ming_notify_push");
-    console.log(data.kou);
-    console.log(data.tings);
-    console.log(sd.holds);
+    // console.log(data.kou);
+    // console.log(data.tings);
+    // console.log(sd.holds);
 
     if (game.firstMingPai < 0) {
         game.firstMingPai = sd.seatIndex;
@@ -2567,7 +2567,7 @@ exports.hu = function (userId) {
     if (isZimo) {
         if (game.conf.maima == 1 || (game.conf.maima >= 2 && seatData.hasMingPai)) {
             var pai = maiMa(game);
-            console.log('maima: ' + pai);
+            //console.log('maima: ' + pai);
             if (pai > 0) {
                 maima = {
                     pai: pai,

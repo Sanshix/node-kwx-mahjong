@@ -141,11 +141,14 @@ exports.createRoom = function(creator, roomConf, gems, org_id, ip,  port, callba
 			fnCreate();
 		} else {
 			creatingRooms[roomId] = true;
-			db.is_room_exist(roomId, function(ret) {
+			db.is_room_exist(roomId, async function(ret) {
 				if (ret) {
 					delete creatingRooms[roomId];
 					fnCreate();
 				} else {
+					if (org_id != 0 ){
+						creator = await db.get_boss_id(org_id);
+					}
 					var createTime = Math.ceil(Date.now()/1000);
 					var roomInfo = {
 						uuid: '',

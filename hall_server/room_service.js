@@ -2,6 +2,7 @@ var crypto = require('../utils/crypto');
 var express = require('express');
 var db = require('../utils/db');
 var http = require('../utils/http');
+var roomMgr = require("../majiang_server/roommgr");
 
 var app = express();
 
@@ -229,9 +230,11 @@ exports.dissolveRoom = function (roomId, fnCallback) {
                 dissolveRoomReq(serverinfo);
             } else {
                 fnCallback('空房间');
+                roomMgr.destroy(roomId)
             }
         } else {
             fnCallback('空房间');
+            roomMgr.destroy(roomId)
         }
     });
 };

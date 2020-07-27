@@ -146,7 +146,7 @@ app.get('/create_private_room', function (req, res) {
             return;
         }
         if (org_id != 0 && data.gems < 30) {
-            http.send(res, 1, "房卡不足30张");
+            //http.send(res, 1, "房卡不足30张");
             console.log(data.gems, '房卡不足30张')
             //return;
         }
@@ -158,11 +158,12 @@ app.get('/create_private_room', function (req, res) {
                 return;
             }
             console.log(account, userId, conf, org_id);
-            room_service.createRoom(account, userId, conf, org_id, function (err, roomId) {
+            room_service.createRoom(account, userId, conf, org_id, async function (err, roomId) {
                 if (err == 0 && roomId != null) {
-                    // if (org_id != 0) {
-                    //     return http.send(res, 0, "ok", { roomid: roomId });
-                    // }
+                    if (org_id != 0) {
+                        // return http.send(res, 0, "ok", { roomid: roomId });
+                        data.coins = await db.get_org_score(org_id,data.userid);
+                    }
                     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
@@ -206,11 +207,12 @@ app.get('/enter_private_room', function (req, res) {
             http.send(res, -1, "system error");
             return;
         }
-        db.get_room_data(roomId, function (room) {
+        db.get_room_data(roomId, async function (room) {
             if (!room) {
                 return http.send(res, -1, "not find room");
             }
             if (room.org_id != 0) {
+                data.coins = await db.get_org_score(room.org_id,data.userid);
                 let room_conf = JSON.parse(room.base_info);
                 let conditionCoin = room_service.switchPump(room_conf.maima, room_conf.baseScore);
                 console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
@@ -369,20 +371,47 @@ app.get('/update_coin', async function (req, res) {
     let coin = parseInt(req.query.coin);
     let org_id = req.query.org_id;
     // 验证
-    let user = await db.async_uuid_getUser(uuid);
+    let user = await db.async_uuid_getUser(uuid, org_id);
     if (!user) {
         return http.send(res, 1, '上分账户异常!', {})
     }
-    if ((user.coins + coin) < 0) {
+    if ((user.score + coin) < 0) {
         return http.send(res, 1, '积分更新后不能小于0', {})
     }
-    db.update_coin(uuid, coin, async (data) => {
-        if (data) {
-            let result = await db.async_get_user(uuid);
-            http.send(res, 0, 'ok', { result });
-        } else {
-            http.send(res, 1, 'handle error', {})
+    let parent_user = await db.async_account_getUser(req.query.account, org_id);
+    //`level` int(1) DEFAULT '7' COMMENT '社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家',
+    switch (parent_user.level) {
+        case 7:
+            return http.send(res, 1, '当前账号无此操作权限', {});
+        case 3, 5:
+            if (parent_user.score < coin) {
+                return http.send(res, 1, '积分不足', {})
+            }
+            parent_user.score -= coin;
+            break;
+        case 4, 6:
+            parent_user =  await db.async_uuid_getUser(user.parent_uuid, org_id);
+            if (parent_user.score < coin) {
+                return http.send(res, 1, '积分不足', {})
+            }
+            parent_user.score -= coin;
+            break;
+    }
+    db.update_coin(uuid, coin,org_id, async (data) => {
+        if (!data) {
+            return  http.send(res, 1, 'handle error1', {});
         }
+        if (parent_user.level == 1 || parent_user.level == 2){
+            let result = await db.async_get_user(uuid,org_id);
+            return http.send(res, 0, 'ok', { result });
+        }
+        db.update_coin(parent_user.userid, parent_user.score, org_id,  async (data) => {
+            if (!data) {
+                return  http.send(res, 1, 'handle error2', {});
+            }
+            let result = await db.async_get_user(uuid,org_id);
+            http.send(res, 0, 'ok', { result });
+        })
     })
 
 });
@@ -511,17 +540,43 @@ app.get('/org_set_config', function (req, res) {
         if (data[0].room_config) {
             data_conf = JSON.parse(data[0].room_config);
         }
-        // for (const key in data_conf) {
-            // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
-            //     data_conf.splice(key, 1);
-            // }
+        data_conf.push(json_room_conf)
+        for (let i=0;i<data_conf.length;i++) {
+        // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
+        //     data_conf.splice(key, 1);
         // }
-        if (data_conf.length > 4){
+            data_conf[i].id = i+1; 
+        }
+        if (data_conf.length > 5) {
             data_conf.shift();
         }
-        data_conf.push(json_room_conf)
-
+    
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
+            http.send(res, 0, 'ok', {});
+        })
+    })
+
+});
+
+// 删除社团玩法
+app.get('/org_del_config', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let org_id = req.query.org_id;
+    let conf_id = req.query.conf_id;
+    db.get_org_info(org_id, (data) => {
+        let data_conf = [];
+        if (data[0].room_config) {
+            data_conf = JSON.parse(data[0].room_config);
+        }
+        for (let i=0;i<data_conf.length;i++) {
+            if (data_conf[i].id == conf_id){
+                data_conf.splice(i, 1);
+                break;
+            }
+        }
+        db.set_org_conf(org_id, JSON.stringify(data_conf), (zxc) => {
             http.send(res, 0, 'ok', {});
         })
     })
@@ -582,7 +637,7 @@ app.get('/org_delete', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
-    let validator = await db.async_get_user(req.query.account)
+    let validator = await db.async_get_user(req.query.account,0)
     if (!validator || validator.level != 1) {
         return http.send(res, 1, '操作失败', {});
     }
@@ -699,11 +754,11 @@ app.get('/bind_mobile', function (req, res) {
 });
 
 
-app.use(function (err, req, res, next) {
-    //res.status(err.status || 500);
-    console.error(err, err.message);
-    return http.send(res, 1, 'server error', {})
-});
+// app.use(function (err, req, res, next) {
+//     //res.status(err.status || 500);
+//     console.error(err, err.message);
+//     return http.send(res, 1, 'server error', {})
+// });
 
 exports.start = function ($config) {
     config = $config;
