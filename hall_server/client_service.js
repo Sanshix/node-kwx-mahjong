@@ -146,8 +146,8 @@ app.get('/create_private_room', function (req, res) {
             return;
         }
         if (org_id != 0 && data.gems < 30) {
-            //http.send(res, 1, "房卡不足30张");
-            //console.log(data.gems, '房卡不足30张')
+            http.send(res, 1, "房卡不足30张");
+            console.log(data.gems, '房卡不足30张')
             //return;
         }
         var userId = data.userid;
@@ -160,9 +160,9 @@ app.get('/create_private_room', function (req, res) {
             console.log(account, userId, conf, org_id);
             room_service.createRoom(account, userId, conf, org_id, function (err, roomId) {
                 if (err == 0 && roomId != null) {
-                    if (org_id != 0) {
-                        return http.send(res, 0, "ok", { roomid: roomId });
-                    }
+                    // if (org_id != 0) {
+                    //     return http.send(res, 0, "ok", { roomid: roomId });
+                    // }
                     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
@@ -367,6 +367,7 @@ app.get('/update_coin', async function (req, res) {
     }
     let uuid = req.query.uuid;
     let coin = parseInt(req.query.coin);
+    let org_id = req.query.org_id;
     // 验证
     let user = await db.async_uuid_getUser(uuid);
     if (!user) {
@@ -408,6 +409,7 @@ app.get('/update_user_rank', async function (req, res) {
         }
     })
 });
+
 // 加入社团
 app.get('/join_org', function (req, res) {
     if (!check_account(req, res)) {

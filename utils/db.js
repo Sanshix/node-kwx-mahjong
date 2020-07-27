@@ -1048,7 +1048,7 @@ exports.async_get_user = async (uuid) => {
 
 exports.async_uuid_getUser = async (userid) => {
     return new Promise((resolve, reject) => {
-        var sql = 'SELECT * FROM t_users WHERE userid = "' + userid + '"';
+        var sql = 'SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE userid = "' + userid + '"';
         query(sql, function (err, rows, fields) {
             if (err) {
                 reject(err);
