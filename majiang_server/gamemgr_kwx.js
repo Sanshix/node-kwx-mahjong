@@ -1593,6 +1593,9 @@ async function update_coin(userid, coins, water, org_id) {
     for (let index = 0; index < 3; index++) {
         let parent = await db.get_parent(org_id, parent_id);
         if (!parent || parent == null) {
+            // 没有上级，直接全分给团长
+            let creator = await db.get_boss_id(org_id);
+            db.update_exp(creator, water, null);
             break;
         }
         // 按份额分
@@ -1606,7 +1609,7 @@ async function update_coin(userid, coins, water, org_id) {
             coin = water_spare;
         }
         if (coin <= 0) {
-            break;
+            continue;
         }
         console.log(`分茶水钱: uuid: ${parent.uuid}, coin: ${coin}`)
         db.update_exp(parent.uuid, coin, null);

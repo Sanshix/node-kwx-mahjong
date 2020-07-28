@@ -115,6 +115,7 @@ app.get('/enter_room', function(req, res) {
 });
 
 app.get('/dissolve_room', function(req, res) {
+	var sign = req.query.sign;
 	var roomId = req.query.roomid;
 	var md5 = crypto.md5(roomId + config.ROOM_PRI_KEY);
 	if (md5 != sign) {
