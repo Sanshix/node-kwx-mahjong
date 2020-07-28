@@ -379,22 +379,21 @@ app.get('/update_coin', async function (req, res) {
         return http.send(res, 1, '积分更新后不能小于0', {})
     }
     let parent_user = await db.async_account_getUser(req.query.account, org_id);
-    //`level` int(1) DEFAULT '7' COMMENT '社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家',
+    //`level`  '社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家',
     switch (parent_user.level) {
         case 7:
             return http.send(res, 1, '当前账号无此操作权限', {});
-        case 3, 5:
+            break;
+        case 3:  case 5:
             if (parent_user.score < coin) {
                 return http.send(res, 1, '积分不足', {})
             }
-            parent_user.score -= coin;
             break;
-        case 4, 6:
+        case 4:  case 6:
             parent_user =  await db.async_uuid_getUser(user.parent_uuid, org_id);
             if (parent_user.score < coin) {
                 return http.send(res, 1, '积分不足', {})
             }
-            parent_user.score -= coin;
             break;
     }
     db.update_coin(uuid, coin,org_id, async (data) => {
@@ -405,7 +404,7 @@ app.get('/update_coin', async function (req, res) {
             let result = await db.async_get_user(uuid,org_id);
             return http.send(res, 0, 'ok', { result });
         }
-        db.update_coin(parent_user.userid, parent_user.score, org_id,  async (data) => {
+        db.update_coin(parent_user.userid, -coin, org_id,  async (data) => {
             if (!data) {
                 return  http.send(res, 1, 'handle error2', {});
             }
