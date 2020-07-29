@@ -743,6 +743,9 @@ exports.get_message = function (type, version, callback) {
 
 exports.update_coin = function (uuid, coin, org_id, callback) {
     callback = callback == null ? nop : callback;
+    if (coin == 0){
+        callback(true);
+    }
     let sql = `update user_organization set score = score+${coin} where uuid=${uuid} and org_id = ${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
@@ -756,6 +759,9 @@ exports.update_coin = function (uuid, coin, org_id, callback) {
 
 exports.update_exp = function (uuid, exp, callback) {
     callback = callback == null ? nop : callback;
+    if (exp == 0){
+        callback(true);
+    }
     let sql = `update t_users set exp = exp+ ` + exp + ` where userid=` + uuid;
     console.log(sql);
     query(sql, function (err, rows) {
@@ -1012,7 +1018,7 @@ exports.get_parent = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
         let sql = `select b.* from user_organization a left join user_organization b on a.parent_uuid=b.uuid
                where a.uuid=${uuid} and b.org_id=${org_id} `;
-        console.log(sql);
+        //console.log(sql);
         query(sql, function (err, rows) {
             if (rows) {
                 return resolve(rows[0]);
@@ -1046,9 +1052,9 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
 exports.async_get_user = async (uuid,org_id) => {
     return new Promise((resolve, reject) => {
         if (org_id != 0){
-            var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id}`;
+            var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id}`;
         }else{
-            var sql = 'SELECT * FROM t_users WHERE userid = "' + uuid + '"';
+            var sql = `SELECT a.*,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid =${uuid} and b.org_id=${org_id}`;
         }
         query(sql, function (err, rows, fields) {
             if (err) {

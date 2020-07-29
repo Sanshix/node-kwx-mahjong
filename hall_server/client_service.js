@@ -249,7 +249,7 @@ app.get('/org_get_room_delet', function (req, res) {
     }
     let room_id = req.query.room_id;
     room_service.dissolveRoom(room_id, (cal_rs) => {
-        console.log('强制解散房间', cal_rs);
+       // console.log('强制解散房间', cal_rs);
         http.send(res, 0, 'ok', {});
     })
 });
@@ -287,7 +287,7 @@ app.get('/get_games_of_room', function (req, res) {
     }
 
     db.get_games_of_room(uuid, function (data) {
-        console.log(data);
+       // console.log(data);
         http.send(res, 0, "ok", { data: data });
     });
 });
@@ -534,6 +534,7 @@ app.get('/org_set_config', function (req, res) {
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
     let room_conf = req.query.conf;
+    console.log(room_conf);
     let json_room_conf = JSON.parse(room_conf);
     db.get_org_info(org_id, (data) => {
         let data_conf = [];
@@ -637,7 +638,7 @@ app.get('/org_delete', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
-    let validator = await db.async_get_user(req.query.account,0)
+    let validator = await db.async_get_user(req.query.uuid,req.query.org_id)
     if (!validator || validator.level != 1) {
         return http.send(res, 1, '操作失败', {});
     }

@@ -1435,6 +1435,7 @@ async function doGameOver(game, userId, forceEnd) {
         }
 
         var fnGameOver = function () {
+            //console.log(results);
             userMgr.broacastInRoom('game_over_push', { results: results, endinfo: endinfo, info: info }, userId, true);
 
             //如果局数已够，则进行整体结算，并关闭房间
@@ -1474,9 +1475,8 @@ async function doGameOver(game, userId, forceEnd) {
                 detail.score = sd.score + detail.gang;
             }
         }
-        if (forceEnd) {
-            let water = await db.get_water(roomInfo.org_id);
-            var water_average = parseFloat(water / roomInfo.numOfSeats);
+        if (roomInfo.numOfGames >= roomInfo.conf.maxGames) {
+            var water_average = await db.get_water(roomInfo.org_id);
         }else{
             var water_average = 0;
         }
@@ -1525,7 +1525,7 @@ async function doGameOver(game, userId, forceEnd) {
 
             results.push(userRT);
             if (roomInfo.org_id != 0) {
-                update_coin(sd.userId, sd.score, water_average, roomInfo.org_id);
+                update_coin(sd.userId, sd.detail.score, water_average, roomInfo.org_id);
             }
             dbresult[i] = sd.detail.score;
             delete gameSeatsOfUsers[sd.userId];
@@ -1607,7 +1607,7 @@ async function update_coin(userid, coins, water, org_id) {
         if (parent.level == 1) {
             // all分给团长
             if (index == 0) {
-                db.update_exp(parent.uuid, water, null);
+                db.update_exp(parent.uuid, water_spare, null);
                 break;
             }
             coin = water_spare;

@@ -171,7 +171,7 @@ function update() {
 				}
 
 				if (data.ip != null) {
-					serverIp = data.ip;
+					serverIp = data.clientip;
 				}
 			} else {
 				lastTickTime = 0;

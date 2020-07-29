@@ -255,7 +255,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 		if (exports.getUserRoom(userId) == roomId) {
 			return 0;
 		}
-		console.log('enterRoom_start',room);
+	//	console.log('enterRoom_start',room);
 		for (var i = 0; i < room.numOfSeats; ++i) {
 			var seat = room.seats[i];
 			if (seat.userId <= 0) {
@@ -269,7 +269,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 					seat.score = parseInt(coins);
 					console.log('coins:',coins);
 				}
-				console.log('enterRoom_end',room);
+			//	console.log('enterRoom_end',room);
 				// 更新coin
 				db.update_seat_info(roomId, i, seat.userId, coins, seat.name);
 				return 0;
@@ -282,7 +282,7 @@ exports.enterRoom = function(roomId, userId, userName,coins, callback) {
 	var room = rooms[roomId];
 	if (room) {
 		var ret = fnTakeSeat(room);
-		console.log('enterRoom_over',room);
+		//console.log('enterRoom_over',room);
 		rooms[roomId] = room;
 		callback(ret);
 	} else {

@@ -160,7 +160,7 @@ exports.enterRoom = function (userId, name, coins, roomId, fnCallback) {
 
     var enterRoomReq = function (serverinfo) {
         http.get(serverinfo.ip, serverinfo.httpPort, "/enter_room", reqdata, function (ret, data) {
-            console.log(data);
+           // console.log(data);
             if (ret) {
                 if (data.errcode == 0) {
                     db.set_room_id_of_user(userId, roomId, function (ret) {
@@ -193,6 +193,7 @@ exports.enterRoom = function (userId, name, coins, roomId, fnCallback) {
         if (ret) {
             var id = ip + ":" + port;
             var serverinfo = serverMap[id];
+            console.log(serverMap,id);
             if (serverinfo != null) {
                 checkRoomIsRuning(serverinfo, roomId, function (isRuning) {
                     if (isRuning) {
@@ -225,15 +226,16 @@ exports.dissolveRoom = function (roomId, fnCallback) {
     db.get_room_addr(roomId, function (ret, ip, port) {
         if (ret) {
             var id = ip + ":" + port;
-            var serverinfo = serverMap[id];
+           // var serverinfo = serverMap[id];
+           var serverinfo = serverMap[0];
             if (serverinfo != null) {
                 dissolveRoomReq(serverinfo);
             } else {
-                fnCallback('空房间');
+                fnCallback('空房间1');
                 roomMgr.destroy(roomId)
             }
         } else {
-            fnCallback('空房间');
+            fnCallback('空房间2');
             roomMgr.destroy(roomId)
         }
     });

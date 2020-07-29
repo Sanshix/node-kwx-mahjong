@@ -226,12 +226,12 @@ app.get('/wechat_auth', function(req, res) {
 			var access_token = data.access_token;
 			var openid = data.openid;
 			if (!access_token || !openid){
-				console.log(access_token, openid)
+				//console.log(access_token, openid)
 				return send(res, { errcode: -1, errmsg: "param err." });
 			}
 			get_state_info(access_token, openid, function(suc2, data2) {
 				if (suc2) {
-					console.log(data2);
+					//console.log(data2);
 					var openid = data2.openid;
 					var nickname = data2.nickname;
 					var sex = data2.sex;

@@ -67,7 +67,7 @@ exports.start = function(config, mgr) {
 
 			var userData = null;
 			var seats = [];
-			console.log('ROOM',roomInfo);
+			//console.log('ROOM',roomInfo);
 			for (var i = 0; i < roomInfo.seats.length; ++i) {
 				var rs = roomInfo.seats[i];
 				var uid = rs.userId;
