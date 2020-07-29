@@ -767,9 +767,9 @@ exports.update_exp = function (uuid, exp, callback) {
     });
 }
 
-exports.update_rank = function (uuid, level, org_id, callback) {
+exports.update_rank = function (to_uuid,uuid, level, org_id, callback) {
     callback = callback == null ? nop : callback;
-    let sql = `update user_organization set level =` + level + ` where uuid=${uuid} and org_id=${org_id}`;
+    let sql = `update user_organization set level=${level} ,parent_uuid=${uuid} where uuid=${to_uuid} and org_id=${org_id}`;
     //console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {

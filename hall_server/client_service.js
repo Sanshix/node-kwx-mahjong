@@ -138,6 +138,7 @@ app.get('/create_private_room', function (req, res) {
     data.account = null;
     data.sign = null;
     var conf = data.conf;
+    console.log(conf);
     let json_conf = JSON.parse(conf);
     var org_id = json_conf.org_id || 0;
     db.get_user_data(account, function (data) {
@@ -429,7 +430,7 @@ app.get('/update_user_rank', async function (req, res) {
     if (!validator || level == 1) {
         return http.send(res, 1, '权限不足', {});
     }
-    db.update_rank(to_uuid, level, org_id, (data) => {
+    db.update_rank(to_uuid, uuid, level, org_id, (data) => {
         if (data) {
             http.send(res, 0, 'ok', {});
         } else {

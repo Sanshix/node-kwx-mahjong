@@ -1474,8 +1474,12 @@ async function doGameOver(game, userId, forceEnd) {
                 detail.score = sd.score + detail.gang;
             }
         }
-        let water = await db.get_water(roomInfo.org_id);
-        let water_average = parseInt(water / roomInfo.numOfSeats);
+        if (forceEnd) {
+            let water = await db.get_water(roomInfo.org_id);
+            var water_average = parseFloat(water / roomInfo.numOfSeats);
+        }else{
+            var water_average = 0;
+        }
         for (var i = 0; i < roomInfo.seats.length; ++i) {
             var rs = roomInfo.seats[i];
             var sd = game.gameSeats[i];
@@ -1582,7 +1586,7 @@ async function doGameOver(game, userId, forceEnd) {
 
 async function update_coin(userid, coins, water, org_id) {
     console.log('更新金币', userid, coins, water, org_id);
-    coins = parseInt(coins - water);
+    coins = parseFloat(coins - water);
     db.update_coin(userid, coins, org_id,null);
     if (water == 0) {
         return true;
@@ -1595,11 +1599,11 @@ async function update_coin(userid, coins, water, org_id) {
         if (!parent || parent == null) {
             // 没有上级，直接全分给团长
             let creator = await db.get_boss_id(org_id);
-            db.update_exp(creator, water, null);
+            db.update_exp(creator, water_spare, null);
             break;
         }
         // 按份额分
-        let coin = parseInt(parent.water_ratio * (water / 100));
+        let coin = parseFloat(parent.water_ratio * (water / 100));
         if (parent.level == 1) {
             // all分给团长
             if (index == 0) {
