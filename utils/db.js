@@ -592,7 +592,7 @@ exports.delete_room = function (roomId, callback) {
     }
     var sql = "DELETE FROM t_rooms WHERE id = '{0}'";
     sql = sql.format(roomId);
-    //console.log(sql);
+    console.log(sql);
     query(sql, function (err, rows, fields) {
         if (err) {
             callback(false);

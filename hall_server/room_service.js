@@ -53,7 +53,7 @@ app.get('/register_gs', function (req, res) {
         load: load
     };
 
-    http.send(res, 0, "ok", {ip: ip});
+    http.send(res, 0, "ok", {ip: clientip});
     console.log("game server registered.\n\tid:" + id + "\n\taddr:" + ip + "\n\thttp port:" + httpPort + "\n\tsocket clientport:" + clientport);
 
     var reqdata = {
@@ -226,8 +226,8 @@ exports.dissolveRoom = function (roomId, fnCallback) {
     db.get_room_addr(roomId, function (ret, ip, port) {
         if (ret) {
             var id = ip + ":" + port;
-           // var serverinfo = serverMap[id];
-           var serverinfo = serverMap[0];
+            var serverinfo = serverMap[id];
+           //var serverinfo = serverMap[0];
             if (serverinfo != null) {
                 dissolveRoomReq(serverinfo);
             } else {
