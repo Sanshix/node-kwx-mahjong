@@ -262,7 +262,7 @@ function checkCanAnGang(game, seatData) {
         var pai = parseInt(key);
         var c = seatData.countMap[key];
         if (c != null && c == 4) {
-            if (!seatData.hasMingPai || seatData.kou.indexOf(pai) != -1) {
+            if (!seatData.hasMingPai && seatData.kou.indexOf(pai) != -1) {
                 seatData.canGang = true;
                 seatData.gangPai.push(pai);
             }
