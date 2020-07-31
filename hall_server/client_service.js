@@ -249,7 +249,8 @@ app.get('/org_get_room_delet', function (req, res) {
     }
     let room_id = req.query.room_id;
     room_service.dissolveRoom(room_id, (cal_rs) => {
-       // console.log('强制解散房间', cal_rs);
+        console.log('强制解散房间', cal_rs);
+        db.delete_room(room_id);
         http.send(res, 0, 'ok', {});
     })
 });

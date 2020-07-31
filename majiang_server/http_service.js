@@ -170,9 +170,10 @@ function update() {
 					console.log(data.errmsg);
 				}
 
-				if (data.ip != null) {
-					serverIp = data.ip;
-				}
+				// if (data.ip != null) {
+				// 	serverIp = data.ip;
+				// }
+				serverIp = data.clientip;
 			} else {
 				lastTickTime = 0;
 			}
