@@ -40,7 +40,7 @@ app.get('/register_gs', function (req, res) {
         }
 
         info.load = load;
-        http.send(res, 0, "ok", {ip: ip});
+        http.send(res, 0, "ok", {ip: clientip});
         return;
     }
 
@@ -193,7 +193,7 @@ exports.enterRoom = function (userId, name, coins, roomId, fnCallback) {
         if (ret) {
             var id = ip + ":" + port;
             var serverinfo = serverMap[id];
-            console.log(serverMap,id);
+            //console.log(serverMap,id);
             if (serverinfo != null) {
                 checkRoomIsRuning(serverinfo, roomId, function (isRuning) {
                     if (isRuning) {

@@ -217,9 +217,7 @@ exports.destroy = function(roomId) {
 	if (roomInfo == null) {
 		return;
 	}
-
 	var nSeats = roomInfo.numOfSeats;
-
 	for (var i = 0; i < nSeats; ++i) {
 		var userId = roomInfo.seats[i].userId;
 		if (userId > 0) {
@@ -232,6 +230,18 @@ exports.destroy = function(roomId) {
 	totalRooms--;
 	db.delete_room(roomId);
 }
+
+// 强制解散
+exports.force_destroy = function(roomId) {
+	var gameMgr = getGameMgr('kwx');
+	if (!gameMgr) {
+		console.log('get game mgr fail');
+		return null;
+	}
+	
+	gameMgr.doDissolve(roomId);
+}
+
 
 exports.getTotalRooms = function() {
 	return totalRooms;

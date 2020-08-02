@@ -262,7 +262,7 @@ function checkCanAnGang(game, seatData) {
         var pai = parseInt(key);
         var c = seatData.countMap[key];
         if (c != null && c == 4) {
-            if (!seatData.hasMingPai && seatData.kou.indexOf(pai) != -1) {
+            if (!seatData.hasMingPai || seatData.kou.indexOf(pai) != -1) {
                 seatData.canGang = true;
                 seatData.gangPai.push(pai);
             }
@@ -271,7 +271,7 @@ function checkCanAnGang(game, seatData) {
 }
 
 //检查是否可以弯杠(自己摸起来的时候)
-function checkCanWanGang(game, seatData) {
+function checkCanWanGang(game, seatData, do_pai) {
     //如果没有牌了，则不能再杠
     if (game.mahjongs.length <= game.currentIndex) {
         return;
@@ -280,10 +280,19 @@ function checkCanWanGang(game, seatData) {
     //从碰过的牌中选
     for (var i = 0; i < seatData.pengs.length; ++i) {
         var pai = seatData.pengs[i];
+        if (seatData.hasMingPai) {
+            if (do_pai == pai){
+                seatData.canGang = true;
+                seatData.gangPai.push(pai);
+                break;
+            }
+            continue;
+        }
         if (seatData.countMap[pai] == 1) {
             seatData.canGang = true;
             seatData.gangPai.push(pai);
         }
+        
     }
 }
 
@@ -1436,6 +1445,9 @@ async function doGameOver(game, userId, forceEnd) {
 
         var fnGameOver = function () {
             //console.log(results);
+            if (results.length == 0 && isEnd){
+                userMgr.broacastAllInRoom('dispress_push', {}, roomId);
+            }
             userMgr.broacastInRoom('game_over_push', { results: results, endinfo: endinfo, info: info }, userId, true);
 
             //如果局数已够，则进行整体结算，并关闭房间

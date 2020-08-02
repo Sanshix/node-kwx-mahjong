@@ -122,9 +122,11 @@ app.get('/dissolve_room', function(req, res) {
 		http.send(res, 2, "sign check failed.");
 		return;
 	}
-	userMgr.broacastAllInRoom('dissolve_done_push', {}, roomId);
-	userMgr.kickAllInRoom(roomId);
-	roomMgr.destroy(roomId);
+	//userMgr.broacastAllInRoom('dispress_push', {}, roomId);
+	// userMgr.kickAllInRoom(roomId);
+	var roomInfo = roomMgr.getRoom(roomId);
+	roomInfo.dissolveDone = true;
+	roomMgr.force_destroy(roomId);
 	http.send(res, 0, "ok");
 });
 
@@ -170,10 +172,10 @@ function update() {
 					console.log(data.errmsg);
 				}
 
-				// if (data.ip != null) {
-				// 	serverIp = data.ip;
-				// }
-				serverIp = data.clientip;
+				if (data.ip != null) {
+					serverIp = data.ip;
+				}
+				//serverIp = data.ip;
 			} else {
 				lastTickTime = 0;
 			}
