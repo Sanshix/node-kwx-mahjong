@@ -755,6 +755,20 @@ app.get('/bind_mobile', function (req, res) {
     })
 });
 
+// 提取奖励
+app.get('/receive_goods', async function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let org_id = req.query.org_id;
+    let user = await db.async_uuid_getUser(uuid, org_id);
+    if (!user || user.level == 7) {
+        return http.send(res, 1, '操作异常!', {})
+    }
+    // TODO 转化数据
+    http.send(res, 0, 'ok', {});
+});
 
 // app.use(function (err, req, res, next) {
 //     //res.status(err.status || 500);

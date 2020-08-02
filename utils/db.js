@@ -931,7 +931,7 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
     if (type == 2) {
         where += ` and a.parent_uuid =0`
     }
-    let sql = `select a.*,b.name,a.score as coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
+    let sql = `select a.*,b.name,a.score as coins,b.exp as goal from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
