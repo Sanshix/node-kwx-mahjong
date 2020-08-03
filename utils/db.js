@@ -757,12 +757,12 @@ exports.update_coin = function (uuid, coin, org_id, callback) {
     });
 }
 
-exports.update_exp = function (uuid, exp, callback) {
+exports.update_exp = function (uuid, exp, org_id, callback) {
     callback = callback == null ? nop : callback;
     if (exp == 0){
         callback(true);
     }
-    let sql = `update t_users set exp = exp+ ` + exp + ` where userid=` + uuid;
+    let sql = `update user_organization set goal = goal+${exp} where uuid=${uuid} and org_id = ${org_id}`;
     console.log(sql);
     query(sql, function (err, rows) {
         if (rows.affectedRows > 0) {
@@ -1016,7 +1016,7 @@ exports.get_water = async (org_id) => {
 
 exports.get_parent = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
-        let sql = `select b.* from user_organization a left join user_organization b on a.parent_uuid=b.uuid
+        let sql = `select b.*,a.level as my_level,a.water_ratio as my_water from user_organization a left join user_organization b on a.parent_uuid=b.uuid
                where a.uuid=${uuid} and b.org_id=${org_id} `;
         //console.log(sql);
         query(sql, function (err, rows) {

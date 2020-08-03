@@ -213,6 +213,10 @@ app.get('/enter_private_room', function (req, res) {
                 return http.send(res, -1, "not find room");
             }
             if (room.org_id != 0) {
+                let user = await db.async_uuid_getUser(data.userid,room.org_id);
+                if (user.level == 1 || user.level == 3 ){
+                    return http.send(res, -1, "团长或分团长无法加入游戏！");
+                }
                 data.coins = await db.get_org_score(room.org_id,data.userid);
                 let room_conf = JSON.parse(room.base_info);
                 let conditionCoin = room_service.switchPump(room_conf.maima, room_conf.baseScore);
@@ -766,7 +770,7 @@ app.get('/receive_goods', async function (req, res) {
     if (!user || user.level == 7) {
         return http.send(res, 1, '操作异常!', {})
     }
-    db.conversion_goal(uuid, mobile, (data) => {
+    db.conversion_goal(uuid, org_id, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });

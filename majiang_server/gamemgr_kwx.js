@@ -1135,10 +1135,11 @@ function calculateResult(game, roomInfo) {
                 var maima = sd.maima;
                 var maScore = 0;
                 if (maima != null) {
-                    maScore = maima.fan;
+                    maima.forEach(element => {
+                        maScore += maima.fan;
+                    });
                     tips.push('买马+' + maScore);
                 }
-
                 //收所有人的钱
                 for (var t = 0; t < game.gameSeats.length; t++) {
                     if (t == i) {
@@ -1611,15 +1612,19 @@ async function update_coin(userid, coins, water, org_id) {
         if (!parent || parent == null) {
             // 没有上级，直接全分给团长
             let creator = await db.get_boss_id(org_id);
-            db.update_exp(creator, water_spare, null);
+            db.update_exp(creator, water_spare, org_id, null);
             break;
         }
+        let water_ratio = parent.water_ratio;
+        if (index == 0 && parent.my_level == 5){
+            water_ratio = parent.my_water;
+        }
         // 按份额分
-        let coin = parseFloat(parent.water_ratio * (water / 100));
+        let coin = parseFloat(water_ratio * (water / 100));
         if (parent.level == 1) {
             // all分给团长
             if (index == 0) {
-                db.update_exp(parent.uuid, water_spare, null);
+                db.update_exp(parent.uuid, water_spare, org_id, null);
                 break;
             }
             coin = water_spare;
@@ -1628,8 +1633,10 @@ async function update_coin(userid, coins, water, org_id) {
             continue;
         }
         console.log(`分茶水钱: uuid: ${parent.uuid}, coin: ${coin}`)
-        db.update_exp(parent.uuid, coin, null);
-        parent_id = parent.uuid;
+        db.update_exp(parent.uuid, coin, org_id, null);
+        if (index != 0 && parent.my_level != 5){
+            parent_id = parent.uuid;
+        }
         water_spare -= coin;
     }
 }
@@ -2582,17 +2589,35 @@ exports.hu = function (userId) {
     seatData.isHaiDiHu = game.currentIndex == game.mahjongs.length;
 
     var maima = null;
+   
+    
+    var mysym_func = (pai)=>{
+        if (pai >= 0 && pai <=3) {
+            // 0~3 1筒
+           return Math.floor(Math.random() * (35 - 4 + 1)) + 4
+        }else if (pai >=36 && pai <= 39){
+            // 36~39 1条
+             return Math.floor(Math.random() * (83 - 40 + 1)) + 40
+        }
+        return false;
+    }
 
     if (isZimo) {
         if (game.conf.maima == 1 || (game.conf.maima >= 2 && seatData.hasMingPai)) {
             var pai = maiMa(game);
             //console.log('maima: ' + pai);
             if (pai > 0) {
-                maima = {
+                maima = [{
                     pai: pai,
                     fan: getMaScore(pai),
-                };
-
+                }];
+                let maima_pai = mysym_func(pai);
+                if (maima_pai){
+                    maima.push({
+                        pai: maima_pai,
+                        fan: getMaScore(maima_pai),
+                    })
+                }
                 seatData.maima = maima;
             }
         }
@@ -2914,6 +2939,7 @@ exports.parseConf = function (roomConf, conf) {
         conf.chajiao = roomConf.chajiao;
     } else if (type == 'yckwx') {
         conf.pqmb = roomConf.pqmb;
+        conf.mysym = roomConf.mysym || false;
     }
     conf.ipForbid = roomConf.ipForbid;
     conf.second9 = roomConf.second9;
