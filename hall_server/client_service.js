@@ -766,8 +766,9 @@ app.get('/receive_goods', async function (req, res) {
     if (!user || user.level == 7) {
         return http.send(res, 1, '操作异常!', {})
     }
-    // TODO 转化数据
-    http.send(res, 0, 'ok', {});
+    db.conversion_goal(uuid, mobile, (data) => {
+        http.send(res, 0, 'ok', {});
+    })
 });
 
 // app.use(function (err, req, res, next) {

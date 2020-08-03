@@ -931,7 +931,7 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
     if (type == 2) {
         where += ` and a.parent_uuid =0`
     }
-    let sql = `select a.*,b.name,a.score as coins,b.exp as goal from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
+    let sql = `select a.*,b.name,a.score as coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
@@ -1161,6 +1161,15 @@ exports.authentication = (uuid, name, id_card, callback) => {
 exports.bind_mobile = (uuid, mobile, callback) => {
     callback = callback == null ? nop : callback;
     let sql = `update t_users set mobile =${mobile} where userid=${uuid}`;
+    //console.log(sql);
+    query(sql, function (err, rows) {
+        callback(true);
+    });
+}
+
+exports.conversion_goal = (uuid, org_id, callback) => {
+    callback = callback == null ? nop : callback;
+    let sql = `update user_organization set goal =0,score=score+goal where uuid=${uuid} and org_id=${org_id}`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
