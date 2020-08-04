@@ -388,7 +388,7 @@ app.get('/update_coin', async function (req, res) {
         return http.send(res, 1, '积分余额不能小于0', {})
     }
     let parent_user = await db.async_account_getUser(req.query.account, org_id);
-    if (user.parent_uuid != parent_user.uuid){
+    if (user.parent_uuid != parent_user.uuid && parent_user.level !=1){
         return http.send(res, 1, '没有操作权限', {})
     }
     //`level`  '社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家',

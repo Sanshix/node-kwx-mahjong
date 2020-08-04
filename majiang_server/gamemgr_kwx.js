@@ -1618,6 +1618,7 @@ async function update_coin(userid, coins, water, org_id) {
         let water_ratio = parent.water_ratio;
         if (index == 0 && parent.my_level == 5){
             water_ratio = parent.my_water;
+            parent.uuid = parent.my_uuid;
         }
         // 按份额分
         let coin = parseFloat(water_ratio * (water / 100));
@@ -1632,7 +1633,7 @@ async function update_coin(userid, coins, water, org_id) {
         if (coin <= 0) {
             continue;
         }
-        console.log(`分茶水钱: uuid: ${parent.uuid}, coin: ${coin}`)
+        console.log(`分茶水钱: uuid: ${parent.uuid},level:${parent.level} coin: ${coin}`)
         db.update_exp(parent.uuid, coin, org_id, null);
         if (index != 0 && parent.my_level != 5){
             parent_id = parent.uuid;

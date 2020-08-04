@@ -1016,7 +1016,7 @@ exports.get_water = async (org_id) => {
 
 exports.get_parent = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
-        let sql = `select b.*,a.level as my_level,a.water_ratio as my_water from user_organization a left join user_organization b on a.parent_uuid=b.uuid
+        let sql = `select b.*,a.level as my_level,a.water_ratio as my_water,a.uuid as my_uuid from user_organization a left join user_organization b on a.parent_uuid=b.uuid
                where a.uuid=${uuid} and b.org_id=${org_id} `;
         //console.log(sql);
         query(sql, function (err, rows) {
@@ -1169,7 +1169,7 @@ exports.bind_mobile = (uuid, mobile, callback) => {
 
 exports.conversion_goal = (uuid, org_id, callback) => {
     callback = callback == null ? nop : callback;
-    let sql = `update user_organization set goal =0,score=score+goal where uuid=${uuid} and org_id=${org_id}`;
+    let sql = `update user_organization set score=score+goal, goal=0 where uuid=${uuid} and org_id=${org_id}`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
