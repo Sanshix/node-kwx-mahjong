@@ -32,7 +32,6 @@ function shuffle(game) {
             count++;
         }
     }
-
     //条
     for (var i = 9; i < 18; ++i) {
         for (var c = 0; c < 4; ++c) {
@@ -1136,7 +1135,7 @@ function calculateResult(game, roomInfo) {
                 var maScore = 0;
                 if (maima != null) {
                     maima.forEach(element => {
-                        maScore += maima.fan;
+                        maScore += element.fan;
                     });
                     tips.push('买马+' + maScore);
                 }
@@ -1616,16 +1615,17 @@ async function update_coin(userid, coins, water, org_id) {
             break;
         }
         let water_ratio = parent.water_ratio;
+        let parent_uuid = parent.uuid;
         if (index == 0 && parent.my_level == 5){
             water_ratio = parent.my_water;
-            parent.uuid = parent.my_uuid;
+            parent_uuid = parent.my_uuid;
         }
         // 按份额分
         let coin = parseFloat(water_ratio * (water / 100));
         if (parent.level == 1) {
             // all分给团长
             if (index == 0) {
-                db.update_exp(parent.uuid, water_spare, org_id, null);
+                db.update_exp(parent_uuid, water_spare, org_id, null);
                 break;
             }
             coin = water_spare;
@@ -1633,11 +1633,9 @@ async function update_coin(userid, coins, water, org_id) {
         if (coin <= 0) {
             continue;
         }
-        console.log(`分茶水钱: uuid: ${parent.uuid},level:${parent.level} coin: ${coin}`)
-        db.update_exp(parent.uuid, coin, org_id, null);
-        if (index != 0 && parent.my_level != 5){
-            parent_id = parent.uuid;
-        }
+        console.log(`分茶水钱: uuid: ${parent_uuid},level:${parent.level} coin: ${coin}`)
+        db.update_exp(parent_uuid, coin, org_id, null);
+        parent_id = parent_uuid;
         water_spare -= coin;
     }
 }
@@ -2593,12 +2591,16 @@ exports.hu = function (userId) {
    
     
     var mysym_func = (pai)=>{
-        if (pai >= 0 && pai <=3) {
-            // 0~3 1筒
-           return Math.floor(Math.random() * (35 - 4 + 1)) + 4
-        }else if (pai >=36 && pai <= 39){
-            // 36~39 1条
-             return Math.floor(Math.random() * (83 - 40 + 1)) + 40
+        if (pai == 0 ) {
+            // 1筒
+           return Math.floor(Math.random() * 26) + 1
+        }else if (pai ==9){
+            // 1条 
+             let ma_pai = Math.floor(Math.random() * 27);
+             if (ma_pai == 9){
+                 ma_pai++;
+             }
+             return ma_pai;
         }
         return false;
     }
@@ -2612,12 +2614,14 @@ exports.hu = function (userId) {
                     pai: pai,
                     fan: getMaScore(pai),
                 }];
-                let maima_pai = mysym_func(pai);
-                if (maima_pai){
-                    maima.push({
-                        pai: maima_pai,
-                        fan: getMaScore(maima_pai),
-                    })
+                if (game.conf.mysym){
+                    let maima_pai = mysym_func(pai);
+                    if (maima_pai){
+                        maima.push({
+                            pai: maima_pai,
+                            fan: getMaScore(maima_pai),
+                        })
+                    }
                 }
                 seatData.maima = maima;
             }

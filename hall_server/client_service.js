@@ -163,8 +163,14 @@ app.get('/create_private_room', function (req, res) {
                 if (err == 0 && roomId != null) {
                     if (org_id != 0) {
                         // return http.send(res, 0, "ok", { roomid: roomId });
-                        data.coins = await db.get_org_score(org_id,data.userid);
+                        data.coins = await db.get_org_score(org_id, data.userid);
+                        let conditionCoin = room_service.switchPump(json_conf.maima, json_conf.baseScore);
+                        console.log(`${data.userid} : 我的积分：${data.coins}, 限制积分：${conditionCoin}`)
+                        if (data.coins < conditionCoin) {
+                            return http.send(res, -1, `积分不足! 该房间限制积分大于等于${conditionCoin}`);
+                        }
                     }
+
                     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
@@ -208,19 +214,19 @@ app.get('/enter_private_room', function (req, res) {
             http.send(res, -1, "system error");
             return;
         }
-        if (data.roomid != null){
-            return http.send(res,-1,"user is playing in room now.");
-        }
+        // if (data.roomid != null){
+        //     return http.send(res,-1,"user is playing in room now.");
+        // }
         db.get_room_data(roomId, async function (room) {
             if (!room) {
                 return http.send(res, -1, "not find room");
             }
             if (room.org_id != 0) {
-                let user = await db.async_uuid_getUser(data.userid,room.org_id);
-                if (user.level == 1 || user.level == 3 ){
-                    return http.send(res, -1, "团长或分团长无法加入游戏！");
-                }
-                data.coins = await db.get_org_score(room.org_id,data.userid);
+                let user = await db.async_uuid_getUser(data.userid, room.org_id);
+                // if (user.level == 1 || user.level == 3) {
+                //     return http.send(res, -1, "团长或分团长无法加入游戏！");
+                // }
+                data.coins = await db.get_org_score(room.org_id, data.userid);
                 let room_conf = JSON.parse(room.base_info);
                 let conditionCoin = room_service.switchPump(room_conf.maima, room_conf.baseScore);
                 console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
@@ -295,7 +301,7 @@ app.get('/get_games_of_room', function (req, res) {
     }
 
     db.get_games_of_room(uuid, function (data) {
-       // console.log(data);
+        // console.log(data);
         http.send(res, 0, "ok", { data: data });
     });
 });
@@ -388,7 +394,7 @@ app.get('/update_coin', async function (req, res) {
         return http.send(res, 1, '积分余额不能小于0', {})
     }
     let parent_user = await db.async_account_getUser(req.query.account, org_id);
-    if (user.parent_uuid != parent_user.uuid && parent_user.level !=1){
+    if (user.parent_uuid != parent_user.uuid && parent_user.level != 1) {
         return http.send(res, 1, '没有操作权限', {})
     }
     //`level`  '社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家',
@@ -396,31 +402,31 @@ app.get('/update_coin', async function (req, res) {
         case 7:
             return http.send(res, 1, '当前账号无此操作权限', {});
             break;
-        case 3:  case 5:
+        case 3: case 5:
             if (parent_user.score < coin) {
                 return http.send(res, 1, '积分不足', {})
             }
             break;
-        case 4:  case 6:
-            parent_user =  await db.async_uuid_getUser(user.parent_uuid, org_id);
+        case 4: case 6:
+            parent_user = await db.async_uuid_getUser(user.parent_uuid, org_id);
             if (parent_user.score < coin) {
                 return http.send(res, 1, '积分不足', {})
             }
             break;
     }
-    db.update_coin(uuid, coin,org_id, async (data) => {
+    db.update_coin(uuid, coin, org_id, async (data) => {
         if (!data) {
-            return  http.send(res, 1, 'handle error1', {});
+            return http.send(res, 1, 'handle error1', {});
         }
-        if (parent_user.level == 1 || parent_user.level == 2){
-            let result = await db.async_get_user(uuid,org_id);
+        if (parent_user.level == 1 || parent_user.level == 2) {
+            let result = await db.async_get_user(uuid, org_id);
             return http.send(res, 0, 'ok', { result });
         }
-        db.update_coin(parent_user.userid, -coin, org_id,  async (data) => {
+        db.update_coin(parent_user.userid, -coin, org_id, async (data) => {
             if (!data) {
-                return  http.send(res, 1, 'handle error2', {});
+                return http.send(res, 1, 'handle error2', {});
             }
-            let result = await db.async_get_user(uuid,org_id);
+            let result = await db.async_get_user(uuid, org_id);
             http.send(res, 0, 'ok', { result });
         })
     })
@@ -553,16 +559,16 @@ app.get('/org_set_config', function (req, res) {
             data_conf = JSON.parse(data[0].room_config);
         }
         data_conf.push(json_room_conf)
-        for (let i=0;i<data_conf.length;i++) {
-        // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
-        //     data_conf.splice(key, 1);
-        // }
-            data_conf[i].id = i+1; 
+        for (let i = 0; i < data_conf.length; i++) {
+            // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
+            //     data_conf.splice(key, 1);
+            // }
+            data_conf[i].id = i + 1;
         }
         if (data_conf.length > 5) {
             data_conf.shift();
         }
-    
+
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
             http.send(res, 0, 'ok', {});
         })
@@ -582,8 +588,8 @@ app.get('/org_del_config', function (req, res) {
         if (data[0].room_config) {
             data_conf = JSON.parse(data[0].room_config);
         }
-        for (let i=0;i<data_conf.length;i++) {
-            if (data_conf[i].id == conf_id){
+        for (let i = 0; i < data_conf.length; i++) {
+            if (data_conf[i].id == conf_id) {
                 data_conf.splice(i, 1);
                 break;
             }
@@ -649,7 +655,7 @@ app.get('/org_delete', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
-    let validator = await db.async_get_user(req.query.uuid,req.query.org_id)
+    let validator = await db.async_get_user(req.query.uuid, req.query.org_id)
     if (!validator || validator.level != 1) {
         return http.send(res, 1, '操作失败', {});
     }
