@@ -5,7 +5,7 @@ var room_service = require("./room_service");
 
 console.log(process.argv[2],"123");
 
-var configs = require(process.argv[2]);
+var configs = require("../configs_local");
 var config = configs.hall_server();
 
 console.log(" ",configs,config)

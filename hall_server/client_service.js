@@ -154,7 +154,7 @@ app.get('/create_private_room', function (req, res) {
         var userId = data.userid;
         var name = data.name;
         db.get_room_id_of_user(userId, function (roomId) {
-            if (roomId != null && org_id == 0) {
+            if (roomId != null) {
                 http.send(res, -1, "user is playing in room now.");
                 return;
             }
@@ -207,6 +207,9 @@ app.get('/enter_private_room', function (req, res) {
         if (null == data) {
             http.send(res, -1, "system error");
             return;
+        }
+        if (data.roomid != null){
+            return http.send(res,-1,"user is playing in room now.");
         }
         db.get_room_data(roomId, async function (room) {
             if (!room) {
@@ -382,9 +385,12 @@ app.get('/update_coin', async function (req, res) {
         return http.send(res, 1, '上分账户异常!', {})
     }
     if ((user.score + coin) < 0) {
-        return http.send(res, 1, '积分更新后不能小于0', {})
+        return http.send(res, 1, '积分余额不能小于0', {})
     }
     let parent_user = await db.async_account_getUser(req.query.account, org_id);
+    if (user.parent_uuid != parent_user.uuid){
+        return http.send(res, 1, '没有操作权限', {})
+    }
     //`level`  '社区等级：1总团长，2总团协管员，3分团长，4分团协管员，5合伙人，6合伙人协管员，7会员玩家',
     switch (parent_user.level) {
         case 7:

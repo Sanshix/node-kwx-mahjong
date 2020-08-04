@@ -24,10 +24,10 @@ exports.start = function(config, mgr) {
 			var time = data.time;
 			var sign = data.sign;
 
-			console.log(roomId);
-			console.log(token);
-			console.log(time);
-			console.log(sign);
+			// console.log(roomId);
+			// console.log(token);
+			// console.log(time);
+			// console.log(sign);
 
 			//检查参数合法性
 			if (token == null || roomId == null || sign == null || time == null) {
