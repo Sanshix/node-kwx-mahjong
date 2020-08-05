@@ -108,8 +108,8 @@ app.get('/create_user', function (req, res) {
 
     var account = req.query.account;
     var name = req.query.name;
-    var coins = 0; // 默认为0
-    var gems = 21;
+    var coins = config.DEFAULT_USER_COINS;
+	var gems = config.DEFAULT_USER_GEMS;
 
     console.log(name);
 
