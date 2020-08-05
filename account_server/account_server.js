@@ -198,8 +198,8 @@ function get_state_info(access_token, openid, callback) {
 }
 
 function create_user(account, name, sex, headimgurl, callback) {
-	var coins = config.DEFAULT_USER_COINS;
-	var gems = config.DEFAULT_USER_GEMS;
+	var coins = 0;
+	var gems = 3;
 
 	db.is_user_exist(account, function(ret) {
 		if (!ret) {
