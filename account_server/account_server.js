@@ -122,26 +122,38 @@ app.get('/auth', function(req, res) {
     var type = req.query.type || 1; // 1账号，2手机验证，
 	db.get_account_info(account, passwords,type, async function(info) {
 		if (!info){
-			return send(res, { errcode: 2, errmsg: "未检测到账号，请先微信登录并绑定手机号" });
-		}
-        if (type == 2){
-			let capthca_data = await db.get_captcha(account);
-			if (capthca_data == null || code != capthca_data.code){
-				send(res, { errcode: 1, errmsg: "invalid code" });
-				return;
+			//return send(res, { errcode: 2, errmsg: "未检测到账号，请先微信登录并绑定手机号" });
+			create_user(account, account, 1, 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1596703587797&di=77396a963e6594a4b4b6bb4e176c327c&imgtype=0&src=http%3A%2F%2Fimg.qqzhi.com%2Fuploads%2F2018-12-09%2F050500979.jpg', function() {
+				var sign = crypto.md5(account + req.ip + config.ACCOUNT_PRI_KEY);
+				var ret = {
+					errcode: 0,
+					errmsg: "ok",
+					account: account,
+					halladdr: hallAddr,
+					sign: sign
+				};
+				send(res, ret);
+			});
+		}else{
+			if (type == 2){
+				let capthca_data = await db.get_captcha(account);
+				if (capthca_data == null || code != capthca_data.code){
+					send(res, { errcode: 1, errmsg: "invalid code" });
+					return;
+				}
+				db.delete_captcha(account);
 			}
-			db.delete_captcha(account);
-        }
-		var account = "vivi_" + req.query.account;
-		var sign = crypto.md5(account + req.ip + config.ACCOUNT_PRI_KEY);
-		var ret = {
-			errcode: 0,
-			errmsg: "ok",
-			account: account,
-			sign: sign
-		}
+			var account = "vivi_" + req.query.account;
+			var sign = crypto.md5(account + req.ip + config.ACCOUNT_PRI_KEY);
+			var ret = {
+				errcode: 0,
+				errmsg: "ok",
+				account: account,
+				sign: sign
+			}
 
-		send(res, ret);
+			send(res, ret);
+		}
 	});
 });
 
