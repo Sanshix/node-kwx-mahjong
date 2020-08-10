@@ -605,7 +605,7 @@ exports.delete_room = function (roomId, callback) {
 
 exports.get_room_list = function (org_id, callback) {
     callback = callback == null ? nop : callback;
-    var sql = 'SELECT * FROM t_rooms WHERE org_id = "' + org_id + '"';
+    var sql = `SELECT * FROM t_rooms WHERE org_id =${org_id} order by create_time desc`;
     query(sql, function (err, rows, fields) {
         if (err) {
             callback({});
