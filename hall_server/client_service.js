@@ -153,24 +153,23 @@ app.get('/create_private_room', function (req, res) {
         }
         var userId = data.userid;
         var name = data.name;
-        db.get_room_id_of_user(userId, function (roomId) {
+        db.get_room_id_of_user(userId, async function (roomId) {
             if (roomId != null) {
                 http.send(res, -1, "user is playing in room now.");
                 return;
             }
             console.log(account, userId, conf, org_id);
+            if (org_id != 0) {
+                // return http.send(res, 0, "ok", { roomid: roomId });
+                data.coins = await db.get_org_score(org_id, data.userid);
+                let conditionCoin = room_service.switchPump(json_conf.maima, json_conf.baseScore);
+                console.log(`${data.userid} : 我的积分：${data.coins}, 限制积分：${conditionCoin}`)
+                if (data.coins < conditionCoin) {
+                    return http.send(res, 1, `积分不足! 该房间限制积分大于等于${conditionCoin}`);
+                }
+            }
             room_service.createRoom(account, userId, conf, org_id, async function (err, roomId) {
                 if (err == 0 && roomId != null) {
-                    if (org_id != 0) {
-                        // return http.send(res, 0, "ok", { roomid: roomId });
-                        data.coins = await db.get_org_score(org_id, data.userid);
-                        let conditionCoin = room_service.switchPump(json_conf.maima, json_conf.baseScore);
-                        console.log(`${data.userid} : 我的积分：${data.coins}, 限制积分：${conditionCoin}`)
-                        if (data.coins < conditionCoin) {
-                            return http.send(res, -1, `积分不足! 该房间限制积分大于等于${conditionCoin}`);
-                        }
-                    }
-
                     room_service.enterRoom(userId, name, data.coins, roomId, function (errcode, enterInfo) {
                         if (enterInfo) {
                             var ret = {
@@ -565,9 +564,9 @@ app.get('/org_set_config', function (req, res) {
             // }
             data_conf[i].id = i + 1;
         }
-        if (data_conf.length > 5) {
-            data_conf.shift();
-        }
+        // if (data_conf.length > 5) {
+        //     data_conf.shift();
+        // }
 
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
             http.send(res, 0, 'ok', {});
