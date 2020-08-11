@@ -1606,6 +1606,7 @@ async function update_coin(userid, coins, water, org_id) {
     // 扣茶水钱
     let parent_id = userid;
     let water_spare = water;
+    let lower_ratio = 0;
     for (let index = 0; index < 3; index++) {
         let parent = await db.get_parent(org_id, parent_id);
         if (!parent || parent == null) {
@@ -1620,6 +1621,11 @@ async function update_coin(userid, coins, water, org_id) {
             water_ratio = parent.my_water;
             parent_uuid = parent.my_uuid;
         }
+        // 获取实际比例
+        if (lower_ratio != 0){
+            water_ratio -= lower_ratio;
+        }
+        lower_ratio = water_ratio;
         // 按份额分
         let coin = parseFloat(water_ratio * (water / 100));
         if (parent.level == 1) {
