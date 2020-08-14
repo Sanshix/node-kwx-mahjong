@@ -105,6 +105,46 @@ function mopai(game, seatIndex) {
     return pai;
 }
 
+function lucky_mopai(game, seatIndex) {
+    if (game.cusrrentIndex == game.mahjongs.length) {
+        return -1;
+    }
+
+    var seat = game.gameSeats[seatIndex];
+    var mahjongs = seat.holds;
+    var pai = game.mahjongs[game.currentIndex];
+
+    //检查是否可以暗杠或者胡
+    //检查胡，直杠，弯杠
+    if (!seat.hued) {
+        checkCanAnGang(game, seat);
+    }
+
+    //如果未胡牌，或者摸起来的牌可以杠，才检查弯杠
+    if (!seat.hued || seat.holds[seat.holds.length - 1] == pai) {
+        checkCanWanGang(game, seat, pai);
+    }
+
+    //检查看是否可以和
+    checkCanHu(game, seat, pai);
+
+    //检查看是否可以明牌
+    checkCanMingPai(game, seat);
+
+    mahjongs.push(pai);
+
+    //统计牌的数目 ，用于快速判定（空间换时间）
+    var c = seat.countMap[pai];
+    if (c == null) {
+        c = 0;
+    }
+
+    seat.countMap[pai] = c + 1;
+    game.currentIndex++;
+
+    return pai;
+}
+
 function new_deal(game, cb) {
     game.currentIndex = 0;
 
@@ -1817,7 +1857,7 @@ function store_game(game, callback) {
 }
 
 //开始新的一局
-exports.begin = function (roomId) {
+exports.begin = async function (roomId) {
     var roomInfo = roomMgr.getRoom(roomId);
     if (roomInfo == null) {
         return;
@@ -1935,7 +1975,7 @@ exports.begin = function (roomId) {
         };
 
         data.dingpiao = seats[i].dingpiao;
-
+        let user_data = await db.get_user_data_by_userid(data.userId)
         gameSeatsOfUsers[data.userId] = data;
     }
 

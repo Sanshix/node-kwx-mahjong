@@ -35,13 +35,14 @@ function generateRoomId() {
 }
 
 function constructRoomFromDb(dbdata) {
+	var nSeats = dbdata.num_seats;
 	var roomInfo = {
 		uuid: dbdata.uuid,
 		id: dbdata.id,
 		numOfGames: dbdata.num_of_turns,
 		createTime: dbdata.create_time,
 		nextButton: dbdata.next_button,
-		//seats: new Array(4),
+		seats:  new Array(nSeats),
 		conf: JSON.parse(dbdata.base_info)
 	};
 
@@ -50,11 +51,8 @@ function constructRoomFromDb(dbdata) {
 		console.log('get game mgr fail');
 		return null;
 	}
-
 	//var nSeats = gameMgr.numOfSeats;
-	var nSeats = dbdata.num_seats;
 	roomInfo.gameMgr = gameMgr;
-	roomInfo.seats = new Array(nSeats);
 	roomInfo.numOfSeats = nSeats;
 
 	var roomId = roomInfo.id;
