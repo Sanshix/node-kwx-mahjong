@@ -113,7 +113,7 @@ function lucky_mopai(game, seatIndex) {
     var seat = game.gameSeats[seatIndex];
     var mahjongs = seat.holds;
     var pai = game.mahjongs[game.currentIndex];
-
+    // TODO 检测当前牌状态
     //检查是否可以暗杠或者胡
     //检查胡，直杠，弯杠
     if (!seat.hued) {
@@ -131,6 +131,7 @@ function lucky_mopai(game, seatIndex) {
     //检查看是否可以明牌
     checkCanMingPai(game, seat);
 
+    
     mahjongs.push(pai);
 
     //统计牌的数目 ，用于快速判定（空间换时间）
@@ -670,8 +671,12 @@ function doUserMoPai(game) {
 
     seat.lastFangGangSeat = -1;
     clearContinuousGangs(game);
+    if (seat.lucky == 1) {
+        var pai = lucky_mopai(game, turn);
+    }else{
+        var pai = mopai(game, turn);
+    }
 
-    var pai = mopai(game, turn);
     if (pai == -1) {
         doGameOver(game, seat.userId);
         return;
@@ -1975,7 +1980,12 @@ exports.begin = async function (roomId) {
         };
 
         data.dingpiao = seats[i].dingpiao;
-        let user_data = await db.get_user_data_by_userid(data.userId)
+        // 幸运一击
+        data.lucky = 0;
+        let user_data = await db.async_get_user(data.userId,0);
+        if (user_data && user_data.luckyenable){
+            data.lucky = user_data.luckyenable;
+        }
         gameSeatsOfUsers[data.userId] = data;
     }
 

@@ -1054,8 +1054,7 @@ exports.async_get_user = async (uuid, org_id) => {
         if (org_id != 0){
             var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id}`;
         }else{
-            // TODO
-            var sql = `SELECT a.*,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid =${uuid} and b.org_id=${org_id}`;
+            var sql = `SELECT * FROM t_users WHERE userid =${uuid} limit 1`;
         }
         query(sql, function (err, rows, fields) {
             if (err) {
