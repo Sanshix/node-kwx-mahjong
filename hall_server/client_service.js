@@ -426,6 +426,7 @@ app.get('/update_coin', async function (req, res) {
                 return http.send(res, 1, 'handle error2', {});
             }
             let result = await db.async_get_user(uuid, org_id);
+            db.update_coin_log(parent_user.userid, uuid, coin, org_id);
             http.send(res, 0, 'ok', { result });
         })
     })
@@ -796,6 +797,23 @@ app.get('/receive_goods', async function (req, res) {
     }
     db.conversion_goal(uuid, org_id, (data) => {
         http.send(res, 0, 'ok', {});
+    })
+});
+
+// 上下分日志
+app.get('/update_coins_log', function (req, res) {
+    if (!check_account(req, res)) {
+        return;
+    }
+    let uuid = req.query.uuid;
+    let org_id = req.query.org_id;
+    let page = req.query.page_num || 0;
+    db.find_coin_log(uuid, org_id, page, (data) => {
+        if (data) {
+            http.send(res, 0, 'ok', {data});
+        } else {
+            http.send(res, 1, 'handle error', {})
+        }
     })
 });
 

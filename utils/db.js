@@ -997,9 +997,15 @@ exports.delete_captcha = (mobile) => {
     });
 }
 
+exports.update_coin_log = (parent_uuid,uuid,coins,org_id) => {
+    let sql = `INSERT INTO update_coin_log(operator_id, uuid, org_id, coins) VALUES (${parent_uuid},${uuid},${org_id},${coins})`
+    //console.log(sql);s
+    query(sql, function (err, rows) {});
+}
+
 exports.get_water = async (org_id) => {
     return new Promise((resolve, reject) => {
-        let sql = `select pump from organization where id=${org_id}`;
+        let sql = `select pump from organization where id=${org_id} limit 1`;
         //console.log(sql);
         query(sql, function (err, rows) {
             if (err) {
@@ -1017,7 +1023,7 @@ exports.get_water = async (org_id) => {
 exports.get_parent = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
         let sql = `select b.*,a.level as my_level,a.water_ratio as my_water,a.uuid as my_uuid from user_organization a left join user_organization b on a.parent_uuid=b.uuid
-               where a.uuid=${uuid} and b.org_id=${org_id} `;
+               where a.uuid=${uuid} and b.org_id=${org_id}  limit 1`;
         //console.log(sql);
         query(sql, function (err, rows) {
             if (rows) {
@@ -1052,7 +1058,7 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
 exports.async_get_user = async (uuid, org_id) => {
     return new Promise((resolve, reject) => {
         if (org_id != 0){
-            var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id}`;
+            var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id} limit 1`;
         }else{
             var sql = `SELECT * FROM t_users WHERE userid =${uuid} limit 1`;
         }
@@ -1072,7 +1078,7 @@ exports.async_get_user = async (uuid, org_id) => {
 
 exports.async_uuid_getUser = async (userid, org_id) => {
     return new Promise((resolve, reject) => {
-        var sql = `SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid =${userid} and b.org_id = ${org_id}`;
+        var sql = `SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid =${userid} and b.org_id = ${org_id} limit 1`;
         query(sql, function (err, rows, fields) {
             if (err) {
                 reject(err);
@@ -1089,7 +1095,7 @@ exports.async_uuid_getUser = async (userid, org_id) => {
 
 exports.async_account_getUser = async (account, org_id) => {
     return new Promise((resolve, reject) => {
-        var sql = `SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.account ="${account}" and b.org_id = ${org_id}`;
+        var sql = `SELECT a.*,b.* FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.account ="${account}" and b.org_id = ${org_id} limit 1`;
         query(sql, function (err, rows, fields) {
             if (err) {
                 reject(err);
@@ -1106,7 +1112,7 @@ exports.async_account_getUser = async (account, org_id) => {
 
 exports.get_captcha = async (mobile) => {
     return new Promise((resolve, reject) => {
-        let sql = `select * from captcha where mobile=${mobile}`;
+        let sql = `select * from captcha where mobile=${mobile} limit 1`;
         //console.log(sql);
         query(sql, function (err, rows) {
             if (err) {
@@ -1173,6 +1179,17 @@ exports.conversion_goal = (uuid, org_id, callback) => {
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(true);
+    });
+}
+
+exports.find_coin_log = (uuid, org_id, page, callback) => {
+    callback = callback == null ? nop : callback;
+    let page_limit = 10;
+    let page_start = page * page_limit;
+    let sql = `selectg * from update_coin_log where uuid=${uuid} and org_id=${org_id} order by id desc limit ${page_start},${page_limit}`;
+    //console.log(sql);
+    query(sql, function (err, rows) {
+        callback(rows);
     });
 }
 

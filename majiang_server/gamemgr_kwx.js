@@ -117,7 +117,7 @@ function lucky_mopai(game, seatIndex) {
     //检查是否可以暗杠或者胡
     //检查胡，直杠，弯杠
     if (!seat.hued) {
-        checkCanAnGang(game, seat);
+        checkCanAnGang(game, seat);a
     }
 
     //如果未胡牌，或者摸起来的牌可以杠，才检查弯杠
