@@ -1180,6 +1180,7 @@ function calculateResult(game, roomInfo) {
                 var maScore = 0;
                 if (maima != null) {
                     maima.forEach(element => {
+                        // TODO 买马根据底分翻倍
                         maScore += element.fan;
                     });
                     tips.push('买马+' + maScore);
@@ -1532,7 +1533,7 @@ async function doGameOver(game, userId, forceEnd) {
                 detail.score = sd.score + detail.gang;
             }
         }
-        if (roomInfo.numOfGames >= roomInfo.conf.maxGames) {
+        if (roomInfo.numOfGames == 1) {
             var water_average = await db.get_water(roomInfo.org_id);
         }else{
             var water_average = 0;

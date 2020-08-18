@@ -642,11 +642,15 @@ app.get('/org_user_list', function (req, res) {
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;
     let type = req.query.type || 1; // 1所有玩家，2未绑定玩家
-    db.org_user_list(org_id, uuid, type, (data) => {
+    db.org_user_list(org_id, uuid, type, async (data) => {
         for (const key in data) {
             data[key].name = crypto.fromBase64(data[key].name);
         }
-        http.send(res, 0, 'ok', { data: data });
+        let superior = [];
+        if (uuid){
+            superior = await db.get_org_superior(org_id,uuid);
+        }
+        http.send(res, 0, 'ok', { data,superior});
     })
 });
 
