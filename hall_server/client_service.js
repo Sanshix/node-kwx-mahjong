@@ -417,6 +417,7 @@ app.get('/update_coin', async function (req, res) {
         if (!data) {
             return http.send(res, 1, 'handle error1', {});
         }
+        db.update_coin_log(parent_user.userid, uuid, coin, org_id);
         if (parent_user.level == 1 || parent_user.level == 2) {
             let result = await db.async_get_user(uuid, org_id);
             return http.send(res, 0, 'ok', { result });
@@ -426,7 +427,6 @@ app.get('/update_coin', async function (req, res) {
                 return http.send(res, 1, 'handle error2', {});
             }
             let result = await db.async_get_user(uuid, org_id);
-            db.update_coin_log(parent_user.userid, uuid, coin, org_id);
             http.send(res, 0, 'ok', { result });
         })
     })
@@ -650,7 +650,7 @@ app.get('/org_user_list', function (req, res) {
         if (uuid){
             superior = await db.get_org_superior(org_id,uuid);
         }
-        http.send(res, 0, 'ok', { data,superior});
+        http.send(res, 0, 'ok', { data,superior:superior});
     })
 });
 

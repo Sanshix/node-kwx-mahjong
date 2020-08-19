@@ -1157,20 +1157,7 @@ exports.get_org_score = async (org_id,uuid) => {
 
 exports.get_org_superior = async (org_id,uuid) => {
     return new Promise((resolve, reject) => {
-        let sql = `SELECT
-	T2.*
-FROM
-	( SELECT
-	@r AS _id,
-	( SELECT @r := parent_uuid FROM user_organization WHERE uuid = _id ) AS parent_id
-FROM
-	( SELECT @r := ${uuid} ) _,
-	user_organization h 
-WHERE
-	@r != 0 
-	AND h.org_id = ${org_id} ) T1
-	JOIN user_organization T2 ON T1._id = T2.uuid
-	where T2.org_id = ${org_id} and T2.uuid != ${uuid}`;
+        let sql = `SELECT T2.* FROM ( SELECT @r AS _id,( SELECT @r := parent_uuid FROM user_organization WHERE uuid = _id and org_id=${org_id}) AS parent_id FROM ( SELECT @r := ${uuid} ) _, user_organization h WHERE @r != 0 AND h.org_id = ${org_id} ) T1 JOIN user_organization T2 ON T1._id = T2.uuid where T2.org_id = ${org_id} and T2.uuid != ${uuid}`;
         //console.log(sql);
         query(sql, function (err, rows) {
             if (rows.length > 0) {
@@ -1213,7 +1200,7 @@ exports.find_coin_log = (uuid, org_id, page, callback) => {
     callback = callback == null ? nop : callback;
     let page_limit = 10;
     let page_start = page * page_limit;
-    let sql = `selectg * from update_coin_log where uuid=${uuid} and org_id=${org_id} order by id desc limit ${page_start},${page_limit}`;
+    let sql = `select * from update_coin_log where uuid=${uuid} and org_id=${org_id} order by id desc limit ${page_start},${page_limit}`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);
