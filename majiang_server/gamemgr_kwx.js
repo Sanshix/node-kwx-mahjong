@@ -2669,14 +2669,14 @@ exports.hu = function (userId) {
             if (pai > 0) {
                 maima = [{
                     pai: pai,
-                    fan: getMaScore(pai),
+                    fan: getMaScore(pai) * game.baseScore,
                 }];
                 if (game.conf.mysym){
                     let maima_pai = mysym_func(pai);
                     if (maima_pai){
                         maima.push({
                             pai: maima_pai,
-                            fan: getMaScore(maima_pai),
+                            fan: getMaScore(maima_pai) * game.baseScore,
                         })
                     }
                 }
