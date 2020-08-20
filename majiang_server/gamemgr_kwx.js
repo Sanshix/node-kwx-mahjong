@@ -668,7 +668,7 @@ function doUserMoPai(game) {
     var turn = game.turn;
     var seat = game.gameSeats[turn];
     var uid = seat.userId;
-
+// TODO seat.tingMap 
     seat.lastFangGangSeat = -1;
     clearContinuousGangs(game);
     if (seat.lucky == 1) {
@@ -1180,7 +1180,6 @@ function calculateResult(game, roomInfo) {
                 var maScore = 0;
                 if (maima != null) {
                     maima.forEach(element => {
-                        // TODO 买马根据底分翻倍
                         maScore += element.fan;
                     });
                     tips.push('买马+' + maScore);
@@ -1220,8 +1219,8 @@ function calculateResult(game, roomInfo) {
                     var tmprs = roomInfo.seats[t];
                     var gs = game.gameSeats[t];
 
-                    piaos += rs.dingpiao > 0 ? rs.dingpiao : 0;
-                    piaos += tmprs.dingpiao > 0 ? tmprs.dingpiao : 0;
+                    piaos += rs.dingpiao > 0 ? rs.dingpiao * game.conf.baseScore: 0;
+                    piaos += tmprs.dingpiao > 0 ? tmprs.dingpiao * game.conf.baseScore: 0;
 
                     if (piaos > 0) {
                         sd.score += piaos;
@@ -1248,8 +1247,8 @@ function calculateResult(game, roomInfo) {
                 var gs = game.gameSeats[info.target];
 
                 // 漂钱
-                piaos += rs.dingpiao > 0 ? rs.dingpiao : 0;
-                piaos += tmprs.dingpiao > 0 ? tmprs.dingpiao : 0;
+                piaos += rs.dingpiao > 0 ? rs.dingpiao * game.conf.baseScore: 0;
+                piaos += tmprs.dingpiao > 0 ? tmprs.dingpiao * game.conf.baseScore: 0;
 
                 if (piaos > 0) {
                     sd.score += piaos;
@@ -2984,7 +2983,13 @@ function update() {
 setInterval(update, 1000);
 
 exports.parseConf = function (roomConf, conf) {
-    conf.dingpiao = roomConf.dingpiao ? true : false;
+    conf.dingpiao = !roomConf.dingpiao ? 0 : roomConf.dingpiao;
+    if (roomConf.dingpiao == 2){
+        conf.dingpiao = 1;
+    }
+    if (conf.dingpiao == 3){
+        conf.dingpiao = 2;
+    }
     conf.maima = roomConf.maima || 0;
 
     var type = roomConf.type;

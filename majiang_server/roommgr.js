@@ -184,7 +184,7 @@ exports.createRoom = function(creator, roomConf, gems, org_id, ip,  port, callba
 							numAnGang: 0,
 							numMingGang: 0,
 							numChaJiao: 0,
-							dingpiao: -1,
+							dingpiao: conf.dingpiao,
 						});
 					}
 

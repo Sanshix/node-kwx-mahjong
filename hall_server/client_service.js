@@ -558,6 +558,7 @@ app.get('/org_set_config', function (req, res) {
         if (data[0].room_config) {
             data_conf = JSON.parse(data[0].room_config);
         }
+        if (json_room_conf){
         data_conf.push(json_room_conf)
         for (let i = 0; i < data_conf.length; i++) {
             // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
@@ -568,7 +569,7 @@ app.get('/org_set_config', function (req, res) {
         // if (data_conf.length > 5) {
         //     data_conf.shift();
         // }
-
+        }
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
             http.send(res, 0, 'ok', {});
         })
