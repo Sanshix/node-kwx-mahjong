@@ -636,14 +636,18 @@ app.get('/org_self', function (req, res) {
 });
 
 // 查询社团成员
-app.get('/org_user_list', function (req, res) {
+app.get('/org_user_list', async function (req, res) {
     if (!check_account(req, res)) {
         return;
     }
     let org_id = req.query.org_id;
     let uuid = req.query.uuid;
     let type = req.query.type || 1; // 1所有玩家，2未绑定玩家
-    db.org_user_list(org_id, uuid, type, async (data) => {
+    let user = await db.async_account_getUser(req.query.account, org_id);
+    if (!user) {
+        return http.send(res, 1, '账号异常!', {})
+    }
+    db.org_user_list(org_id, uuid, type, user, async (data) => {
         for (const key in data) {
             data[key].name = crypto.fromBase64(data[key].name);
         }
@@ -704,7 +708,10 @@ app.get('/org_pump_config', async function (req, res) {
     if (!parent_user) {
         return http.send(res, 1, '账号异常!', {})
     }
-    if (water > parent_user.water_ratio){
+    if (parent_user.level ==1 && water > 100){
+        return http.send(res, 1, '比例数值不能高于100', {});
+    }
+    if (water > parent_user.water_ratio && parent_user.level !=1){
        return http.send(res, 1, '比例数值不能高于自己', {});
     }
     db.org_pump_config(org_id,uuid,water, (data) => {

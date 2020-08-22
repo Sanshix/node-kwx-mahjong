@@ -922,7 +922,7 @@ exports.org_self = (uuid, callback) => {
     });
 }
 
-exports.org_user_list = (org_id, uuid, type, callback) => {
+exports.org_user_list = (org_id, uuid, type, user, callback) => {
     callback = callback == null ? nop : callback;
     let where = `a.org_id=${org_id}`;
     if (uuid) {
@@ -930,6 +930,8 @@ exports.org_user_list = (org_id, uuid, type, callback) => {
     }
     if (type == 2) {
         where += ` and a.parent_uuid =0`
+    }else if (user.level != 1){
+        where += ` and (a.parent_uuid =0 or a.parent_uuid =${user.uuid} or a.uuid=${user.uuid})`
     }
     let sql = `select a.*,b.name,a.score as coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
     //console.log(sql);

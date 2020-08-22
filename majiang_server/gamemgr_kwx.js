@@ -109,29 +109,23 @@ function lucky_mopai(game, seatIndex) {
     if (game.cusrrentIndex == game.mahjongs.length) {
         return -1;
     }
-
     var seat = game.gameSeats[seatIndex];
     var mahjongs = seat.holds;
     var pai = game.mahjongs[game.currentIndex];
-    // TODO 检测当前牌状态
-    //检查是否可以暗杠或者胡
-    //检查胡，直杠，弯杠
-    if (!seat.hued) {
-        checkCanAnGang(game, seat);a
+    // 检测听牌
+    let tingMap = seat.tingMap;
+    if (Object.keys(tingMap).length > 0){
+        for (let key in tingMap) {
+            key = parseInt(key);
+            let index = game.mahjongs.indexOf(key);
+            console.log(`检查听牌:`,key,'index:',index);
+            if (index == -1){continue;}
+            game.mahjongs[game.currentIndex] = game.mahjongs[index];
+            game.mahjongs[index] = pai;
+            break;
+        }
     }
-
-    //如果未胡牌，或者摸起来的牌可以杠，才检查弯杠
-    if (!seat.hued || seat.holds[seat.holds.length - 1] == pai) {
-        checkCanWanGang(game, seat, pai);
-    }
-
-    //检查看是否可以和
-    checkCanHu(game, seat, pai);
-
-    //检查看是否可以明牌
-    checkCanMingPai(game, seat);
-
-    
+    pai = game.mahjongs[game.currentIndex];
     mahjongs.push(pai);
 
     //统计牌的数目 ，用于快速判定（空间换时间）
@@ -665,10 +659,9 @@ function moveToNextUser(game, nextSeat) {
 function doUserMoPai(game) {
     game.chuPai = -1;
 
-    var turn = game.turn;
+    var turn = game.turn;1
     var seat = game.gameSeats[turn];
     var uid = seat.userId;
-// TODO seat.tingMap 
     seat.lastFangGangSeat = -1;
     clearContinuousGangs(game);
     if (seat.lucky == 1) {
