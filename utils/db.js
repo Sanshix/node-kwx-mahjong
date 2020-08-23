@@ -1202,7 +1202,7 @@ exports.find_coin_log = (uuid, org_id, page, callback) => {
     callback = callback == null ? nop : callback;
     let page_limit = 10;
     let page_start = page * page_limit;
-    let sql = `select * from update_coin_log where uuid=${uuid} and org_id=${org_id} order by id desc limit ${page_start},${page_limit}`;
+    let sql = `select * from update_coin_log where (uuid=${uuid} or operator_id=${uuid})  and org_id=${org_id} order by id desc limit ${page_start},${page_limit}`;
     //console.log(sql);
     query(sql, function (err, rows) {
         callback(rows);

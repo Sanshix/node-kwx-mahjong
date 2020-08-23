@@ -109,7 +109,7 @@ app.get('/create_user', function (req, res) {
     var account = req.query.account;
     var name = req.query.name;
     var coins = config.DEFAULT_USER_COINS;
-	var gems = config.DEFAULT_USER_GEMS;
+    var gems = config.DEFAULT_USER_GEMS;
 
     console.log(name);
 
@@ -274,17 +274,24 @@ app.get('/get_history_list', function (req, res) {
     }
 
     var account = data.account;
-    db.get_user_data(account, function (data) {
-        if (null == data) {
-            http.send(res, -1, "system error");
-            return;
-        }
-
-        var userId = data.userid;
+    let uuid = data.uuid;
+    if (uuid) {
         db.get_user_history(userId, function (history) {
             http.send(res, 0, "ok", { history: history });
         });
-    });
+    } else {
+        db.get_user_data(account, function (data) {
+            if (null == data) {
+                http.send(res, -1, "system error");
+                return;
+            }
+
+            var userId = data.userid;
+            db.get_user_history(userId, function (history) {
+                http.send(res, 0, "ok", { history: history });
+            });
+        });
+    }
 });
 
 app.get('/get_games_of_room', function (req, res) {
@@ -558,17 +565,17 @@ app.get('/org_set_config', function (req, res) {
         if (data[0].room_config) {
             data_conf = JSON.parse(data[0].room_config);
         }
-        if (json_room_conf){
-        data_conf.push(json_room_conf)
-        for (let i = 0; i < data_conf.length; i++) {
-            // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
-            //     data_conf.splice(key, 1);
+        if (json_room_conf) {
+            data_conf.push(json_room_conf)
+            for (let i = 0; i < data_conf.length; i++) {
+                // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
+                //     data_conf.splice(key, 1);
+                // }
+                data_conf[i].id = i + 1;
+            }
+            // if (data_conf.length > 5) {
+            //     data_conf.shift();
             // }
-            data_conf[i].id = i + 1;
-        }
-        // if (data_conf.length > 5) {
-        //     data_conf.shift();
-        // }
         }
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
             http.send(res, 0, 'ok', {});
@@ -652,10 +659,10 @@ app.get('/org_user_list', async function (req, res) {
             data[key].name = crypto.fromBase64(data[key].name);
         }
         let superior = [];
-        if (uuid){
-            superior = await db.get_org_superior(org_id,uuid);
+        if (uuid) {
+            superior = await db.get_org_superior(org_id, uuid);
         }
-        http.send(res, 0, 'ok', { data,superior:superior});
+        http.send(res, 0, 'ok', { data, superior: superior });
     })
 });
 
@@ -701,20 +708,20 @@ app.get('/org_pump_config', async function (req, res) {
         return http.send(res, 1, '权限不足', {});
     }
     //console.log(org_id,uuid,parent_uuid,value);
-    if (water < 0 || water > 100){
+    if (water < 0 || water > 100) {
         return http.send(res, 1, '操作异常', {});
     }
     let parent_user = await db.async_uuid_getUser(parent_id, org_id);
     if (!parent_user) {
         return http.send(res, 1, '账号异常!', {})
     }
-    if (parent_user.level ==1 && water > 100){
+    if (parent_user.level == 1 && water > 100) {
         return http.send(res, 1, '比例数值不能高于100', {});
     }
-    if (water > parent_user.water_ratio && parent_user.level !=1){
-       return http.send(res, 1, '比例数值不能高于自己', {});
+    if (water > parent_user.water_ratio && parent_user.level != 1) {
+        return http.send(res, 1, '比例数值不能高于自己', {});
     }
-    db.org_pump_config(org_id,uuid,water, (data) => {
+    db.org_pump_config(org_id, uuid, water, (data) => {
         http.send(res, 0, 'ok', {});
     })
 });
@@ -822,7 +829,7 @@ app.get('/update_coins_log', function (req, res) {
     let page = req.query.page_num || 0;
     db.find_coin_log(uuid, org_id, page, (data) => {
         if (data) {
-            http.send(res, 0, 'ok', {data});
+            http.send(res, 0, 'ok', { data });
         } else {
             http.send(res, 1, 'handle error', {})
         }

@@ -117,8 +117,8 @@ function lucky_mopai(game, seatIndex) {
     if (Object.keys(tingMap).length > 0){
         for (let key in tingMap) {
             key = parseInt(key);
-            let index = game.mahjongs.indexOf(key);
-            console.log(`检查听牌:`,key,'index:',index);
+            let index = game.mahjongs.indexOf(key,game.currentIndex);
+           // console.log(`检查听牌:`,key,'index:',index);
             if (index == -1){continue;}
             game.mahjongs[game.currentIndex] = game.mahjongs[index];
             game.mahjongs[index] = pai;
@@ -127,7 +127,7 @@ function lucky_mopai(game, seatIndex) {
     }
     pai = game.mahjongs[game.currentIndex];
     mahjongs.push(pai);
-
+    //console.log('公共牌：',game.mahjongs);
     //统计牌的数目 ，用于快速判定（空间换时间）
     var c = seat.countMap[pai];
     if (c == null) {
