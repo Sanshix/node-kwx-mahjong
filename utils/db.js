@@ -1159,7 +1159,7 @@ exports.get_org_score = async (org_id,uuid) => {
 
 exports.get_org_superior = async (org_id,uuid) => {
     return new Promise((resolve, reject) => {
-        let sql = `SELECT T2.* FROM ( SELECT @r AS _id,( SELECT @r := parent_uuid FROM user_organization WHERE uuid = _id and org_id=${org_id}) AS parent_id FROM ( SELECT @r := ${uuid} ) _, user_organization h WHERE @r != 0 AND h.org_id = ${org_id} ) T1 JOIN user_organization T2 ON T1._id = T2.uuid where T2.org_id = ${org_id} and T2.uuid != ${uuid}`;
+        let sql = `SELECT T2.* FROM ( SELECT @r AS _id,( SELECT @r := parent_uuid FROM user_organization WHERE uuid = _id and org_id=${org_id}) AS parent_id FROM ( SELECT @r := ${uuid} ) _, user_organization h WHERE @r != 0 AND h.org_id = ${org_id} AND h.level != 1 ) T1 JOIN user_organization T2 ON T1._id = T2.uuid where T2.org_id = ${org_id} and T2.uuid != ${uuid}`;
         //console.log(sql);
         query(sql, function (err, rows) {
             if (rows.length > 0) {

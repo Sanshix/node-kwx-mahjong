@@ -147,9 +147,9 @@ app.get('/create_private_room', function (req, res) {
             return;
         }
         if (org_id != 0 && data.gems < 30) {
-            //http.send(res, 1, "房卡不足30张");
+            http.send(res, 1, "房卡不足30张");
             console.log(data.gems, '房卡不足30张')
-            //return;
+            return;
         }
         var userId = data.userid;
         var name = data.name;
@@ -221,7 +221,7 @@ app.get('/enter_private_room', function (req, res) {
                 return http.send(res, -1, "not find room");
             }
             if (room.org_id != 0) {
-                let user = await db.async_uuid_getUser(data.userid, room.org_id);
+                //let user = await db.async_uuid_getUser(data.userid, room.org_id);
                 // if (user.level == 1 || user.level == 3) {
                 //     return http.send(res, -1, "团长或分团长无法加入游戏！");
                 // }
