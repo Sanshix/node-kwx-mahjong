@@ -743,7 +743,7 @@ exports.get_message = function (type, version, callback) {
 
 exports.update_coin = function (uuid, coin, org_id, callback) {
     callback = callback == null ? nop : callback;
-    if (coin == 0){
+    if (coin == 0) {
         callback(true);
     }
     let sql = `update user_organization set score = score+${coin} where uuid=${uuid} and org_id = ${org_id}`;
@@ -759,7 +759,7 @@ exports.update_coin = function (uuid, coin, org_id, callback) {
 
 exports.update_exp = function (uuid, exp, org_id, callback) {
     callback = callback == null ? nop : callback;
-    if (exp == 0){
+    if (exp == 0) {
         callback(true);
     }
     let sql = `update user_organization set goal = goal+${exp} where uuid=${uuid} and org_id = ${org_id}`;
@@ -773,7 +773,7 @@ exports.update_exp = function (uuid, exp, org_id, callback) {
     });
 }
 
-exports.update_rank = function (to_uuid,uuid, level, org_id, callback) {
+exports.update_rank = function (to_uuid, uuid, level, org_id, callback) {
     callback = callback == null ? nop : callback;
     let sql = `update user_organization set level=${level} ,parent_uuid=${uuid} where uuid=${to_uuid} and org_id=${org_id}`;
     //console.log(sql);
@@ -930,7 +930,7 @@ exports.org_user_list = (org_id, uuid, type, user, callback) => {
     }
     if (type == 2) {
         where += ` and a.parent_uuid =0`
-    }else if (user.level != 1){
+    } else if (user.level != 1) {
         where += ` and (a.parent_uuid =0 or a.parent_uuid =${user.uuid} or a.uuid=${user.uuid})`
     }
     let sql = `select a.*,b.name,a.score as coins from user_organization a left join t_users b on b.userid = a.uuid where  ${where} and a.type=1`;
@@ -999,10 +999,10 @@ exports.delete_captcha = (mobile) => {
     });
 }
 
-exports.update_coin_log = (parent_uuid,uuid,coins,org_id) => {
+exports.update_coin_log = (parent_uuid, uuid, coins, org_id) => {
     let sql = `INSERT INTO update_coin_log(operator_id, uuid, org_id, coins) VALUES (${parent_uuid},${uuid},${org_id},${coins})`
     //console.log(sql);s
-    query(sql, function (err, rows) {});
+    query(sql, function (err, rows) { });
 }
 
 exports.get_water = async (org_id) => {
@@ -1059,9 +1059,9 @@ exports.org_duibi_dengji = async (org_id, uuid, to_uuid) => {
 
 exports.async_get_user = async (uuid, org_id) => {
     return new Promise((resolve, reject) => {
-        if (org_id != 0){
+        if (org_id != 0) {
             var sql = `SELECT a.userid,a.account,a.name,a.mobile,a.headimg,b.score as coins,b.level FROM t_users a left join user_organization b on a.userid=b.uuid WHERE a.userid=${uuid} and b.org_id=${org_id} limit 1`;
-        }else{
+        } else {
             var sql = `SELECT * FROM t_users WHERE userid =${uuid} limit 1`;
         }
         query(sql, function (err, rows, fields) {
@@ -1094,6 +1094,23 @@ exports.async_uuid_getUser = async (userid, org_id) => {
         });
     })
 };
+
+
+exports.async_org_boos_gems = async (org_id) => {
+    return new Promise((resolve, reject) => {
+        if (org_id == 0) {
+            return resolve(31);
+        }
+        var sql = `SELECT b.gems FROM  organization a left join t_users b on b.userid=a.boss_uuid WHERE a.id =${org_id} limit 1`;
+        query(sql, function (err, rows, fields) {
+            if (rows.length > 0) {
+                resolve(rows[0].gems);
+            } else {
+                resolve(0)
+            }
+        })
+    });
+}
 
 exports.async_account_getUser = async (account, org_id) => {
     return new Promise((resolve, reject) => {
@@ -1143,7 +1160,7 @@ exports.get_boss_id = async (org_id) => {
     });
 }
 
-exports.get_org_score = async (org_id,uuid) => {
+exports.get_org_score = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
         let sql = `select score from user_organization where uuid = ${uuid} and org_id = ${org_id}`;
         //console.log(sql);
@@ -1157,7 +1174,7 @@ exports.get_org_score = async (org_id,uuid) => {
     });
 }
 
-exports.get_org_superior = async (org_id,uuid) => {
+exports.get_org_superior = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
         let sql = `SELECT T2.* FROM ( SELECT @r AS _id,( SELECT @r := parent_uuid FROM user_organization WHERE uuid = _id and org_id=${org_id}) AS parent_id FROM ( SELECT @r := ${uuid} ) _, user_organization h WHERE @r != 0 AND h.org_id = ${org_id} AND h.level != 1 ) T1 JOIN user_organization T2 ON T1._id = T2.uuid where T2.org_id = ${org_id} and T2.uuid != ${uuid}`;
         //console.log(sql);

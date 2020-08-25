@@ -141,14 +141,15 @@ app.get('/create_private_room', function (req, res) {
     //console.log(conf);
     let json_conf = JSON.parse(conf);
     var org_id = json_conf.org_id || 0;
-    db.get_user_data(account, function (data) {
+    db.get_user_data(account, async function (data) {
         if (null == data) {
             http.send(res, 1, "system error");
             return;
         }
-        if (org_id != 0 && data.gems < 30) {
+        let boss_gems = await db.async_org_boos_gems(org_id);
+        if (boss_gems < 30) {
             http.send(res, 1, "房卡不足30张");
-            console.log(data.gems, '房卡不足30张')
+            console.log(boss_gems, '团长房卡不足30张')
             return;
         }
         var userId = data.userid;
