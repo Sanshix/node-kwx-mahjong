@@ -1655,7 +1655,7 @@ async function update_coin(userid, coins, water, org_id) {
         }
         let water_ratio = parent.water_ratio;
         let parent_uuid = parent.uuid;
-        if (index == 0 && parent.my_level == 5){
+        if (index == 0 && parent.my_level <= 5){
             water_ratio = parent.my_water;
             parent_uuid = parent.my_uuid;
         }
@@ -1666,12 +1666,8 @@ async function update_coin(userid, coins, water, org_id) {
         lower_ratio = water_ratio;
         // 按份额分
         let coin = parseFloat(water_ratio * (water / 100));
-        if (parent.level == 1) {
+        if (parent.level == 1 && index != 0) {
             // all分给团长
-            if (index == 0) {
-                db.update_exp(parent_uuid, water_spare, org_id, null);
-                break;
-            }
             coin = water_spare;
         }
         if (coin <= 0) {
@@ -1681,6 +1677,7 @@ async function update_coin(userid, coins, water, org_id) {
         db.update_exp(parent_uuid, coin, org_id, null);
         parent_id = parent_uuid;
         water_spare -= coin;
+        if (water_spare <= 0){break;}
     }
 }
 
