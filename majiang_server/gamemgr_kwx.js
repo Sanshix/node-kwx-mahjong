@@ -1493,7 +1493,7 @@ async function doGameOver(game, userId, forceEnd) {
                 roomInfo.end = true;
 
                 setTimeout(function () {
-                    if (roomInfo.numOfGames > 1) {
+                    if (roomInfo.numOfGames >= 1) {
                         store_history(roomInfo);
                     }
 
@@ -1506,7 +1506,7 @@ async function doGameOver(game, userId, forceEnd) {
 
         fnGameOver();
     }
-
+    var difen_veriyf = false;
     if (game != null) {
         if (!forceEnd) {
             calculateResult(game, roomInfo);
@@ -1575,6 +1575,7 @@ async function doGameOver(game, userId, forceEnd) {
 
             results.push(userRT);
             if (roomInfo.org_id != 0) {
+                if (rs.score < roomInfo.conf.difen){difen_veriyf = true}
                 update_coin(sd.userId, sd.detail.score, water_average, roomInfo.org_id);
             }
             dbresult[i] = sd.detail.score;
@@ -1628,6 +1629,7 @@ async function doGameOver(game, userId, forceEnd) {
 
             }
             var isEnd = (roomInfo.numOfGames >= roomInfo.conf.maxGames);
+            if (difen_veriyf){isEnd = true}
             fnNoticeResult(isEnd);
         });
     }
@@ -2373,6 +2375,7 @@ function doGang(game, turnSeat, seatData, gangtype, numOfCnt, pai) {
     doUserMoPai(game);
 
     //只能放在这里。因为过手就会清除杠牌标记
+    // TODO 检测为什么会清楚标记
     seatData.lastFangGangSeat = gameTurn;
     game.continuousGangs = fan + 1;
 }
@@ -3001,6 +3004,7 @@ exports.parseConf = function (roomConf, conf) {
     conf.ipForbid = roomConf.ipForbid;
     conf.second9 = roomConf.second9;
     conf.people = roomConf.people || 3;
+    conf.difen = roomConf.difen || 2;
 }
 
 exports.checkConf = function () {
