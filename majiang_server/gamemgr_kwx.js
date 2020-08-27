@@ -356,7 +356,7 @@ function checkCanHu(game, seatData, pai, ignoreCheckFan) {
         seatData.canHu = true;
         return;
     }
-
+    console.log('检测杠上炮:',turnSeat);
     // 杠上炮
     if (turnSeat.lastFangGangSeat >= 0) {
         seatData.canHu = true;
@@ -2375,9 +2375,9 @@ function doGang(game, turnSeat, seatData, gangtype, numOfCnt, pai) {
     doUserMoPai(game);
 
     //只能放在这里。因为过手就会清除杠牌标记
-    // TODO 检测为什么会清楚标记
     seatData.lastFangGangSeat = gameTurn;
     game.continuousGangs = fan + 1;
+    console.log('杠牌了',seatData);
 }
 
 exports.ming = function (uid, data) {
