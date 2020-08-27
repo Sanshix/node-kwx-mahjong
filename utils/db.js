@@ -957,11 +957,10 @@ exports.org_quit = (org_id, uuid, callback) => {
     let sql = `delete from user_organization where org_id = ${org_id} and uuid = ${uuid}`;
     //console.log(sql);
     query(sql, function (err, rows) {
-        if (err) {
-            callback(false);
-        } else {
+        let sqls = `update user_organization set parent_uuid =0 where org_id = ${org_id} and parent_uuid = ${uuid}`;
+        query(sqls, function (err, rows) {
             callback(true);
-        }
+        });
     });
 }
 

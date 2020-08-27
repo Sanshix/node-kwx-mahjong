@@ -352,11 +352,11 @@ function checkCanHu(game, seatData, pai, ignoreCheckFan) {
     if (seatData.hasMingPai ||
         turnSeat.hasMingPai ||
         ignoreCheckFan ||
-        ting.fan >= 1) {
+        ting.fan >= 0) {
         seatData.canHu = true;
         return;
     }
-    console.log('检测杠上炮:',turnSeat);
+    //console.log('检测杠上炮:',turnSeat);
     // 杠上炮
     if (turnSeat.lastFangGangSeat >= 0) {
         seatData.canHu = true;
@@ -1629,7 +1629,10 @@ async function doGameOver(game, userId, forceEnd) {
 
             }
             var isEnd = (roomInfo.numOfGames >= roomInfo.conf.maxGames);
-            if (difen_veriyf){isEnd = true}
+            if (difen_veriyf){
+                isEnd = true;
+                userMgr.broacastAllInRoom('difen_reject_push', {}, roomId);
+            }
             fnNoticeResult(isEnd);
         });
     }
@@ -2377,7 +2380,7 @@ function doGang(game, turnSeat, seatData, gangtype, numOfCnt, pai) {
     //只能放在这里。因为过手就会清除杠牌标记
     seatData.lastFangGangSeat = gameTurn;
     game.continuousGangs = fan + 1;
-    console.log('杠牌了',seatData);
+   // console.log('杠牌了',seatData.seatIndex);
 }
 
 exports.ming = function (uid, data) {

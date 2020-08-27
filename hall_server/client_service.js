@@ -558,6 +558,7 @@ app.get('/org_set_config', function (req, res) {
     let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
+    let difen = req.query.difen || 1; //低分
     let room_conf = req.query.conf;
     console.log(room_conf);
     let json_room_conf = JSON.parse(room_conf);
@@ -573,6 +574,7 @@ app.get('/org_set_config', function (req, res) {
                 //     data_conf.splice(key, 1);
                 // }
                 data_conf[i].id = i + 1;
+                data_conf[i].difen = difen;
             }
             // if (data_conf.length > 5) {
             //     data_conf.shift();
@@ -757,6 +759,21 @@ app.get('/org_get_room_list', function (req, res) {
         for (const key in data) {
             data[key]['base_info'] = JSON.parse(data[key]['base_info']);
         }
+        data.sort(function (a, b) {
+            let a_people = a.base_info.people;
+            if (a_people == 2) {
+                a_people = a.user_id1 != 0 ? 2 : 1
+            }else if (a_people ==3){
+                a_people = a.user_id2 != 0 ? 2 : 1
+            }
+            let b_people = b.base_info.people;
+            if (b_people == 2) {
+                b_people = b.user_id1 != 0 ? 2 : 1
+            }else if (b_people ==3){
+                b_people = b.user_id2 != 0 ? 2 : 1
+            }
+            return a_people - b_people
+        })
         http.send(res, 0, 'ok', { data: data });
     })
 });

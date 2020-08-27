@@ -112,7 +112,7 @@ exports.createRoom = function(creator, roomConf, gems, org_id, ip,  port, callba
 		return;
 	}
 
-	if (roomConf.difen < 0 || roomConf.difen > DI_FEN.length) {
+	if (roomConf.difen < 0) {
 		callback(1, null);
 		return;
 	}
