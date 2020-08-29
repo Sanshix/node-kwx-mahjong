@@ -499,7 +499,7 @@ app.get('/join_org_list', function (req, res) {
             }
             http.send(res, 0, 'ok', { data: data });
         } else {
-            http.send(res, 1, 'handle error', {})
+            http.send(res, 1, '操作失败', {})
         }
     })
 });
@@ -516,7 +516,7 @@ app.get('/join_org_approval', function (req, res) {
         if (data) {
             http.send(res, 0, 'ok', { data: data });
         } else {
-            http.send(res, 1, 'handle error', {})
+            http.send(res, 1, '操作失败', {})
         }
     })
 });
@@ -529,9 +529,11 @@ app.get('/org_get_info', function (req, res) {
     let org_id = req.query.org_id;
     db.get_org_info(org_id, (data) => {
         if (data) {
+            let conf = JSON.parse(data[0].room_config);
+            data[0].difen = parseInt(conf[0].difen);
             http.send(res, 0, 'ok', { data: data });
         } else {
-            http.send(res, 1, 'server error', {})
+            http.send(res, 1, '该社团不存在', {})
         }
     })
 });
@@ -569,16 +571,13 @@ app.get('/org_set_config', function (req, res) {
         }
         if (json_room_conf) {
             data_conf.push(json_room_conf)
-            for (let i = 0; i < data_conf.length; i++) {
-                // if (data_conf[key] && data_conf[key].type == json_room_conf.type) {
-                //     data_conf.splice(key, 1);
-                // }
-                data_conf[i].id = i + 1;
-                data_conf[i].difen = difen;
-            }
             // if (data_conf.length > 5) {
             //     data_conf.shift();
             // }
+        }
+        for (let i = 0; i < data_conf.length; i++) {
+            data_conf[i].id = i + 1;
+            data_conf[i].difen = parseInt(difen);
         }
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
             http.send(res, 0, 'ok', {});
@@ -759,21 +758,23 @@ app.get('/org_get_room_list', function (req, res) {
         for (const key in data) {
             data[key]['base_info'] = JSON.parse(data[key]['base_info']);
         }
-        data.sort(function (a, b) {
-            let a_people = a.base_info.people;
-            if (a_people == 2) {
-                a_people = a.user_id1 != 0 ? 2 : 1
-            }else if (a_people ==3){
-                a_people = a.user_id2 != 0 ? 2 : 1
-            }
-            let b_people = b.base_info.people;
-            if (b_people == 2) {
-                b_people = b.user_id1 != 0 ? 2 : 1
-            }else if (b_people ==3){
-                b_people = b.user_id2 != 0 ? 2 : 1
-            }
-            return a_people - b_people
-        })
+        if (data.length > 0){
+            data.sort(function (a, b) {
+                let a_people = a.base_info.people;
+                if (a_people == 2) {
+                    a_people = a.user_id1 != 0 ? 2 : 1
+                }else if (a_people ==3){
+                    a_people = a.user_id2 != 0 ? 2 : 1
+                }
+                let b_people = b.base_info.people;
+                if (b_people == 2) {
+                    b_people = b.user_id1 != 0 ? 2 : 1
+                }else if (b_people ==3){
+                    b_people = b.user_id2 != 0 ? 2 : 1
+                }
+                return a_people - b_people
+            })
+        }
         http.send(res, 0, 'ok', { data: data });
     })
 });
