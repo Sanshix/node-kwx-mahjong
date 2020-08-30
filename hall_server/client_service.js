@@ -560,16 +560,17 @@ app.get('/org_set_config', function (req, res) {
     let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
     let pump = req.query.pump; //总抽水比例
-    let difen = req.query.difen || 1; //低分
+    let difen = req.query.difen || 5; //低分
     let room_conf = req.query.conf;
-    console.log(room_conf);
-    let json_room_conf = JSON.parse(room_conf);
+    //console.log(room_conf);
+    let json_room_conf = room_conf ? JSON.parse(room_conf) : false;
     db.get_org_info(org_id, (data) => {
         let data_conf = [];
         if (data[0].room_config) {
             data_conf = JSON.parse(data[0].room_config);
         }
         if (json_room_conf) {
+            json_room_conf.difen = parseInt(difen);
             data_conf.push(json_room_conf)
             // if (data_conf.length > 5) {
             //     data_conf.shift();
@@ -577,7 +578,7 @@ app.get('/org_set_config', function (req, res) {
         }
         for (let i = 0; i < data_conf.length; i++) {
             data_conf[i].id = i + 1;
-            data_conf[i].difen = parseInt(difen);
+            //data_conf[i].difen = parseInt(difen);
         }
         db.set_org_info(org_id, func_type_1, func_type_2, show_type, pump, JSON.stringify(data_conf), (data) => {
             http.send(res, 0, 'ok', {});
