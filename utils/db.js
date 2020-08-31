@@ -1024,7 +1024,7 @@ exports.get_water = async (org_id) => {
 exports.get_parent = async (org_id, uuid) => {
     return new Promise((resolve, reject) => {
         let sql = `select b.*,a.level as my_level,a.water_ratio as my_water,a.uuid as my_uuid from user_organization a left join user_organization b on a.parent_uuid=b.uuid
-               where a.uuid=${uuid} and b.org_id=${org_id}  limit 1`;
+               where a.uuid=${uuid} and b.org_id=${org_id} and a.org_id=${org_id}  limit 1`;
         //console.log(sql);
         query(sql, function (err, rows) {
             if (rows) {

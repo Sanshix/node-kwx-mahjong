@@ -1663,6 +1663,7 @@ async function update_coin(userid, coins, water, org_id) {
         if (index == 0 && parent.my_level <= 5){
             water_ratio = parent.my_water;
             parent_uuid = parent.my_uuid;
+            parent.level = parent.my_level;
         }
         // 获取实际比例
         if (lower_ratio != 0){
@@ -1670,7 +1671,7 @@ async function update_coin(userid, coins, water, org_id) {
         }
         lower_ratio = water_ratio;
         // 按份额分
-        let coin = parseFloat(water_ratio * (water / 100));
+        let coin = water_ratio * (water / 100);
         if (parent.level == 1 && index != 0) {
             // all分给团长
             coin = water_spare;

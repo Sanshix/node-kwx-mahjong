@@ -528,9 +528,11 @@ app.get('/org_get_info', function (req, res) {
     }
     let org_id = req.query.org_id;
     db.get_org_info(org_id, (data) => {
-        if (data) {
+        if (data.length) {
             let conf = JSON.parse(data[0].room_config);
-            data[0].difen = parseInt(conf[0].difen);
+            if (conf && conf.length){
+                data[0].difen = parseInt(conf[0].difen);
+            }
             http.send(res, 0, 'ok', { data: data });
         } else {
             http.send(res, 1, '该社团不存在', {})
