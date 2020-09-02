@@ -179,8 +179,8 @@ var appInfo = {
 		secret: "2bc59f74dca944715cd502bd5d0e06ca",
 	},
 	iOS: {
-		appid: "wxcb508816c5c4e2a4",
-		secret: "7de38489ede63089269e3410d5905038",
+		appid: "wx9e441ca3da64f3e7",
+		secret: "2bc59f74dca944715cd502bd5d0e06ca",
 	}
 };
 
