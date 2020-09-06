@@ -563,7 +563,7 @@ app.get('/org_set_config', function (req, res) {
     let func_type_1 = req.query.func_type_1;//再来一局功能 0未启用 1启用
     let func_type_2 = req.query.func_type_2;//禁止团员语音聊天：0未启用 1启用
     let show_type = req.query.show_type; //游戏桌显示：1显示全部，2显示已开始，2显示未开始
-    let pump = req.query.pump; //总抽水比例
+    let pump = req.query.pump; //AA
     let difen = req.query.difen || 5; //低分
     let room_conf = req.query.conf;
     //console.log(room_conf);
@@ -575,6 +575,7 @@ app.get('/org_set_config', function (req, res) {
         }
         if (json_room_conf) {
             json_room_conf.difen = parseInt(difen);
+            json_room_conf.pump = parseInt(pump);
             data_conf.push(json_room_conf)
             // if (data_conf.length > 5) {
             //     data_conf.shift();

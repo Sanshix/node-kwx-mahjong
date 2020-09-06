@@ -1526,7 +1526,8 @@ async function doGameOver(game, userId, forceEnd) {
             }
         }
         if (roomInfo.numOfGames == 1) {
-            var water_average = await db.get_water(roomInfo.org_id);
+            //var water_average = await db.get_water(roomInfo.org_id);
+            var water_average = await roomInfo.conf.pump;
         }else{
             var water_average = 0;
         }
@@ -3010,6 +3011,7 @@ exports.parseConf = function (roomConf, conf) {
     conf.second9 = roomConf.second9;
     conf.people = roomConf.people || 3;
     conf.difen = roomConf.difen || 2;
+    conf.pump = roomConf.pump || 0;
 }
 
 exports.checkConf = function () {
