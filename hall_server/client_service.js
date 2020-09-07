@@ -140,6 +140,8 @@ app.get('/create_private_room', function (req, res) {
     var conf = data.conf;
     //console.log(conf);
     let json_conf = JSON.parse(conf);
+    json_conf.pump = data.pump||1;
+    conf = JSON.stringify(json_conf);
     var org_id = json_conf.org_id || 0;
     db.get_user_data(account, async function (data) {
         if (null == data) {
@@ -230,7 +232,7 @@ app.get('/enter_private_room', function (req, res) {
                 let room_conf = JSON.parse(room.base_info);
                 let conditionCoin = room_service.switchPump(room_conf.maima, room_conf.baseScore);
                 console.log(`我的积分：${data.coins}, 限制积分：${conditionCoin}`)
-                if (data.coins < conditionCoin) {
+                if (!data.roomid && data.coins < conditionCoin) {
                     return http.send(res, -1, `积分不足! 该房间限制积分大于等于${conditionCoin}`);
                 }
             }
@@ -567,7 +569,7 @@ app.get('/org_set_config', function (req, res) {
     let difen = req.query.difen || 5; //低分
     let room_conf = req.query.conf;
     //console.log(room_conf);
-    let json_room_conf = room_conf ? JSON.parse(room_conf) : false;
+    let json_room_conf = Object.keys(room_conf).length > 0 ? JSON.parse(room_conf) : false;
     db.get_org_info(org_id, (data) => {
         let data_conf = [];
         if (data[0].room_config) {
