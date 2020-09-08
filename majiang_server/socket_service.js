@@ -510,7 +510,7 @@ exports.start = function(config, mgr) {
 			//通知房间内其它玩家
 			userMgr.broacastInRoom('user_state_push', data, uid, false);
 
-			//清除玩家的在线信息
+			// //清除玩家的在线信息
 			userMgr.del(uid);
 			socket.userId = null;
 
@@ -533,18 +533,18 @@ exports.start = function(config, mgr) {
 			}
 
 			var ret = socket.gameMgr.dissolveUpdate(roomId, uid, false);
-			if (ret != null) {
-				var dr = ret.dr;
-				var ramaingTime = (dr.endTime - Date.now()) / 1000;
-				var data = {
-					time: ramaingTime,
-					states: dr.states,
-					online: dr.online,
-					reason: dr.reason,
-				}
+			// if (ret != null) {
+			// 	var dr = ret.dr;
+			// 	var ramaingTime = (dr.endTime - Date.now()) / 1000;
+			// 	var data = {
+			// 		time: ramaingTime,
+			// 		states: dr.states,
+			// 		online: dr.online,
+			// 		reason: dr.reason,
+			// 	}
 
-				userMgr.broacastInRoom('dissolve_notice_push', data, uid, false);
-			}
+			// 	userMgr.broacastInRoom('dissolve_notice_push', data, uid, false);
+			// }
 		});
 
 		socket.on('game_ping', function(data) {

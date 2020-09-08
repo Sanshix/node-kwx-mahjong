@@ -620,19 +620,26 @@ function sendOperations(game, seatData, pai) {
             ming: seatData.canMingPai,
             mingpai: seatData.mingPai,
         };
-
-        //如果可以有操作，则进行操作
-        userMgr.sendMsg(seatData.userId, 'game_action_push', data);
+        if ((game.roomInfo.dr && game.roomInfo.dr.online[seatData.seatIndex]) || !game.roomInfo.dr){
+            //如果可以有操作，则进行操作
+            userMgr.sendMsg(seatData.userId, 'game_action_push', data);
+        }
     } else {
         userMgr.sendMsg(seatData.userId, 'game_action_push');
     }
 
     var autoAction = function () {
         var uid = seatData.userId;
+        // if (seatData.canHu) {
+        //     exports.hu(uid);
+        // } else if (seatData.canGang) {
+        //     exports.gang(uid, seatData.gangPai[0]);
+        // } else if (seatData.canChuPai) {
+        //     var chupai = seatData.holds[seatData.holds.length - 1];
+        //     exports.chuPai(uid, chupai);
+        // }
         if (seatData.canHu) {
             exports.hu(uid);
-        } else if (seatData.canGang) {
-            exports.gang(uid, seatData.gangPai[0]);
         } else if (seatData.canChuPai) {
             var chupai = seatData.holds[seatData.holds.length - 1];
             exports.chuPai(uid, chupai);
@@ -641,6 +648,13 @@ function sendOperations(game, seatData, pai) {
 
     if (seatData.hasMingPai) {
         setTimeout(autoAction, 1000);
+    }else if (game.roomInfo.dr && !game.roomInfo.dr.online[seatData.seatIndex]){
+        setTimeout(()=>{
+            if (seatData.canChuPai) {
+                var chupai = seatData.holds[seatData.holds.length - 1];
+                exports.chuPai(seatData.userId, chupai);
+            }
+        }, 1000);
     }
 }
 
@@ -2073,8 +2087,9 @@ exports.chuPai = function (userId, pai) {
         console.log('no need chupai.');
         return;
     }
-
-    if (hasOperations(seatData)) {
+    if (game.roomInfo.dr && !game.roomInfo.dr.online[seatIndex]){
+        
+    }else if(hasOperations(seatData)) {
         console.log('plz guo before you chupai.');
         return;
     }
@@ -2117,6 +2132,9 @@ exports.chuPai = function (userId, pai) {
 
         if (gs.canHu) {
             hasHu = true;
+        }
+        if (game.roomInfo.dr && !game.roomInfo.dr.online[i]){
+            hasActions = false;
         }
     }
 
