@@ -568,14 +568,14 @@ app.get('/org_set_config', function (req, res) {
     let pump = req.query.pump; //AA
     let difen = req.query.difen || 5; //低分
     let room_conf = req.query.conf;
-    //console.log(room_conf);
+    console.log(room_conf,pump);
     let json_room_conf = Object.keys(room_conf).length > 0 ? JSON.parse(room_conf) : false;
     db.get_org_info(org_id, (data) => {
         let data_conf = [];
         if (data[0].room_config) {
             data_conf = JSON.parse(data[0].room_config);
         }
-        if (json_room_conf) {
+        if (json_room_conf && json_room_conf.type) {
             json_room_conf.difen = parseInt(difen);
             json_room_conf.pump = parseInt(pump);
             data_conf.push(json_room_conf)
