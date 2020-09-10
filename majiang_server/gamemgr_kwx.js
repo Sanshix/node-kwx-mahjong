@@ -630,20 +630,20 @@ function sendOperations(game, seatData, pai) {
 
     var autoAction = function () {
         var uid = seatData.userId;
-        // if (seatData.canHu) {
-        //     exports.hu(uid);
-        // } else if (seatData.canGang) {
-        //     exports.gang(uid, seatData.gangPai[0]);
-        // } else if (seatData.canChuPai) {
-        //     var chupai = seatData.holds[seatData.holds.length - 1];
-        //     exports.chuPai(uid, chupai);
-        // }
         if (seatData.canHu) {
             exports.hu(uid);
+        } else if (seatData.canGang && seatData.kou.indexOf(pai)!=-1) {
+            exports.gang(uid, seatData.gangPai[0]);
         } else if (seatData.canChuPai) {
             var chupai = seatData.holds[seatData.holds.length - 1];
             exports.chuPai(uid, chupai);
         }
+        // if (seatData.canHu) {
+        //     exports.hu(uid);
+        // } else if (seatData.canChuPai) {
+        //     var chupai = seatData.holds[seatData.holds.length - 1];
+        //     exports.chuPai(uid, chupai);
+        // }
     };
 
     if (seatData.hasMingPai) {

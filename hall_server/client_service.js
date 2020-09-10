@@ -140,7 +140,6 @@ app.get('/create_private_room', function (req, res) {
     var conf = data.conf;
     //console.log(conf);
     let json_conf = JSON.parse(conf);
-    json_conf.pump = data.pump||1;
     conf = JSON.stringify(json_conf);
     var org_id = json_conf.org_id || 0;
     db.get_user_data(account, async function (data) {
