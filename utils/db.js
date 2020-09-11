@@ -1225,4 +1225,47 @@ exports.find_coin_log = (uuid, org_id, page, callback) => {
     });
 }
 
+exports.get_org_sum_score_3 = async (org_id, uuid) => {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT sum(T1.score+IFNULL(T2.score, 0)) as sumScore FROM (SELECT uuid ,score from user_organization where parent_uuid = ${uuid} and org_id=${org_id}) T1 left JOIN user_organization T2 ON T1.uuid = T2.parent_uuid and org_id = ${org_id}`;
+
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (rows.length > 0) {
+                resolve(rows[0].sumScore);
+            } else {
+                resolve(0);
+            }
+        });
+    });
+}
+
+exports.get_org_sum_score_5 = async (org_id, uuid) => {
+    return new Promise((resolve, reject) => {
+        let sql = `select sum(score) as sum_score from user_organization where parent_uuid=${uuid} and org_id=${org_id}`;
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (rows.length > 0) {
+                resolve(rows[0].sum_score);
+            } else {
+                resolve(0);
+            }
+        });
+    });
+}
+
+exports.get_org_sum_score_1 = async (org_id, uuid) => {
+    return new Promise((resolve, reject) => {
+        let sql = `select sum(score) as sum_score from user_organization where org_id=${org_id}`;
+        //console.log(sql);
+        query(sql, function (err, rows) {
+            if (rows.length > 0) {
+                resolve(rows[0].sum_score);
+            } else {
+                resolve(0);
+            }
+        });
+    });
+}
+
 exports.query = query;

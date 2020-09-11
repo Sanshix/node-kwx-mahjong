@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
     var reqDomain = domain.create();
     reqDomain.on('error', function (err) { // 下面抛出的异常在这里被捕获
         console.log(err.message);
-        err.message = '服务器异常';
+        //err.message = '服务器异常';
         next(err, req, res, next);
     });
     //console.log(req.url);
@@ -668,10 +668,21 @@ app.get('/org_user_list', async function (req, res) {
             data[key].name = crypto.fromBase64(data[key].name);
         }
         let superior = [];
+        let sum_score = data[0].score;
         if (uuid) {
             superior = await db.get_org_superior(org_id, uuid);
+    	    if (data[0].level == 3){
+                 let score_sum =  await db.get_org_sum_score_3(org_id,uuid);
+                 sum_score+= parseInt(score_sum);
+    	    }else if (data[0].level == 5){
+                let score_sum = await db.get_org_sum_score_5(org_id,uuid);
+                sum_score+= parseInt(score_sum);
+    	    }else if (data[0].level == 1){
+                let score_sum = await db.get_org_sum_score_1(org_id,uuid);
+                sum_score+= parseInt(score_sum);
+            }
         }
-        http.send(res, 0, 'ok', { data, superior: superior });
+        http.send(res, 0, 'ok', { data, superior, sum_score });
     })
 });
 
