@@ -439,7 +439,7 @@ function checkCanTingPai(game, seatData) {
     var kou = seatData.kou;
 
     //检查是否是七对 前提是没有碰，也没有杠 ，即手上拥有13张牌
-    if (kou.length == 0 && seatData.holds.length >= 13) {
+    if (kou && kou.length == 0 && seatData.holds.length >= 13) {
         var hu = false;
         var danPai = -1;
         var pairCount = 0;
