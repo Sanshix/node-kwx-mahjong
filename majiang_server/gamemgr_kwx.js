@@ -2678,9 +2678,10 @@ exports.hu = function (userId) {
     }
 
     if (isZimo) {
+        console.debug('debug-maima:',game.conf.maima,seatData.hasMingPai)
         if (game.conf.maima == 1 || (game.conf.maima >= 2 && seatData.hasMingPai)) {
             var pai = maiMa(game);
-            //console.log('maima: ' + pai);
+            console.log('maima: ' + pai);
             if (pai > 0) {
                 maima = [{
                     pai: pai,
