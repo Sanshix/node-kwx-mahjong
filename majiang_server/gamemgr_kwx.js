@@ -510,10 +510,13 @@ function checkCanTingPai(game, seatData) {
             }
         }
     }
-
+    let mark_kou = [];
     for (var i = 0; i < kou.length; i++) {
         var pai = kou[i];
-        seatData.countMap[pai] -= 3;
+        mark_kou.push(seatData.countMap[pai]);
+        seatData.countMap[pai] -= seatData.countMap[pai];
+        //seatData.holds
+        // TODO 从holds里把kou的牌都上了，检测完后再加上
     }
 
     //检查是不是平胡
@@ -523,7 +526,7 @@ function checkCanTingPai(game, seatData) {
 
     for (var i = 0; i < kou.length; i++) {
         var pai = kou[i];
-        seatData.countMap[pai] += 3;
+        seatData.countMap[pai] += mark_kou[i];
     }
 }
 
@@ -633,7 +636,7 @@ function sendOperations(game, seatData, pai) {
         if (seatData.canHu) {
             exports.hu(uid);
         } else if (seatData.canGang && seatData.kou.indexOf(pai)!=-1) {
-            exports.gang(uid, seatData.gangPai[0]);
+            exports.gang(uid, pai);
         } else if (seatData.canChuPai) {
             var chupai = seatData.holds[seatData.holds.length - 1];
             exports.chuPai(uid, chupai);
@@ -2432,6 +2435,8 @@ exports.ming = function (uid, data) {
     clearAllOptions(game, sd);
 
     sd.hasMingPai = true;
+    checkCanTingPai(game, sd);
+    // TODO 判断有没有听牌
     sd.kou = data.kou;
     sd.mingPai = [];
 
