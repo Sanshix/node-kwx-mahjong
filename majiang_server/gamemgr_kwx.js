@@ -514,9 +514,14 @@ function checkCanTingPai(game, seatData) {
     for (var i = 0; i < kou.length; i++) {
         var pai = kou[i];
         mark_kou.push(seatData.countMap[pai]);
+        for(let x =0; x < seatData.countMap[pai]; x++) {
+            var index = seatData.holds.indexOf(pai);
+            if (index != -1) {
+                seatData.holds.splice(index, 1);
+            }
+        }
         seatData.countMap[pai] -= seatData.countMap[pai];
-        //seatData.holds
-        // TODO 从holds里把kou的牌都上了，检测完后再加上
+        // 从holds里把kou的牌都delete，检测完后再加上
     }
 
     //检查是不是平胡
@@ -527,6 +532,9 @@ function checkCanTingPai(game, seatData) {
     for (var i = 0; i < kou.length; i++) {
         var pai = kou[i];
         seatData.countMap[pai] += mark_kou[i];
+        for(let x =0; x < seatData.countMap[pai]; x++) {
+            seatData.holds.push(pai);
+        }
     }
 }
 
@@ -2437,9 +2445,11 @@ exports.ming = function (uid, data) {
     sd.hasMingPai = true;
     checkCanTingPai(game, sd);
     // TODO 判断有没有听牌
-    sd.kou = data.kou;
+    if (Object.keys(sd.tingMap).length > 0){
+        sd.kou = data.kou;
+    }
+    
     sd.mingPai = [];
-
     exports.chuPai(uid, pai);
 
     recordGameAction(game, sd.seatIndex, ACTION_MING, 0);
