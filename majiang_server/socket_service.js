@@ -450,7 +450,7 @@ exports.start = function(config, mgr) {
 				userMgr.broacastInRoom('dissolve_notice_push', data, uid, true);
 
 				var doAllAgree = true;
-				for (var i = 0; i < dr.states.length; ++i) {
+				for (var i = 0; i < roomInfo.conf.people; ++i) {
 					if (!dr.states[i]) {
 						doAllAgree = false;
 						break;

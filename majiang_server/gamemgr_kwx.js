@@ -514,14 +514,7 @@ function checkCanTingPai(game, seatData) {
     for (var i = 0; i < kou.length; i++) {
         var pai = kou[i];
         mark_kou.push(seatData.countMap[pai]);
-        for(let x =0; x < seatData.countMap[pai]; x++) {
-            var index = seatData.holds.indexOf(pai);
-            if (index != -1) {
-                seatData.holds.splice(index, 1);
-            }
-        }
         seatData.countMap[pai] -= seatData.countMap[pai];
-        // 从holds里把kou的牌都delete，检测完后再加上
     }
 
     //检查是不是平胡
@@ -532,10 +525,31 @@ function checkCanTingPai(game, seatData) {
     for (var i = 0; i < kou.length; i++) {
         var pai = kou[i];
         seatData.countMap[pai] += mark_kou[i];
-        for(let x =0; x < seatData.countMap[pai]; x++) {
-            seatData.holds.push(pai);
+    }
+}
+
+//检查扣牌是否占胡
+function checkCanKoupaiZhanhu(seatData,pai) {
+    seatData.tingMap = {};
+    for(let x =0; x < seatData.countMap[pai]; x++) {
+        var index = seatData.holds.indexOf(pai);
+        if (index != -1) {
+            seatData.holds.splice(index, 1);
         }
     }
+    let mark_max = seatData.countMap[pai];
+    seatData.countMap[pai] -= seatData.countMap[pai];
+
+    //检查是不是平胡
+    mjutils.checkTingPai(seatData, 0, 9);
+    mjutils.checkTingPai(seatData, 9, 18);
+    mjutils.checkTingPai(seatData, 27, 30);
+
+    seatData.countMap[pai] += mark_max;
+    for(let x =0; x < seatData.countMap[pai]; x++) {
+        seatData.holds.push(pai);
+    }
+
 }
 
 function checkCanChuPai(game, seatData, pai) {
@@ -2424,7 +2438,7 @@ exports.ming = function (uid, data) {
     }
 
     var game = sd.game;
-
+    sd.kou = [];
     if (sd.hasMingPai) {
         console.log('cannot ming again');
         return;
@@ -2441,16 +2455,19 @@ exports.ming = function (uid, data) {
         }
     */
     clearAllOptions(game, sd);
-
-    sd.hasMingPai = true;
-    checkCanTingPai(game, sd);
-    // TODO 判断有没有听牌
-    if (Object.keys(sd.tingMap).length > 0){
-        sd.kou = data.kou;
-    }
-    
     sd.mingPai = [];
+
     exports.chuPai(uid, pai);
+    sd.hasMingPai = true;
+
+    for (var i = 0; i < kou.length; i++) {
+        var pai = kou[i];
+        checkCanKoupaiZhanhu(sd,pai);
+        if (Object.keys(sd.tingMap).length > 0){
+            sd.kou.push(pai) ;
+        }
+    }
+
 
     recordGameAction(game, sd.seatIndex, ACTION_MING, 0);
 
