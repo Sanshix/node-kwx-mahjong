@@ -873,12 +873,6 @@ app.get('/update_coins_log', function (req, res) {
     })
 });
 
-// app.use(function (err, req, res, next) {
-//     //res.status(err.status || 500);
-//     console.error(err, err.message);
-//     return http.send(res, 1, 'server error', {})
-// });
-
 exports.start = function ($config) {
     config = $config;
     let server = app.listen(9001);
