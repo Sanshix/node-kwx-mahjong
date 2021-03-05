@@ -5,11 +5,11 @@ var HALL_ROOM_PORT = 9002;
 var ACCOUNT_PRI_KEY = "^&*#$%()@";
 var ROOM_PRI_KEY = "~!@#$(*&^%$&";
 
-var LOCAL_IP = 'localhost';
+var LOCAL_IP = '127.0.0.1';
 
 exports.mysql = function(){
 	return {
-		HOST:'118.24.146.117',
+		HOST:'localhost',
 		USER:'nodejs_test',
 		PSWD:'rpMph5R7YWFD4ZCc',
 		DB:'nodejs_test',
